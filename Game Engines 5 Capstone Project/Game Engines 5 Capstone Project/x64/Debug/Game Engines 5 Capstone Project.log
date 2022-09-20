@@ -1,7 +1,4 @@
 ﻿  Main.cpp
-  MemoryAllocation.cpp
   Multithreading.cpp
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Multithreading.cpp(7,22): error C2276: '&': illegal operation on bound member function expression
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Multithreading.cpp(11,22): error C2276: '&': illegal operation on bound member function expression
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Multithreading.cpp(14,22): error C2276: '&': illegal operation on bound member function expression
   Generating Code...
+  Game Engines 5 Capstone Project.vcxproj -> C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\x64\Debug\Game Engines 5 Capstone Project.exe

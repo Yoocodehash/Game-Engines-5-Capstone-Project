@@ -34,6 +34,9 @@ class MemoryAllocation
 {
 public:
 
+	MemoryAllocation();
+	~MemoryAllocation();
+
 	void ReturnMemoryAllocation();
 
 };

@@ -1,17 +1,26 @@
 #include "MemoryAllocation.h"
 
+MemoryAllocation::MemoryAllocation()
+{
+
+}
+
+MemoryAllocation::~MemoryAllocation()
+{
+
+}
 
 void MemoryAllocation::ReturnMemoryAllocation()
 {
-
 	VectorVariables vec;
 
-	std::cout << "The byte size of the vectors = " << sizeof(vec) << std::endl << "\n";
+	std::cout << "\nThe byte size of the vectors = " << sizeof(vec) << std::endl << "\n";
 
 	void* vectorPtr = malloc(1000000);
 	void* vectorPtr2 = new VectorVariables[50000];
 
 	std::cout << "vectorPtr size = " << sizeof(vectorPtr) << " " << vectorPtr << std::endl << "\n";
+	std::cout << "vectorPtr2 size = " << sizeof(vectorPtr2) << " " << vectorPtr2 << std::endl << "\n";
 
 
 	float* floatNumber = nullptr;

@@ -2,11 +2,12 @@
 #include "MemoryAllocation.h"
 
 Multithreading threading;
-MemoryAllocation mem;
+MemoryAllocation memory;
 
 int main() {
 
-	threading.Run();
-	mem.ReturnMemoryAllocation();
+	threading.Run(50, 500);
+	memory.ReturnMemoryAllocation();
+
 	return 0;
 }

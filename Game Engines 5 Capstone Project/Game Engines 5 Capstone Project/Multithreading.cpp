@@ -1,37 +1,51 @@
 #include "Multithreading.h"
 
-/// Kind of like the GameManager
-void Multithreading::Run() {
+Multithreading* multiThread = new Multithreading();
+
+Multithreading::Multithreading()
+{
+
+}
+
+Multithreading::~Multithreading()
+{
+
+}
+
+// Run multithreading here
+void Multithreading::Run(int i_, int milliseconds_) {
 	bool isRunning = true;
 	static long long frameCount = 0;
-	std::thread thread1(&DoSomethingCool);
+
+	// (function, object pointer, starting point, end point, milliseconds (used for std::chrono))
+	std::thread thread1(&Multithreading::Level, multiThread, 0, 20, 1000);
 	thread1.detach();
 
-	//thread1.join(); /// Whats the difference between detach and join?
-	std::thread thread2(&DoSomethingElse, 12);
+	std::thread thread2(&Multithreading::PlayerAt, multiThread, 0, 20, 1000);
 	thread2.detach();
 
-	std::thread thread3(&MultiThreading);
+	// (function, object pointer, maxNumber, milliseconds)
+	std::thread thread3(&Multithreading::multiThreading, multiThread, 3, 500);
 	thread3.detach();
 
-	/// This represents the master game loop
+	// Loop isRunning as many times as I want (in main.cpp)
 	while (isRunning) {
-		if (frameCount == 200) {
+		if (frameCount == i_) {
 			isRunning = false;
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		std::cout << frameCount << " master loop()\n";
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
+		std::cout << frameCount << " run this game!\n";
 		frameCount++;
 	}
 
 
 }
 
-void Multithreading::MultiThreading()
+void Multithreading::multiThreading(int i_, int milliseconds_)
 {
-	for (int number = 0; number < 3; number++)
+	for (int number = 0; number < i_; number++)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
 		std::cout << "Multi-threading is now shown on the console, as now this 1st thread is about Scott's love for master loops\n";
 
 		if (number == 3)
@@ -41,9 +55,9 @@ void Multithreading::MultiThreading()
 	}
 	std::cout << "1st thread is now complete! Scott has stopped master looping threads!\n";
 
-	for (int number = 0; number < 3; number++)
+	for (int number = 0; number < i_; number++)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
 		std::cout << "2nd thread here is about how The World Is Yours (reference to Scarface)!\n";
 
 		if (number == 3)
@@ -53,9 +67,9 @@ void Multithreading::MultiThreading()
 	}
 	std::cout << "2nd thread is now complete! So the world might not be yours anymore!\n";
 
-	for (int number = 0; number < 3; number++)
+	for (int number = 0; number < i_; number++)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
 		std::cout << "3rd thread here is where The Last Of Us 2 got Game Of The Year Award in 2020\n";
 
 		if (number == 3)
@@ -65,9 +79,9 @@ void Multithreading::MultiThreading()
 	}
 	std::cout << "3rd thread is now complete! No more The Last Of Us 2!\n";
 
-	for (int number = 0; number < 3; number++)
+	for (int number = 0; number < i_; number++)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
 		std::cout << "4th thread here is about COVID vaccines becoming a thing\n";
 
 		if (number == 3)
@@ -78,9 +92,9 @@ void Multithreading::MultiThreading()
 	std::cout << "4th thread is now complete! The world might be free of coronavirus!\n";
 
 
-	for (int number = 0; number < 3; number++)
+	for (int number = 0; number < i_; number++)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
 		std::cout << "5th thread here is about Microsoft developing Windows 11 and everyone is loving it!\n";
 
 		if (number == 3)
@@ -93,28 +107,22 @@ void Multithreading::MultiThreading()
 
 
 
-void Multithreading::DoSomethingCool() {
-	int i = 0;
-	while (true) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		std::cout << i << " Hello from doSomethingCool()\n";
-		++i;
-		if (i == 20) {
-			break; /// break out of the loop
-		}
+void Multithreading::Level(int i_, int endAt_, int milliseconds_)
+{
+	while (i_ < endAt_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
+		std::cout << i_ << " is where the level increments at\n";
+		++i_;
 	}
-	std::cout << i << " doSomethingCool() is done\n";
+	std::cout << "Finished with level increments\n";
 }
 
-void Multithreading::DoSomethingElse(int data_)
+void Multithreading::PlayerAt(int i_, int endAt_, int milliseconds_)
 {
-	while (true) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		std::cout << data_ << " Hello from doSomethingElse()\n";
-		++data_;
-		if (data_ == 20) {
-			break; /// break out of the loop
-		}
+	while (i_ < endAt_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
+		std::cout << i_ << " is where the player location increments at\n";
+		++i_;
 	}
-	std::cout << data_ << " doSomethingElse() is done\n";
+	std::cout << "Finished with player location increments\n";
 }
