@@ -1,8 +1,14 @@
 #include "Window.h"
+#include "TextureManager.h"
+#include "Level.h"
+#include "GameObject.h"
 #include <iostream>
 
-SDL_Texture* playerBird;
+GameObject* playerBird;
 SDL_Rect* srcRect, destRect;
+Level* level;
+
+SDL_Renderer* Window::renderer = nullptr;
 
 Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 {
@@ -16,12 +22,16 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 	window = SDL_CreateWindow(name, x, y, w, h, flags);
 	renderer = SDL_CreateRenderer(window, -1, 0);
 
+	if (renderer)
+	{
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // Set the color of the renderer
+	}
+
 	isRunning = true;
 
-	SDL_Surface* playerSurface = IMG_Load("Flappy bird sprite.png");
+	playerBird = new GameObject("Flappy bird sprite.png", -50, 200);
 
-	playerBird = SDL_CreateTextureFromSurface(renderer, playerSurface);
-	SDL_FreeSurface(playerSurface);
+	level = new Level();
 }
 
 Window::~Window()
@@ -59,15 +69,14 @@ void Window::HandleEvents()
 
 void Window::Update()
 {
-	// By the way you can modify the size of the sprite here
-	destRect.h = 180;
-	destRect.w = 300;
+	playerBird->UpdatePlayer();
 }
 
 void Window::Render()
 {
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, playerBird, NULL, &destRect);
+	level->RenderLevel();
+	playerBird->Render();
 	SDL_RenderPresent(renderer);
 }
 
