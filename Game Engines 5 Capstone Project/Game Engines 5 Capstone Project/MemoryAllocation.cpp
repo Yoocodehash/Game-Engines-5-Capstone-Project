@@ -12,9 +12,12 @@ MemoryAllocation::~MemoryAllocation()
 
 void MemoryAllocation::ReturnMemoryAllocation()
 {
+	std::cout << "\nThe byte size of enemy flappy bird file: " << sizeof("Enemy Flappy Bird.png") << " bytes!" << std::endl;
+	std::cout << "The byte size of player flappy bird file: " << sizeof("Flappy bird sprite.png") << " bytes!" << std::endl;
+
 	VectorVariables vec;
 
-	std::cout << "\nThe byte size of the vectors = " << sizeof(vec) << std::endl << "\n";
+	std::cout << "\nThe byte size of the vectors: " << sizeof(vec) << " bytes!" << std::endl << "\n";
 
 	void* vectorPtr = malloc(1000000);
 	void* vectorPtr2 = new VectorVariables[50000];
@@ -38,10 +41,10 @@ void MemoryAllocation::ReturnMemoryAllocation()
 
 		numbers.push(floatNumber);
 
-		std::cout << "Printed float numbers: \n";
+		std::cout << "\nPrinted float numbers: \n";
 		while (!numbers.empty())
 		{
-			std::cout << numbers.front() << " " << *floatNumber << std::endl;
+			std::cout << numbers.front() << " " << *floatNumber << std::endl << "\n";
 			numbers.pop();
 		}
 	}

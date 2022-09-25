@@ -12,10 +12,11 @@ public:
 	Multithreading();
 	~Multithreading();
 
+	void PlayerTookDamage(int i_, int endAt_, int milliseconds_);
 	void Run(int i_, int milliseconds_);
 
-private: 
-	
+private:
+
 	// Makes the multithreading functions only accessible to this class
 	void multiThreading(int i_, int milliseconds_);
 	void Level(int i_, int endAt_, int milliseconds_);

@@ -34,7 +34,7 @@ void Multithreading::Run(int i_, int milliseconds_) {
 			isRunning = false;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
-		std::cout << frameCount << " run this game!\n";
+		std::cout << frameCount << " load this game!\n";
 		frameCount++;
 	}
 
@@ -111,18 +111,18 @@ void Multithreading::Level(int i_, int endAt_, int milliseconds_)
 {
 	while (i_ < endAt_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
-		std::cout << i_ << " is where the level increments at\n";
+		std::cout << i_ << "% loading level...\n";
 		++i_;
 	}
-	std::cout << "Finished with level increments\n";
+	std::cout << "Level loaded!\n";
 }
 
 void Multithreading::PlayerAt(int i_, int endAt_, int milliseconds_)
 {
 	while (i_ < endAt_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
-		std::cout << i_ << " is where the player location increments at\n";
+		std::cout << i_ << "& loading player...\n";
 		++i_;
 	}
-	std::cout << "Finished with player location increments\n";
+	std::cout << "Player loaded!\n";
 }

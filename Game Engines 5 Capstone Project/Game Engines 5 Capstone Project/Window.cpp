@@ -1,14 +1,21 @@
 #include "Window.h"
 #include "TextureManager.h"
 #include "Level.h"
-#include "GameObject.h"
 #include <iostream>
+#include "Components.h"
+#include "Enemy.h"
 
-GameObject* playerBird;
-SDL_Rect* srcRect, destRect;
+PlayerTransformComponent transform;
+
+Manager manager;
 Level* level;
+Enemy* EnemyBird[3];
 
 SDL_Renderer* Window::renderer = nullptr;
+SDL_Event Window::event;
+SDL_Rect Window::Camera = { 0,0,800, 3500 };
+
+auto& PlayerBird(manager.AddEntity());
 
 Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 {
@@ -29,7 +36,12 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 
 	isRunning = true;
 
-	playerBird = new GameObject("Flappy bird sprite.png", -50, 200);
+	PlayerBird.AddComponent<PlayerTransformComponent>();
+	PlayerBird.AddComponent<PlayerSpriteComponent>().SpriteComponent("Flappy bird sprite.png");
+	PlayerBird.AddComponent<KeyboardController>();
+	PlayerBird.AddComponent<PlayerSpriteComponent>().SetPlayerHealth(10, 3);
+
+	EnemyBird[0] = new Enemy("Enemy Flappy Bird.png", 200, 200);
 
 	level = new Level();
 }
@@ -41,8 +53,6 @@ Window::~Window()
 
 void Window::HandleEvents()
 {
-	SDL_Event event;
-
 	if (SDL_PollEvent(&event))
 	{
 		switch (event.type)
@@ -69,14 +79,27 @@ void Window::HandleEvents()
 
 void Window::Update()
 {
-	playerBird->UpdatePlayer();
+	manager.Refresh();
+	manager.Update();
+
+	/*Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400;
+	Camera.y = PlayerBird.GetComponent<PlayerTransformComponent>().position.y - 320;
+
+	if (Camera.x < 0) Camera.x = 0;
+	if (Camera.y < 0) Camera.y = 0;
+	if (Camera.x > Camera.w) Camera.x = Camera.w;
+	if (Camera.y > Camera.h) Camera.y = Camera.h; */
+
+	EnemyBird[0]->UpdateEnemy();
 }
 
 void Window::Render()
 {
 	SDL_RenderClear(renderer);
 	level->RenderLevel();
-	playerBird->Render();
+
+	EnemyBird[0]->RenderEnemy();
+	manager.Draw();
 	SDL_RenderPresent(renderer);
 }
 
