@@ -137,7 +137,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MemoryAllocation.cpp" />
+    <ClCompile Include="Memory.cpp" />
     <ClCompile Include="Multithreading.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Vec2.cpp" />
@@ -150,7 +150,7 @@
     <ClInclude Include="KeyboardController.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Level.h" />
-    <ClInclude Include="MemoryAllocation.h" />
+    <ClInclude Include="Memory.h" />
     <ClInclude Include="Multithreading.h" />
     <ClInclude Include="PlayerSpriteComponent.h" />
     <ClInclude Include="TextureManager.h" />
