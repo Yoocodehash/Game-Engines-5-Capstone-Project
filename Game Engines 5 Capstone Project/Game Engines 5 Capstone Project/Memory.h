@@ -35,7 +35,7 @@ class Memory
 {
 public:
 
-	Memory(std::vector<const char*> file_, std::vector<std::size_t> playerSize_);
+	Memory(std::vector<const char*> file_, std::size_t size_);
 	~Memory();
 
 	void MemorySizeOfVectors();
@@ -44,8 +44,8 @@ public:
 
 private:
 	std::vector<const char*> File;
-	unsigned long amountAllocated = 0;
-	static Memory* instance;
+	//unsigned long amountAllocated = 0;
+	//static Memory* instance;
 	byte* file;
 	std::size_t fileIndex;
 

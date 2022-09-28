@@ -121,7 +121,7 @@ void Multithreading::PlayerAt(int i_, int endAt_, int milliseconds_)
 {
 	while (i_ < endAt_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
-		std::cout << i_ << "& loading player...\n";
+		std::cout << i_ << "% loading player...\n";
 		++i_;
 	}
 	std::cout << "Player loaded!\n";

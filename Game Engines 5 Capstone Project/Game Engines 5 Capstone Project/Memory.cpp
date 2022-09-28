@@ -1,8 +1,8 @@
 #include "Memory.h"
 
-Memory* Memory::instance;
+//Memory* Memory::instance;
 
-Memory::Memory(std::vector<const char*> file_, std::vector<std::size_t> playerSize_)
+Memory::Memory(std::vector<const char*> file_, std::size_t size_)
 {
 	File = file_;
 
@@ -12,18 +12,13 @@ Memory::Memory(std::vector<const char*> file_, std::vector<std::size_t> playerSi
 		std::ifstream in_file(file_[i], std::ios::binary);
 		in_file.seekg(0, std::ios::end);
 
-		int fileSize = in_file.tellg();
+		int fileSize = in_file.tellg(); // Determines the size of the file in bytes
 
 		std::cout << "The size of " << file_[i] << " file is " << fileSize << " bytes!\n";
-
-		for (int i = 0; i < playerSize_.size(); i++)
-		{
-			file = static_cast<byte*>(malloc(playerSize_[i]));
-			fileIndex = 0;
-		}
-
-		std::cout << "The size of " << file_[i] << " string is " << playerSize_[i] << " bytes!\n";
 	}
+
+	file = static_cast<byte*>(malloc(size_));
+	fileIndex = 0;
 
 	std::cout << "\nThe size of byte* (name) is " << sizeof(file) << " bytes!\n" << std::endl;
 }
@@ -31,14 +26,17 @@ Memory::Memory(std::vector<const char*> file_, std::vector<std::size_t> playerSi
 
 Memory::~Memory()
 {
-	free(file);
+	if (file)
+	{
+		free(file);
+		std::cout << "\nByte* file has been freed from the memory!\n";
+	}
 
 	std::cout << "\n";
 	for (int i = 0; i < File.size(); i++)
 	{
-		std::cout << "File " << File[i] << " freed from memory\n";
+		std::cout << "File " << File[i] << " destroyed!\n";
 	}
-	std::cout << "\n";
 }
 
 void Memory::MemorySizeOfVectors()
@@ -46,8 +44,20 @@ void Memory::MemorySizeOfVectors()
 	void* vectorPtr = malloc(1000000);
 	void* vectorPtr2 = new Vec3[50000];
 
-	std::cout << "vectorPtr size = " << sizeof(vectorPtr) << " " << vectorPtr << std::endl << "\n";
+	std::cout << "\nvectorPtr size = " << sizeof(vectorPtr) << " " << vectorPtr << std::endl;
 	std::cout << "vectorPtr2 size = " << sizeof(vectorPtr2) << " " << vectorPtr2 << std::endl << "\n";
+
+	if (vectorPtr)
+	{
+		free(vectorPtr);
+		std::cout << "Amount of of vectorPtr memory leaks are freed and there are no more memory leaks!\n";
+	}
+
+	if (vectorPtr2)
+	{
+		delete[] vectorPtr2;
+		std::cout << "Amount of vectorPtr2 memory leaks are freed and there are no more memory leaks!\n\n";
+	}
 }
 
 void Memory::ManageMemory(int max, char startLetterAt)
@@ -72,8 +82,9 @@ void Memory::ManageMemory(int max, char startLetterAt)
 		free(letters); // Frees the letters from the memory after it's done
 		std::cout << "The letters have been freed from the memory!\n";
 	}
-	else {
-		printf("Not enough memory\n"); // If letters are NULL, return this statement to the console
+	else 
+	{
+		std::cerr << "Not enough memory\n"; // If letters are NULL, return this statement to the console
 	}
 }
 
@@ -100,17 +111,17 @@ void Memory::TypeNumbers(int maxAmount)
 
 			if (!p[n])
 			{
-				std::cerr << "You didn't return a number, try again!\n";
+				std::cerr << "\nYou didn't return a number, try again!\n";
 			}
 		}
 
 		std::cout << "\nReceived numbers: ";
-		for (n = 0; n < maxAmount; n++)
+		for (n = 0; n < p[n]; n++)
 		{
 			std::cout << p[n] << std::endl;
 		}
 
-		std::cout << "\nThe size of n is " << sizeof(n) << " bytes!" << std::endl;
+		std::cout << "\n\nThe size of n is " << sizeof(n) << " bytes!" << std::endl;
 		std::cout << "The size of *p is " << sizeof(p) << " bytes!" << std::endl;
 
 		delete[] p;

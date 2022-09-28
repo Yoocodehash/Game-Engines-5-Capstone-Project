@@ -11,8 +11,7 @@ int main(int argc, char **argv) {
 
 	// Initialize SDL window here
 	window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, false);
-	memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png"}, 
-		{sizeof("Enemy Flappy Bird.png"), sizeof("Flappy bird sprite.png")});
+	memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png"}, 10);
 
 	// These will run before the window opens to keep things simple
 	threading.Run(50, 500);
