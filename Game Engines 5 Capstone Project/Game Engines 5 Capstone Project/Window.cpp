@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Components.h"
 #include "Enemy.h"
+#include <Windows.h>
+#include <Xinput.h>
 
 PlayerTransformComponent transform;
 
@@ -38,7 +40,7 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 
 	PlayerBird.AddComponent<PlayerTransformComponent>();
 	PlayerBird.AddComponent<PlayerSpriteComponent>().SpriteComponent("Flappy bird sprite.png");
-	PlayerBird.AddComponent<KeyboardController>();
+	PlayerBird.AddComponent<Controller>();
 	PlayerBird.AddComponent<PlayerSpriteComponent>().SetPlayerHealth(10, 3);
 
 	EnemyBird[0] = new Enemy("Enemy Flappy Bird.png", 200, 200);
@@ -61,6 +63,15 @@ void Window::HandleEvents()
 		case SDL_QUIT:
 			isRunning = false;
 			break;
+
+		case SDL_JOYBUTTONDOWN:
+			switch (event.key.keysym.sym)
+			{
+				// Xbox controls to exit the window
+			case XINPUT_GAMEPAD_BACK:
+				isRunning = false;
+				break;
+			}
 
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)

@@ -77,7 +77,7 @@
     <ClInclude Include="PlayerTransformComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KeyboardController.h">
+    <ClInclude Include="Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vec2.h">

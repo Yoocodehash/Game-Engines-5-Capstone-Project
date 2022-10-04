@@ -147,7 +147,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EntityComponentSystem.h" />
-    <ClInclude Include="KeyboardController.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Memory.h" />
