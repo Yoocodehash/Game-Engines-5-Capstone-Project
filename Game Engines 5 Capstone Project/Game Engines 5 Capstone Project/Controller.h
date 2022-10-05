@@ -3,13 +3,44 @@
 #include "Window.h"
 #include "EntityComponentSystem.h"
 #include "Components.h"
+
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <Xinput.h>
 
 class Controller : public Component
 {
+private:
+	int controllerID;
+	XINPUT_STATE controllerState{};
+
 public: 
 	PlayerTransformComponent* PlayerTransform;
+	/*Controller* player0;
+
+	Controller(int playerID) : controllerID(playerID)
+	{
+		memset(&controllerState, 0, sizeof(controllerState));
+	}
+
+	XINPUT_STATE GetState() // has unresolved error here
+	{
+		XInputGetState(controllerID, &controllerState);
+		return controllerState;
+	} 
+
+	bool IsConnected()
+	{
+		uint16_t result = XInputGetState(controllerID, &controllerState);
+
+		if (result == ERROR_SUCCESS)
+		{
+			return true;
+		}
+
+		std::cerr << "No controller " << controllerID << "found\n";
+		return false;
+	} */
 
 	void PlayerInit() override
 	{
@@ -61,44 +92,63 @@ public:
 			}
 		}
 
-		if (Window::event.type == SDL_JOYBUTTONDOWN) // When a Xbox button is pressed
+		/*player0 = new Controller(0);
+
+		while (player0->IsConnected())
 		{
-			switch (Window::event.key.keysym.sym)
+			XINPUT_STATE xinput_state = player0->GetState();
+
+			if (xinput_state.Gamepad.wButtons > 0) // When a Xbox button is pressed
 			{
-				// XBOX controls
-			case XINPUT_GAMEPAD_A:
-				PlayerTransform->velocity.y = 0.5;
-				break;
-			case XINPUT_GAMEPAD_B:
-				PlayerTransform->velocity.x = -0.5;
-				break;
-			case XINPUT_GAMEPAD_X:
-				PlayerTransform->velocity.y = -0.5;
-				break;
-			case XINPUT_GAMEPAD_Y:
-				PlayerTransform->velocity.x = 0.5;
-				break;
+				switch (xinput_state.Gamepad.wButtons)
+				{
+					// XBOX controls
+				case XINPUT_GAMEPAD_A:
+					player0->PlayerTransform->velocity.y = 0.5;
+					break;
+				case XINPUT_GAMEPAD_B:
+					player0->PlayerTransform->velocity.x = -0.5;
+					break;
+				case XINPUT_GAMEPAD_X:
+					player0->PlayerTransform->velocity.y = -0.5;
+					break;
+				case XINPUT_GAMEPAD_Y:
+					player0->PlayerTransform->velocity.x = 0.5;
+					break;
+
+				default:
+					static int count = 0;
+					count++;
+					break;
+				}
+			}
+
+			if (xinput_state.Gamepad.wButtons < 0) // When a Xbox button is released
+			{
+				switch (xinput_state.Gamepad.wButtons)
+				{
+					// XBOX controls
+				case XINPUT_GAMEPAD_A:
+					player0->PlayerTransform->velocity.y = 0;
+					break;
+				case XINPUT_GAMEPAD_B:
+					player0->PlayerTransform->velocity.x = 0;
+					break;
+				case XINPUT_GAMEPAD_X:
+					player0->PlayerTransform->velocity.y = 0;
+					break;
+				case XINPUT_GAMEPAD_Y:
+					player0->PlayerTransform->velocity.x = 0;
+					break;
+
+				default:
+					static int count = 0;
+					count++;
+					break;
+				}
 			}
 		}
 
-		if (Window::event.type == SDL_JOYBUTTONUP) // When a Xbox button is released
-		{
-			switch (Window::event.key.keysym.sym)
-			{
-				// XBOX controls
-			case XINPUT_GAMEPAD_A:
-				PlayerTransform->velocity.y = 0;
-				break;
-			case XINPUT_GAMEPAD_B:
-				PlayerTransform->velocity.x = 0;
-				break;
-			case XINPUT_GAMEPAD_X:
-				PlayerTransform->velocity.y = 0;
-				break;
-			case XINPUT_GAMEPAD_Y:
-				PlayerTransform->velocity.x = 0;
-				break;
-			}
-		}
+		delete player0; */
 	}
 };
