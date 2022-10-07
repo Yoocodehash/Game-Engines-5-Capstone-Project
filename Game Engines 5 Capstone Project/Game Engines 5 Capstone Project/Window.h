@@ -4,7 +4,6 @@
 #include <SDL_image.h>
 #include <string>
 #include <iostream>
-#include <thread>
 #include <chrono>
 #include <list>
 
@@ -12,16 +11,13 @@ class Window
 {
 
 public:
+
 	Window(const char *title_, int x, int y, int w, int h, bool fullScreen);
 	~Window();
 
-	void RunMultithread();
 	void HandleEvents();
 	void Update();
 	void Render();
-	void RunGame(int i_, int endAt_, int milliseconds_);
-	void Level1(int i_, int endAt_, int milliseconds_);
-	void PlayerAt(int i_, int endAt_, int milliseconds_);
 	void Clear();
 
 	bool Running();

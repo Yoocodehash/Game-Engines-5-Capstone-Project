@@ -53,21 +53,6 @@ Window::~Window()
 
 }
 
-void Window::RunMultithread()
-{
-	// (function, object pointer, starting point, end point, milliseconds (used for std::chrono))
-	std::thread thread1(&Window::PlayerAt, ourWindow, 0, 10, 500);
-	thread1.detach();
-
-	// (function, object pointer, starting point, end point, milliseconds (used for std::chrono))
-	std::thread thread2(&Window::Level1, ourWindow, 0, 10, 500);
-	thread2.detach();
-
-	// (function, object pointer, starting point, end point, milliseconds (used for std::chrono))
-	std::thread thread3(&Window::RunGame, ourWindow, 0, 10, 500);
-	thread3.detach();
-}
-
 void Window::HandleEvents()
 {
 	if (SDL_PollEvent(&event))
@@ -127,38 +112,6 @@ void Window::Render()
 	EnemyBird[0]->RenderEnemy();
 	manager.Draw();
 	SDL_RenderPresent(renderer);
-}
-
-void Window::RunGame(int i_, int endAt_, int milliseconds_)
-{
-	while (i_ < endAt_) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
-		std::cout << "This game has loaded! Now go!\n";
-		++i_;
-	}
-	std::cout << "We're done looping RunGame() thread!\n";
-}
-
-void Window::Level1(int i_, int endAt_, int milliseconds_)
-{
-	while (i_ < endAt_) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
-		std::cout << "You are at Level 1! Go now!\n";
-		++i_;
-	}
-	std::cout << "We're done looping Level1 thread!\n";
-}
-
-void Window::PlayerAt(int i_, int endAt_, int milliseconds_)
-{
-	while (i_ < endAt_) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_));
-
-		std::cout << "Player is at (" << PlayerBird.AddComponent<PlayerTransformComponent>().position.x << ", " <<
-			PlayerBird.AddComponent<PlayerTransformComponent>().position.y << ")\n";
-		++i_;
-	}
-	std::cout << "We're done looping player position thread!\n";
 }
 
 void Window::Clear()

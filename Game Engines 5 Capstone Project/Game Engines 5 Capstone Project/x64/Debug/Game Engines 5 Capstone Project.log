@@ -1,6 +1,18 @@
-﻿  Main.cpp
+﻿  Enemy.cpp
+  Player.cpp
+  Level.cpp
+  Main.cpp
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Main.cpp(18,13): error C2039: 'start': is not a member of 'ThreadPool'
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Threadpool.h(9): message : see declaration of 'ThreadPool'
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Main.cpp(31,14): error C2039: 'abort': is not a member of 'ThreadPool'
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Threadpool.h(9): message : see declaration of 'ThreadPool'
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Main.cpp(35,13): error C2039: 'finish': is not a member of 'ThreadPool'
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Threadpool.h(9): message : see declaration of 'ThreadPool'
+  Memory.cpp
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Memory.cpp(15,16): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+  TextureManager.cpp
+  Vec2.cpp
   Window.cpp
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\PlayerSpriteComponent.h(51,40): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\PlayerSpriteComponent.h(52,40): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   Generating Code...
-  Game Engines 5 Capstone Project.vcxproj -> C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\x64\Debug\Game Engines 5 Capstone Project.exe
