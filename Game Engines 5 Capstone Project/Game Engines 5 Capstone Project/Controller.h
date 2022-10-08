@@ -4,18 +4,30 @@
 #include "EntityComponentSystem.h"
 #include "Components.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <Xinput.h>
+//#define WIN32_LEAN_AND_MEAN
+//#include <Windows.h>
+//#include <Xinput.h>
 
 class Controller : public Component
 {
 private:
-	int controllerID;
-	XINPUT_STATE controllerState{};
+	//int controllerID;
+	//XINPUT_STATE controllerState{};
+
+	//Analog joystick dead zone
+	const int JOYSTICK_DEAD_ZONE = 8000;
+
+	//Game Controller 1 handler
+	SDL_Joystick* gGameController = NULL;
+
+	//Normalized direction
+	int xDir = 0;
+	int yDir = 0;
+
+	//Main loop flag
+	bool quit = false;
 
 public: 
-	PlayerTransformComponent* PlayerTransform;
 	/*Controller* player0;
 
 	Controller(int playerID) : controllerID(playerID)
@@ -42,9 +54,36 @@ public:
 		return false;
 	} */
 
+	PlayerTransformComponent* PlayerTransform;
+
 	void PlayerInit() override
 	{
 		PlayerTransform = &entity->GetComponent<PlayerTransformComponent>();
+
+		//Initialization flag
+		bool success = true;
+
+		//Initialize SDL
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+		{
+			printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+			success = false;
+		}
+
+		//Check for joysticks
+		if (SDL_NumJoysticks() < 1)
+		{
+			printf("Warning: No joysticks connected!\n");
+		}
+		else
+		{
+			//Load joystick
+			gGameController = SDL_JoystickOpen(0);
+			if (gGameController == NULL)
+			{
+				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+			}
+		}
 	}
 
 	void UpdatePlayer() override
@@ -89,6 +128,70 @@ public:
 				break;
 			default:
 				break;
+			}
+		}
+
+		while (SDL_PollEvent(&Window::event) != 0)
+		{
+			//User requests quit
+			if (Window::event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+
+			else if (Window::event.type == SDL_JOYAXISMOTION)
+			{
+				//Motion on controller 0
+				if (Window::event.jaxis.which == 0)
+				{
+					//X axis motion
+					if (Window::event.jaxis.axis == 0)
+					{
+						//Left of dead zone
+						if (Window::event.jaxis.value < -JOYSTICK_DEAD_ZONE)
+						{
+							PlayerTransform->velocity.x = -1;
+						}
+						//Right of dead zone
+						else if (Window::event.jaxis.value > JOYSTICK_DEAD_ZONE)
+						{
+							PlayerTransform->velocity.x = 1;
+						}
+						else
+						{
+							PlayerTransform->velocity.x = 0;
+						}
+					}
+
+					//Y axis motion
+					else if (Window::event.jaxis.axis == 1)
+					{
+						//Below of dead zone
+						if (Window::event.jaxis.value < -JOYSTICK_DEAD_ZONE)
+						{
+							PlayerTransform->velocity.y = -1;
+						}
+						//Above of dead zone
+						else if (Window::event.jaxis.value > JOYSTICK_DEAD_ZONE)
+						{
+							PlayerTransform->velocity.y = 1;
+						}
+						else
+						{
+							PlayerTransform->velocity.y = 0;
+						}
+					}
+
+					//Calculate angle
+					double joystickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
+
+					//Correct angle
+					if (xDir == 0 && yDir == 0)
+					{
+						joystickAngle = 0;
+					}
+
+				}
 			}
 		}
 

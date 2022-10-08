@@ -8,6 +8,7 @@
 #include <Xinput.h>
 
 PlayerTransformComponent transform;
+Controller* gameController = nullptr;
 
 Manager manager;
 Level* level;
@@ -63,15 +64,6 @@ void Window::HandleEvents()
 		case SDL_QUIT:
 			isRunning = false;
 			break;
-
-		case SDL_JOYBUTTONDOWN:
-			switch (event.key.keysym.sym)
-			{
-				// Xbox controls to exit the window
-			case XINPUT_GAMEPAD_BACK:
-				isRunning = false;
-				break;
-			}
 
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)

@@ -8,14 +8,18 @@
 Window* window;
 Memory* memory;
 ThreadPool threadPool;
+MemoryPool* memoryPool;
 
 int main(int argc, char **argv) 
 {
 	// Initialize SDL window here
 	window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, false);
-	memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png"}, 10);
+	memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png"});
+	memoryPool = new MemoryPool();
 
 	threadPool.Start(10);
+	memoryPool->AllocatePool(10, 10, 1);
+	memoryPool->AllocateAligned(13, 1);
 
 	// While the window is running, handle events, update and render the whole window
 	while (window->Running())
@@ -31,11 +35,10 @@ int main(int argc, char **argv)
 		threadPool.Abort();
 	}
 
-	// The typing minigame will be done after the window has been closed (along with the thread pool)
+	// The typing minigame will be done after the window has been closed (along with the thread/memory pool)
 	threadPool.Finish();
+	memoryPool->ReleaseMemoryPool();
 	memory->~Memory();
-	memory->MemorySizeOfVectors();
-	memory->ManageMemory(13, 'c');
 	memory->TypeNumbers(3);
 
 	return 0;
