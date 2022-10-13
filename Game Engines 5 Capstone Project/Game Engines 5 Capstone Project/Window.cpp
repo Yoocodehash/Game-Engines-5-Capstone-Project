@@ -3,6 +3,7 @@
 #include "Level.h"
 #include <iostream>
 #include "Components.h"
+#include "Collision.h"
 #include "Enemy.h"
 #include <Windows.h>
 #include <Xinput.h>
@@ -18,7 +19,10 @@ SDL_Renderer* Window::renderer = nullptr;
 SDL_Event Window::event;
 SDL_Rect Window::Camera = { 0,0,800, 3500 };
 
+//std::vector<ColliderComponent*> Window::colliders;
+
 auto& PlayerBird(manager.AddEntity());
+auto& wallBlock(manager.AddEntity());
 
 Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 {
@@ -39,14 +43,19 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 
 	isRunning = true;
 
-	PlayerBird.AddComponent<PlayerTransformComponent>();
-	PlayerBird.AddComponent<PlayerSpriteComponent>().SpriteComponent("Flappy bird sprite.png");
+	level = new Level();
+
+	PlayerBird.AddComponent<PlayerTransformComponent>(2);
+	PlayerBird.AddComponent<PlayerSpriteComponent>("Flappy bird sprite.png");
 	PlayerBird.AddComponent<Controller>();
+	PlayerBird.AddComponent<ColliderComponent>("Player");
 	PlayerBird.AddComponent<PlayerSpriteComponent>().SetPlayerHealth(10, 3);
 
-	EnemyBird[0] = new Enemy("Enemy Flappy Bird.png", 200, 200);
+	//wallBlock.AddComponent<PlayerTransformComponent>(-15.0f, 300.0f, 5000, 10, 1);
+	//wallBlock.AddComponent<PlayerSpriteComponent>("Level 1.png");
+	//wallBlock.AddComponent<ColliderComponent>("Wall");
 
-	level = new Level();
+	EnemyBird[0] = new Enemy("Enemy Flappy Bird.png", 200, 200);
 }
 
 Window::~Window()
@@ -82,16 +91,23 @@ void Window::HandleEvents()
 
 void Window::Update()
 {
+	level->UpdateLevel();
 	manager.Refresh();
 	manager.Update();
 
-	/*Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400;
+	/*if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
+		wallBlock.GetComponent<ColliderComponent>().collider))
+	{
+		PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
+	}*/
+
+	Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400;
 	Camera.y = PlayerBird.GetComponent<PlayerTransformComponent>().position.y - 320;
 
 	if (Camera.x < 0) Camera.x = 0;
 	if (Camera.y < 0) Camera.y = 0;
 	if (Camera.x > Camera.w) Camera.x = Camera.w;
-	if (Camera.y > Camera.h) Camera.y = Camera.h; */
+	if (Camera.y > Camera.h) Camera.y = Camera.h;
 
 	EnemyBird[0]->UpdateEnemy();
 }

@@ -16,9 +16,14 @@ private:
 
 public:
 	PlayerSpriteComponent() = default;
-	void SpriteComponent(const char* fileName_)
+	PlayerSpriteComponent(const char* fileName_)
 	{
 		texture = TextureManager::LoadTexture(fileName_);
+	}
+
+	~PlayerSpriteComponent()
+	{
+		SDL_DestroyTexture(texture);
 	}
 
 	void SetPlayerHealth(int currentHealth_, int damage_)
@@ -39,17 +44,16 @@ public:
 		PlayerPosition = &entity->GetComponent<PlayerTransformComponent>();
 
 		srcRect.x = srcRect.y = 0;
-		srcRect.h = 69;
-		srcRect.w = 100;
-
-		destRect.w = srcRect.w * 2;
-		destRect.h = srcRect.h * 2;
+		srcRect.h = PlayerPosition->height;
+		srcRect.w = PlayerPosition->width;
 	}
 
 	void UpdatePlayer() override
 	{
-		destRect.x = PlayerPosition->position.x;
-		destRect.y = PlayerPosition->position.y;
+		destRect.x = static_cast<int>(PlayerPosition->position.x) - Window::Camera.x;
+		destRect.y = static_cast<int>(PlayerPosition->position.y) - Window::Camera.y;
+		destRect.w = PlayerPosition->width * PlayerPosition->scale;
+		destRect.h = PlayerPosition->height * PlayerPosition->scale;
 	}
 
 	void Draw() override

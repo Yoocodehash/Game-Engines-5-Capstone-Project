@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "EntityComponentSystem.h"
 #include "Components.h"
+#include "Audio.h"
 
 //#define WIN32_LEAN_AND_MEAN
 //#include <Windows.h>
@@ -24,8 +25,7 @@ private:
 	int xDir = 0;
 	int yDir = 0;
 
-	//Main loop flag
-	bool quit = false;
+	Audio soundEffect;
 
 public: 
 	/*Controller* player0;
@@ -74,6 +74,8 @@ public:
 		}
 
 		PlayerTransform = &entity->GetComponent<PlayerTransformComponent>();
+
+		soundEffect.LoadAudio();
 	}
 
 	void UpdatePlayer() override
@@ -85,15 +87,19 @@ public:
 				// Keyboard controls
 			case SDLK_DOWN:
 				PlayerTransform->velocity.y = 0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 				break;
 			case SDLK_LEFT:
 				PlayerTransform->velocity.x = -0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 				break;
 			case SDLK_UP:
 				PlayerTransform->velocity.y = -0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 				break;
 			case SDLK_RIGHT:
 				PlayerTransform->velocity.x = 0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 				break;
 			default:
 				break;

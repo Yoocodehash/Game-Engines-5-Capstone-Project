@@ -3,6 +3,9 @@
 
 Level::Level()
 {
+	position.x = destRect.x;
+	position.y = destRect.y;
+
 	destRect.w = 3674;
 	destRect.h = 550;
 	destRect.x = 0;
@@ -18,6 +21,12 @@ Level::Level()
 
 Level::~Level()
 {
+}
+
+void Level::UpdateLevel()
+{
+	destRect.x = position.x - Window::Camera.x;
+	destRect.y = position.y - Window::Camera.y;
 }
 
 void Level::RenderLevel()

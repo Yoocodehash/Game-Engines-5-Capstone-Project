@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <list>
+#include <vector>
 
 class Window
 {
@@ -26,6 +27,7 @@ public:
 	static SDL_Event event;
 
 	static SDL_Rect Camera;
+	//static std::vector<ColliderComponent*> colliders;
 private:
 	bool isRunning;
 	SDL_Window* window;
