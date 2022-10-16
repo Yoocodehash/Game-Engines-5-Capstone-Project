@@ -49,7 +49,6 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 	PlayerBird.AddComponent<PlayerSpriteComponent>("Flappy bird sprite.png");
 	PlayerBird.AddComponent<Controller>();
 	PlayerBird.AddComponent<ColliderComponent>("Player");
-	PlayerBird.AddComponent<PlayerSpriteComponent>().SetPlayerHealth(10, 3);
 
 	//wallBlock.AddComponent<PlayerTransformComponent>(-15.0f, 300.0f, 5000, 10, 1);
 	//wallBlock.AddComponent<PlayerSpriteComponent>("Level 1.png");

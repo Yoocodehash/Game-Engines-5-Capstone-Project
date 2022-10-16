@@ -1,4 +1,5 @@
 ﻿  Audio.cpp
+  Button.cpp
   Collision.cpp
   Enemy.cpp
   Level.cpp
@@ -12,7 +13,7 @@ C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game E
   TextureManager.cpp
   Vec2.cpp
   Window.cpp
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(103,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(104,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(105,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   Generating Code...
   Game Engines 5 Capstone Project.vcxproj -> C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\x64\Debug\Game Engines 5 Capstone Project.exe
