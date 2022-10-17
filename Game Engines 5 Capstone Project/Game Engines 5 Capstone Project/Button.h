@@ -19,7 +19,7 @@ public:
         rect.h = 25;
         point.w = 1;
         point.h = 1;
-        SDL_ShowCursor(true);
+        SDL_ShowCursor(false);
     }
 
     void update() {
