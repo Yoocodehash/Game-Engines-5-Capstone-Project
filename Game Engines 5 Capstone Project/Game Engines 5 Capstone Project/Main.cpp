@@ -41,28 +41,28 @@ int main(int argc, char **argv)
     //y = rect.y;
 
     Button startButton;
-    startButton.srect.y = 0;
+    startButton.srect.y = 10;
     startButton.drect.x = 800 / 2 - startButton.drect.w / 2;
     startButton.drect.y = 50; // Will place the button according to the screen's position Y axis
 
     Button optionButton;
-    optionButton.srect.y = 300; // This will give me the button name depending on the button's position
-    optionButton.drect.x = 800 / 2 - startButton.drect.w / 2;
+    optionButton.srect.y = 310; // This will give me the button name depending on the button's position
+    optionButton.drect.x = 800 / 2 - optionButton.drect.w / 2;
     optionButton.drect.y = 150;
 
     Button creditsButton;
-    creditsButton.srect.y = 400;
-    creditsButton.drect.x = 800 / 2 - startButton.drect.w / 2;
+    creditsButton.srect.y = 410;
+    creditsButton.drect.x = 800 / 2 - creditsButton.drect.w / 2;
     creditsButton.drect.y = 250;
 
     Button backButton;
     backButton.srect.y = 200;
-    backButton.drect.x = 800 / 2 - startButton.drect.w / 2;
+    backButton.drect.x = 800 / 2 - backButton.drect.w / 2;
     backButton.drect.y = 200;
 
     Button exitButton;
-    exitButton.srect.y = 700;
-    exitButton.drect.x = 800 / 2 - startButton.drect.w / 2;
+    exitButton.srect.y = 710;
+    exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
     exitButton.drect.y = 350;
 
     audio->LoadAudio(); // Load music before the window opens
