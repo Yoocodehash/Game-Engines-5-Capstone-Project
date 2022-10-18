@@ -2,6 +2,8 @@
 #include "Memory.h"
 #include "Threadpool.h"
 #include "Audio.h"
+#include "OptionsMenu.h"
+#include "CreditsMenu.h"
 
 #include <iostream>
 #include <thread>
@@ -12,9 +14,11 @@ Memory* memory;
 ThreadPool threadPool;
 MemoryPool* memoryPool;
 Audio *audio;
+OptionsMenu* optionsMenu;
+CreditsMenu* creditsMenu;
 
 SDL_Window* win = SDL_CreateWindow("Main Menu", SDL_WINDOWPOS_UNDEFINED,
-    SDL_WINDOWPOS_UNDEFINED, 1280, 720, 0);
+    SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
 
 SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
@@ -23,8 +27,7 @@ double time2 = SDL_GetTicks();
 
 int main(int argc, char **argv) 
 {
-	// Initialize everything here
-	memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png"});
+	// Initialize memory pool and audio here
 	memoryPool = new MemoryPool();
 	audio = new Audio();
 
@@ -39,17 +42,17 @@ int main(int argc, char **argv)
 
     Button startButton;
     startButton.srect.y = 0;
-    startButton.drect.x = 1280 / 2 - startButton.drect.w / 2;
+    startButton.drect.x = 800 / 2 - startButton.drect.w / 2;
     startButton.drect.y = 50; // Will place the button according to the screen's position Y axis
 
     Button optionButton;
     optionButton.srect.y = 300; // This will give me the button name depending on the button's position
-    optionButton.drect.x = 1280 / 2 - startButton.drect.w / 2;
+    optionButton.drect.x = 800 / 2 - startButton.drect.w / 2;
     optionButton.drect.y = 150;
 
     Button creditsButton;
     creditsButton.srect.y = 400;
-    creditsButton.drect.x = 1280 / 2 - startButton.drect.w / 2;
+    creditsButton.drect.x = 800 / 2 - startButton.drect.w / 2;
     creditsButton.drect.y = 250;
 
     Button backButton;
@@ -59,7 +62,7 @@ int main(int argc, char **argv)
 
     Button exitButton;
     exitButton.srect.y = 700;
-    exitButton.drect.x = 1280 / 2 - startButton.drect.w / 2;
+    exitButton.drect.x = 800 / 2 - startButton.drect.w / 2;
     exitButton.drect.y = 350;
 
     audio->LoadAudio(); // Load music before the window opens
@@ -107,8 +110,12 @@ int main(int argc, char **argv)
                 {
                     if (startButton.isSelected)
                     {
-                        // Destroy Main Menu window
+                        // Destroy Main Menu renderer and window
+                        SDL_DestroyRenderer(ren);
                         SDL_DestroyWindow(win);
+
+                        // Initialize memory files here
+                        memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png" });
 
                         // Initialize window when the start button is pressed
                         window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, false);
@@ -147,34 +154,50 @@ int main(int argc, char **argv)
 
                     if (optionButton.isSelected)
                     {
-                        threadPool.Finish();
-                        memoryPool->ReleaseMemoryPool();
+                        // Destroy Main Menu renderer and window
+                        SDL_DestroyRenderer(ren);
+                        SDL_DestroyWindow(win);
 
-                        return false;
-                        break;
+                        // Initialize window when the start button is pressed
+                        optionsMenu = new OptionsMenu("Options", SDL_WINDOWPOS_CENTERED,
+                            SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+
+                        while (optionsMenu->Running())
+                        {
+                            optionsMenu->OptionsMenuHandleEvents();
+                            optionsMenu->RenderOptionsMenu();
+                        }
+
+                        if (!optionsMenu->Running())
+                        {
+                            optionsMenu->Clear();
+                        }
+
+                        return 0;
                     }
 
                     if (creditsButton.isSelected)
                     {
-                        // Destroy Main Menu window
+                        // Destroy Main Menu renderer and window
+                        SDL_DestroyRenderer(ren);
                         SDL_DestroyWindow(win);
 
-                        int imgFlags = IMG_INIT_PNG;
-
                         // Initialize window when the start button is pressed
-                        SDL_Window* creditsWindow = SDL_CreateWindow("Flying Bird Credits", SDL_WINDOWPOS_CENTERED, 
-                            SDL_WINDOWPOS_CENTERED, 800, 600, imgFlags);
+                        creditsMenu = new CreditsMenu("Flying Bird Credits", SDL_WINDOWPOS_CENTERED, 
+                            SDL_WINDOWPOS_CENTERED, 800, 600, IMG_INIT_PNG);
 
-                        SDL_Renderer* creditsRenderer = SDL_CreateRenderer(creditsWindow, -1, SDL_RENDERER_ACCELERATED);
+                        while (creditsMenu->Running())
+                        {
+                            creditsMenu->CreditsMenuHandleEvents();
+                            creditsMenu->RenderCreditsMenu();
+                        }
 
-                        SDL_Surface* creditsSurface = IMG_Load("Credits.png");
-                        SDL_Texture* creditsTexture = SDL_CreateTextureFromSurface(creditsRenderer, creditsSurface);
+                        if (!creditsMenu->Running())
+                        {
+                            creditsMenu->Clear();
+                        }
 
-                        SDL_RenderClear(creditsRenderer);
-                        SDL_RenderCopy(creditsRenderer, creditsTexture, NULL, NULL);
-                        SDL_RenderPresent(creditsRenderer);
-
-                        break;
+                        return 0;
                     }
 
                     // If you choose to exit the main menu, the above functions won't show up in the console at all
@@ -205,5 +228,7 @@ int main(int argc, char **argv)
         exitButton.draw();
         mouse.draw();
         SDL_RenderPresent(ren);
-    }	
+    }
+
+    return 0;
 }

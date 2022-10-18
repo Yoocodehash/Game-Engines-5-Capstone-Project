@@ -1,8 +1,8 @@
 #include "Button.h"
 
 Button::Button() {
-    static SDL_Texture* t = IMG_LoadTexture(ren, "buttons2.png");
-    tex = t;
+    static SDL_Texture* buttonTexture = IMG_LoadTexture(ren, "Buttons.png");
+    tex = buttonTexture;
 
     srect.h = 100;
     srect.w = 400;

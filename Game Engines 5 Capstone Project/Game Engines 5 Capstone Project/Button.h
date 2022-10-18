@@ -9,17 +9,16 @@ extern double delta;
 
 class Mouse {
 public:
-    SDL_Texture* tex;
     SDL_Rect rect;
     SDL_Rect point;
 
-    Mouse() {
-        tex = IMG_LoadTexture(ren, "mouse.png");
+    Mouse() 
+    {
         rect.w = 25;
         rect.h = 25;
         point.w = 1;
         point.h = 1;
-        SDL_ShowCursor(false);
+        //SDL_ShowCursor(true);
     }
 
     void update() {
@@ -30,7 +29,7 @@ public:
     }
 
     void draw() {
-        SDL_RenderCopy(ren, tex, NULL, &rect);
+        SDL_RenderCopy(ren, NULL, NULL, &rect);
     }
 };
 
