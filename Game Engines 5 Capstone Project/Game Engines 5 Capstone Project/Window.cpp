@@ -5,8 +5,6 @@
 #include "Components.h"
 #include "Collision.h"
 #include "Enemy.h"
-#include <Windows.h>
-#include <Xinput.h>
 
 PlayerTransformComponent transform;
 Controller* gameController = nullptr;

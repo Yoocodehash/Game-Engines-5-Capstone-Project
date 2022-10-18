@@ -5,41 +5,38 @@
 #include "Components.h"
 #include "Audio.h"
 
-//#define WIN32_LEAN_AND_MEAN
-//#include <Windows.h>
-//#include <Xinput.h>
+#include <Windows.h>
+#include <Xinput.h>
 
 class Controller : public Component
 {
 private:
-	//int controllerID;
-	//XINPUT_STATE controllerState{};
-
-	//Analog joystick dead zone
-	const int JOYSTICK_DEAD_ZONE = 8000;
-
-	//Game Controller 1 handler
-	SDL_Joystick* gGameController = NULL;
-
-	//Normalized direction
-	int xDir = 0;
-	int yDir = 0;
+	int controllerID;
+	XINPUT_STATE controllerState{};
 
 	Audio soundEffect;
 
-public: 
-	/*Controller* player0;
+public:
+	Controller* player0;
+	PlayerTransformComponent* PlayerTransform;
 
-	Controller(int playerID) : controllerID(playerID)
+	void PlayerInit() override
 	{
+		PlayerTransform = &entity->GetComponent<PlayerTransformComponent>();
+		soundEffect.LoadAudio();
+	}
+
+	void XboxController(int playerID)
+	{
+		controllerID = playerID;
 		memset(&controllerState, 0, sizeof(controllerState));
 	}
 
-	XINPUT_STATE GetState() // has unresolved error here
+	XINPUT_STATE GetState()
 	{
 		XInputGetState(controllerID, &controllerState);
 		return controllerState;
-	} 
+	}
 
 	bool IsConnected()
 	{
@@ -50,32 +47,8 @@ public:
 			return true;
 		}
 
-		std::cerr << "No controller " << controllerID << "found\n";
+		std::cerr << "No controller " << controllerID << " found!\n";
 		return false;
-	} */
-
-	PlayerTransformComponent* PlayerTransform;
-
-	void PlayerInit() override
-	{
-		//Check for joysticks
-		if (SDL_NumJoysticks() < 1)
-		{
-			printf("Warning: No joysticks connected!\n");
-		}
-		else
-		{
-			//Load joystick
-			gGameController = SDL_JoystickOpen(0);
-			if (gGameController == NULL)
-			{
-				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
-			}
-		}
-
-		PlayerTransform = &entity->GetComponent<PlayerTransformComponent>();
-
-		soundEffect.LoadAudio();
 	}
 
 	void UpdatePlayer() override
@@ -127,62 +100,8 @@ public:
 			}
 		}
 
-		if (Window::event.type == SDL_JOYAXISMOTION)
-		{
-			//Motion on controller 0
-			if (Window::event.jaxis.which == 0)
-			{
-				//X axis motion
-				if (Window::event.jaxis.axis == 0)
-				{
-					//Left of dead zone
-					if (Window::event.jaxis.value < -JOYSTICK_DEAD_ZONE)
-					{
-						PlayerTransform->velocity.x = -1;
-					}
-					//Right of dead zone
-					else if (Window::event.jaxis.value > JOYSTICK_DEAD_ZONE)
-					{
-						PlayerTransform->velocity.x = 1;
-					}
-					else
-					{
-						PlayerTransform->velocity.x = 0;
-					}
-				}
-
-				//Y axis motion
-				else if (Window::event.jaxis.axis == 1)
-				{
-					//Below of dead zone
-					if (Window::event.jaxis.value < -JOYSTICK_DEAD_ZONE)
-					{
-						PlayerTransform->velocity.y = -1;
-					}
-					//Above of dead zone
-					else if (Window::event.jaxis.value > JOYSTICK_DEAD_ZONE)
-					{
-						PlayerTransform->velocity.y = 1;
-					}
-					else
-					{
-						PlayerTransform->velocity.y = 0;
-					}
-				}
-
-				//Calculate angle
-				double joystickAngle = atan2((double)yDir, (double)xDir) * (180.0 / M_PI);
-
-				//Correct angle
-				if (xDir == 0 && yDir == 0)
-				{
-					joystickAngle = 0;
-				}
-
-			}
-		}
-
-		/*player0 = new Controller(0);
+		player0 = new Controller();
+		player0->XboxController(0);
 
 		while (player0->IsConnected())
 		{
@@ -239,6 +158,6 @@ public:
 			}
 		}
 
-		delete player0; */
+		delete player0;
 	}
 };

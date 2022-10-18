@@ -7,6 +7,8 @@
 #include <chrono>
 #include <list>
 #include <vector>
+#include <Windows.h>
+#include <Xinput.h>
 
 class Window
 {
@@ -31,5 +33,4 @@ public:
 private:
 	bool isRunning;
 	SDL_Window* window;
-	Window* ourWindow;
 };
