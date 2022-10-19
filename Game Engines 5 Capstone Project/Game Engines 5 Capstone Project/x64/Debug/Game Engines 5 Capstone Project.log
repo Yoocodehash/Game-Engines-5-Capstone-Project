@@ -1,7 +1,8 @@
 ﻿  Audio.cpp
   Button.cpp
   Collision.cpp
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(43,19): warning C4244: 'initializing': conversion from 'DWORD' to 'uint16_t', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(45,19): warning C4244: 'initializing': conversion from 'DWORD' to 'uint16_t', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(108,52): warning C4805: '==': unsafe mix of type 'Uint32' and type 'bool' in operation
   CreditsMenu.cpp
   Enemy.cpp
   Level.cpp
@@ -16,7 +17,8 @@ C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game E
   TextureManager.cpp
   Vec2.cpp
   Window.cpp
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(43,19): warning C4244: 'initializing': conversion from 'DWORD' to 'uint16_t', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(45,19): warning C4244: 'initializing': conversion from 'DWORD' to 'uint16_t', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(108,52): warning C4805: '==': unsafe mix of type 'Uint32' and type 'bool' in operation
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(101,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(102,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   Generating Code...

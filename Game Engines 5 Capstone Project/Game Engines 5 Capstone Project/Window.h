@@ -7,8 +7,6 @@
 #include <chrono>
 #include <list>
 #include <vector>
-#include <Windows.h>
-#include <Xinput.h>
 
 class Window
 {

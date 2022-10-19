@@ -13,7 +13,7 @@ class Controller : public Component
 private:
 	int controllerID;
 	XINPUT_STATE controllerState{};
-
+	bool isRunning;
 	Audio soundEffect;
 
 public:
@@ -24,6 +24,8 @@ public:
 	{
 		PlayerTransform = &entity->GetComponent<PlayerTransformComponent>();
 		soundEffect.LoadAudio();
+
+		isRunning = true;
 	}
 
 	void XboxController(int playerID)
@@ -103,11 +105,11 @@ public:
 		player0 = new Controller();
 		player0->XboxController(0);
 
-		while (player0->IsConnected())
+		while (Window::event.type == player0->IsConnected())
 		{
 			XINPUT_STATE xinput_state = player0->GetState();
 
-			if (xinput_state.Gamepad.wButtons > 0) // When a Xbox button is pressed
+			if (Window::event.type == xinput_state.Gamepad.wButtons > 0) // When a Xbox button is pressed
 			{
 				switch (xinput_state.Gamepad.wButtons)
 				{
@@ -124,15 +126,15 @@ public:
 				case XINPUT_GAMEPAD_Y:
 					player0->PlayerTransform->velocity.x = 0.5;
 					break;
-
+				case XINPUT_GAMEPAD_BACK:
+					isRunning = false;
+					break;
 				default:
-					static int count = 0;
-					count++;
 					break;
 				}
 			}
 
-			if (xinput_state.Gamepad.wButtons < 0) // When a Xbox button is released
+			if (Window::event.type == xinput_state.Gamepad.wButtons < 0) // When a Xbox button is released
 			{
 				switch (xinput_state.Gamepad.wButtons)
 				{
@@ -151,8 +153,6 @@ public:
 					break;
 
 				default:
-					static int count = 0;
-					count++;
 					break;
 				}
 			}
