@@ -109,22 +109,26 @@ public:
 		{
 			XINPUT_STATE xinput_state = player0->GetState();
 
-			if (Window::event.type == xinput_state.Gamepad.wButtons > 0) // When a Xbox button is pressed
+			if (Window::event.cbutton.type == xinput_state.Gamepad.wButtons > 0) // When a Xbox button is pressed
 			{
-				switch (xinput_state.Gamepad.wButtons)
+				switch (Window::event.cbutton.state)
 				{
 					// XBOX controls
 				case XINPUT_GAMEPAD_A:
 					player0->PlayerTransform->velocity.y = 0.5;
+					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 					break;
 				case XINPUT_GAMEPAD_B:
 					player0->PlayerTransform->velocity.x = -0.5;
+					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 					break;
 				case XINPUT_GAMEPAD_X:
 					player0->PlayerTransform->velocity.y = -0.5;
+					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 					break;
 				case XINPUT_GAMEPAD_Y:
 					player0->PlayerTransform->velocity.x = 0.5;
+					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
 					break;
 				case XINPUT_GAMEPAD_BACK:
 					isRunning = false;
@@ -134,9 +138,9 @@ public:
 				}
 			}
 
-			if (Window::event.type == xinput_state.Gamepad.wButtons < 0) // When a Xbox button is released
+			if (Window::event.cbutton.type == xinput_state.Gamepad.wButtons < 0) // When a Xbox button is released
 			{
-				switch (xinput_state.Gamepad.wButtons)
+				switch (Window::event.cbutton.state)
 				{
 					// XBOX controls
 				case XINPUT_GAMEPAD_A:

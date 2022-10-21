@@ -1,25 +1,10 @@
-﻿  Audio.cpp
-  Button.cpp
-  Collision.cpp
+﻿  Collision.cpp
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(45,19): warning C4244: 'initializing': conversion from 'DWORD' to 'uint16_t', possible loss of data
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(108,52): warning C4805: '==': unsafe mix of type 'Uint32' and type 'bool' in operation
-  CreditsMenu.cpp
-  Enemy.cpp
-  Level.cpp
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Level.cpp(6,23): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Level.cpp(7,23): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Level.cpp(28,26): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Level.cpp(29,26): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-  Main.cpp
-  Memory.cpp
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Memory.cpp(258,16): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-  OptionsMenu.cpp
-  TextureManager.cpp
-  Vec2.cpp
   Window.cpp
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(45,19): warning C4244: 'initializing': conversion from 'DWORD' to 'uint16_t', possible loss of data
 C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Controller.h(108,52): warning C4805: '==': unsafe mix of type 'Uint32' and type 'bool' in operation
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(101,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(102,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(109,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(110,76): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   Generating Code...
   Game Engines 5 Capstone Project.vcxproj -> C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\x64\Debug\Game Engines 5 Capstone Project.exe

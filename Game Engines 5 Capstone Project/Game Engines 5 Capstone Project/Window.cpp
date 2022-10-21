@@ -21,6 +21,7 @@ SDL_Rect Window::Camera = { 0,0,800, 3500 };
 
 auto& PlayerBird(manager.AddEntity());
 auto& wallBlock(manager.AddEntity());
+auto& wallBlock2(manager.AddEntity());
 
 Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 {
@@ -48,9 +49,10 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 	PlayerBird.AddComponent<Controller>();
 	PlayerBird.AddComponent<ColliderComponent>("Player");
 
-	//wallBlock.AddComponent<PlayerTransformComponent>(-15.0f, 300.0f, 5000, 10, 1);
-	//wallBlock.AddComponent<PlayerSpriteComponent>("Level 1.png");
-	//wallBlock.AddComponent<ColliderComponent>("Wall");
+	wallBlock.AddComponent<PlayerTransformComponent>(1700.0f, 0.0f, 600, 20, 1);
+	wallBlock2.AddComponent<PlayerTransformComponent>(-100.0f, 0.0f, 600, 20, 1);
+	wallBlock.AddComponent<ColliderComponent>("Wall");
+	wallBlock2.AddComponent<ColliderComponent>("Wall2");
 
 	EnemyBird[0] = new Enemy("Enemy Flappy Bird.png", 200, 200);
 }
@@ -92,11 +94,17 @@ void Window::Update()
 	manager.Refresh();
 	manager.Update();
 
-	/*if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
+	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
 		wallBlock.GetComponent<ColliderComponent>().collider))
 	{
 		PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
-	}*/
+	}
+
+	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
+		wallBlock2.GetComponent<ColliderComponent>().collider))
+	{
+		PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
+	}
 
 	Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400;
 	Camera.y = PlayerBird.GetComponent<PlayerTransformComponent>().position.y - 320;
