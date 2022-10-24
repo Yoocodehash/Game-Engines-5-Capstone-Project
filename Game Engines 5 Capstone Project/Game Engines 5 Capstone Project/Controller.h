@@ -11,13 +11,10 @@
 class Controller : public Component
 {
 private:
-	int controllerID;
-	XINPUT_STATE controllerState{};
-	bool isRunning;
+	SDL_Joystick* player;
 	Audio soundEffect;
 
 public:
-	Controller* player0;
 	PlayerTransformComponent* PlayerTransform;
 
 	void PlayerInit() override
@@ -25,32 +22,22 @@ public:
 		PlayerTransform = &entity->GetComponent<PlayerTransformComponent>();
 		soundEffect.LoadAudio();
 
-		isRunning = true;
-	}
+		SDL_Init(SDL_INIT_JOYSTICK);
 
-	void XboxController(int playerID)
-	{
-		controllerID = playerID;
-		memset(&controllerState, 0, sizeof(controllerState));
-	}
-
-	XINPUT_STATE GetState()
-	{
-		XInputGetState(controllerID, &controllerState);
-		return controllerState;
-	}
-
-	bool IsConnected()
-	{
-		uint16_t result = XInputGetState(controllerID, &controllerState);
-
-		if (result == ERROR_SUCCESS)
+		//Check for joysticks
+		if (SDL_NumJoysticks() < 1)
 		{
-			return true;
+			printf("Warning: No joysticks connected!\n");
 		}
-
-		std::cerr << "No controller " << controllerID << " found!\n";
-		return false;
+		else
+		{
+			//Load joystick
+			player = SDL_JoystickOpen(0);
+			if (player == NULL)
+			{
+				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+			}
+		}
 	}
 
 	void UpdatePlayer() override
@@ -102,66 +89,52 @@ public:
 			}
 		}
 
-		player0 = new Controller();
-		player0->XboxController(0);
-
-		while (Window::event.type == player0->IsConnected())
+		if (Window::event.type == SDL_JOYBUTTONDOWN)
 		{
-			XINPUT_STATE xinput_state = player0->GetState();
-
-			if (Window::event.cbutton.type == xinput_state.Gamepad.wButtons > 0) // When a Xbox button is pressed
+			switch (Window::event.jbutton.button)
 			{
-				switch (Window::event.cbutton.state)
-				{
-					// XBOX controls
-				case XINPUT_GAMEPAD_A:
-					player0->PlayerTransform->velocity.y = 0.5;
-					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
-					break;
-				case XINPUT_GAMEPAD_B:
-					player0->PlayerTransform->velocity.x = -0.5;
-					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
-					break;
-				case XINPUT_GAMEPAD_X:
-					player0->PlayerTransform->velocity.y = -0.5;
-					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
-					break;
-				case XINPUT_GAMEPAD_Y:
-					player0->PlayerTransform->velocity.x = 0.5;
-					Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
-					break;
-				case XINPUT_GAMEPAD_BACK:
-					isRunning = false;
-					break;
-				default:
-					break;
-				}
-			}
+			case SDL_CONTROLLER_BUTTON_A:
+				PlayerTransform->velocity.y = 0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
+				break;
+			case SDL_CONTROLLER_BUTTON_B:
+				PlayerTransform->velocity.x = 0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
+				break;
+			case SDL_CONTROLLER_BUTTON_X:
+				PlayerTransform->velocity.x = -0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
+				break;
+			case SDL_CONTROLLER_BUTTON_Y:
+				PlayerTransform->velocity.y = -0.5;
+				Mix_PlayChannel(-1, soundEffect.BirdSound, -1);
+				break;
 
-			if (Window::event.cbutton.type == xinput_state.Gamepad.wButtons < 0) // When a Xbox button is released
-			{
-				switch (Window::event.cbutton.state)
-				{
-					// XBOX controls
-				case XINPUT_GAMEPAD_A:
-					player0->PlayerTransform->velocity.y = 0;
-					break;
-				case XINPUT_GAMEPAD_B:
-					player0->PlayerTransform->velocity.x = 0;
-					break;
-				case XINPUT_GAMEPAD_X:
-					player0->PlayerTransform->velocity.y = 0;
-					break;
-				case XINPUT_GAMEPAD_Y:
-					player0->PlayerTransform->velocity.x = 0;
-					break;
-
-				default:
-					break;
-				}
+			default:
+				break;
 			}
 		}
 
-		delete player0;
+		if (Window::event.type == SDL_JOYBUTTONUP)
+		{
+			switch (Window::event.jbutton.button)
+			{
+			case SDL_CONTROLLER_BUTTON_A:
+				PlayerTransform->velocity.y = 0;
+				break;
+			case SDL_CONTROLLER_BUTTON_B:
+				PlayerTransform->velocity.x = 0;
+				break;
+			case SDL_CONTROLLER_BUTTON_X:
+				PlayerTransform->velocity.x = 0;
+				break;
+			case SDL_CONTROLLER_BUTTON_Y:
+				PlayerTransform->velocity.y = 0;
+				break;
+
+			default:
+				break;
+			}
+		}
 	}
 };
