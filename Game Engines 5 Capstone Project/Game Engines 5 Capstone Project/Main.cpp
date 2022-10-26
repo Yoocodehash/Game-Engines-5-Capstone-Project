@@ -164,6 +164,8 @@ int main(int argc, char **argv)
 
                         while (optionsMenu->Running())
                         {
+                            
+                            optionsMenu->UpdateOptionsMenu();
                             optionsMenu->OptionsMenuHandleEvents();
                             optionsMenu->RenderOptionsMenu();
                         }

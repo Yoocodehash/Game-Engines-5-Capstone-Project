@@ -21,5 +21,8 @@ bool Collision::AABB(const ColliderComponent& colliderA, const ColliderComponent
 		return true;
 	}
 
-	return false;
+	else
+	{
+		return false;
+	}
 }

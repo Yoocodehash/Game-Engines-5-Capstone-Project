@@ -17,7 +17,7 @@ SDL_Renderer* Window::renderer = nullptr;
 SDL_Event Window::event;
 SDL_Rect Window::Camera = { 0,0,800, 3500 };
 
-//std::vector<ColliderComponent*> Window::colliders;
+std::vector<ColliderComponent*> Window::colliders;
 
 auto& PlayerBird(manager.AddEntity());
 auto& wallBlock(manager.AddEntity());
@@ -79,6 +79,10 @@ void Window::HandleEvents()
 			// I included ESC key because if you're going to play in full screen then you can't press X and you're stuck
 			case SDLK_ESCAPE:
 				isRunning = false;
+				break;
+
+			case SDLK_p: // Pauses the game for a bit
+				SDL_Delay(5000);
 				break;
 			}
 

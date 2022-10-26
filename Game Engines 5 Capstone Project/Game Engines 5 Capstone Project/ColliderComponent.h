@@ -25,7 +25,7 @@ public:
 
 		transform = &entity->GetComponent<PlayerTransformComponent>();
 
-		//Window::colliders.push_back(this);
+		Window::colliders.push_back(this);
 	}
 
 	void UpdatePlayer() override

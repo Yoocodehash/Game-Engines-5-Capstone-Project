@@ -8,6 +8,10 @@ OptionsMenu::OptionsMenu(const char* title_, int x_, int y_, int w_, int h_, int
     optionsWindow = SDL_CreateWindow(title_, x_, y_, w_, h_, flags_);
     optionsRenderer = SDL_CreateRenderer(optionsWindow, -1, SDL_RENDERER_ACCELERATED);
 
+    exitButton.srect.y = 710;
+    exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
+    exitButton.drect.y = 350;
+
     memoryPool = new MemoryPool();
 
     threadPool.Start(10);
@@ -19,6 +23,12 @@ OptionsMenu::OptionsMenu(const char* title_, int x_, int y_, int w_, int h_, int
 
 OptionsMenu::~OptionsMenu()
 {
+}
+
+void OptionsMenu::UpdateOptionsMenu()
+{
+    mouse.update();
+    exitButton.update(mouse);
 }
 
 void OptionsMenu::OptionsMenuHandleEvents()
@@ -46,6 +56,19 @@ void OptionsMenu::OptionsMenuHandleEvents()
                 break;
             }
 
+        case SDL_MOUSEBUTTONUP:
+                if (optionsEvent.button.button == SDL_BUTTON_LEFT)
+                {
+                    if (exitButton.isSelected)
+                    {
+                        threadPool.Finish();
+                        memoryPool->ReleaseMemoryPool();
+
+                        isRunning = false;
+                        break;
+                    }
+                }
+
         default:
             break;
         }
@@ -60,6 +83,8 @@ void OptionsMenu::RenderOptionsMenu()
     SDL_RenderFillRect(optionsRenderer, 0);
     SDL_SetRenderDrawColor(optionsRenderer, 200, 0, 0, 255);
     SDL_RenderDrawRect(optionsRenderer, 0);
+    exitButton.draw();
+    mouse.draw();
     SDL_RenderPresent(optionsRenderer);
 }
 
