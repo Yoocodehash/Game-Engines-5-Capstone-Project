@@ -93,6 +93,21 @@ void Window::HandleEvents()
 
 					PauseGame->UpdatePauseMenu();
 					PauseGame->HandleEventPauseMenu();
+
+			case SDL_MOUSEBUTTONUP:
+				if (PauseGame->pauseEvent.button.button == SDL_BUTTON_LEFT)
+				{
+					if (PauseGame->Quit.isSelected)
+					{
+						PauseGame->threadPool.Finish();
+						PauseGame->memoryPool->ReleaseMemoryPool();
+
+						isRunning = false;
+						PauseGame->isRunning = false;
+						break;
+					}
+				}
+
 					PauseGame->RenderPauseMenu();
 				}
 

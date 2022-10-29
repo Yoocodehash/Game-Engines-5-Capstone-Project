@@ -1,18 +1,27 @@
 #include "PauseMenu.h"
 
+SDL_Event PauseMenu::pauseEvent;
+
 PauseMenu::PauseMenu(const char* title_, int x_, int y_, int w_, int h_, int flags_)
 {
     // Initialize window when pause menu is pressed
     pauseWindow = SDL_CreateWindow(title_, x_, y_, w_, h_, flags_);
     pauseRenderer = SDL_CreateRenderer(pauseWindow, -1, SDL_RENDERER_ACCELERATED);
 
+    pauseSurface = IMG_Load("Pause Menu.png");
+    pauseTexture = SDL_CreateTextureFromSurface(pauseRenderer, pauseSurface);
+
+    Resume.srect.y = 710;
+    Resume.drect.x = 800 / 2 - Resume.drect.w / 2;
+    Resume.drect.y = 250;
+
     Options.srect.y = 310; // This will give me the button name depending on the button's position
     Options.drect.x = 800 / 2 - Options.drect.w / 2;
-    Options.drect.y = 150;
+    Options.drect.y = 350;
 
     Quit.srect.y = 710;
     Quit.drect.x = 800 / 2 - Quit.drect.w / 2;
-    Quit.drect.y = 350;
+    Quit.drect.y = 450;
 
     memoryPool = new MemoryPool();
 
@@ -33,6 +42,7 @@ PauseMenu::~PauseMenu()
 void PauseMenu::UpdatePauseMenu()
 {
     mouse.update();
+    Resume.update(mouse);
     Options.update(mouse);
     Quit.update(mouse);
 }
@@ -65,6 +75,15 @@ void PauseMenu::HandleEventPauseMenu()
         case SDL_MOUSEBUTTONUP:
             if (pauseEvent.button.button == SDL_BUTTON_LEFT)
             {
+                if (Resume.isSelected)
+                {
+                    threadPool.Finish();
+                    memoryPool->ReleaseMemoryPool();
+
+                    isRunning = false;
+                    break;
+                }
+
                 if (Options.isSelected)
                 {
                     SDL_DestroyRenderer(pauseRenderer);
@@ -81,13 +100,13 @@ void PauseMenu::HandleEventPauseMenu()
                         optionsMenu->OptionsMenuHandleEvents();
                         optionsMenu->RenderOptionsMenu();
                     }
-                }
-                if (Quit.isSelected)
-                {
-                    threadPool.Finish();
-                    memoryPool->ReleaseMemoryPool();
 
-                    isRunning = false;
+                    if (!optionsMenu->Running())
+                    {
+                        optionsMenu->Clear(); // If the options menu isn't running, then clear the options menu
+                        isRunning = false; // Without this, the game will freeze
+                    }
+
                     break;
                 }
             }
@@ -100,12 +119,9 @@ void PauseMenu::HandleEventPauseMenu()
 
 void PauseMenu::RenderPauseMenu()
 {
-    SDL_SetRenderDrawColor(pauseRenderer, 50, 50, 50, 255);
     SDL_RenderClear(pauseRenderer);
-    SDL_SetRenderDrawColor(pauseRenderer, 100, 0, 100, 255);
-    SDL_RenderFillRect(pauseRenderer, 0);
-    SDL_SetRenderDrawColor(pauseRenderer, 200, 0, 0, 255);
-    SDL_RenderDrawRect(pauseRenderer, 0);
+    SDL_RenderCopy(pauseRenderer, pauseTexture, NULL, NULL);
+    Resume.draw();
     Options.draw();
     Quit.draw();
     mouse.draw();
@@ -114,6 +130,7 @@ void PauseMenu::RenderPauseMenu()
 
 void PauseMenu::Clear()
 {
+    // Don't use SDL_Quit() because it'll quit the whole window program
     SDL_DestroyWindow(pauseWindow);
     SDL_DestroyRenderer(pauseRenderer);
 }

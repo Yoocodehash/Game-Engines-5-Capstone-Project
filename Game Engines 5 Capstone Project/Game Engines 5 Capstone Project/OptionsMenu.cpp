@@ -8,15 +8,18 @@ OptionsMenu::OptionsMenu(const char* title_, int x_, int y_, int w_, int h_, int
     optionsWindow = SDL_CreateWindow(title_, x_, y_, w_, h_, flags_);
     optionsRenderer = SDL_CreateRenderer(optionsWindow, -1, SDL_RENDERER_ACCELERATED);
 
-    memoryPool = new MemoryPool();
+    optionsSurface = IMG_Load("Options Menu.png");
+    optionsTexture = SDL_CreateTextureFromSurface(optionsRenderer, optionsSurface);
 
-    exitButton.srect.y = 710;
-    exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
-    exitButton.drect.y = 350;
+    memoryPool = new MemoryPool();
 
     threadPool.Start(10);
     memoryPool->AllocatePool(10, 10, 1);
     memoryPool->AllocateAligned(13, 1);
+
+    exitButton.srect.y = 710;
+    exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
+    exitButton.drect.y = 550;
 
     isRunning = true;
 }
@@ -77,12 +80,8 @@ void OptionsMenu::OptionsMenuHandleEvents()
 
 void OptionsMenu::RenderOptionsMenu()
 {
-    SDL_SetRenderDrawColor(optionsRenderer, 50, 50, 50, 255);
     SDL_RenderClear(optionsRenderer);
-    SDL_SetRenderDrawColor(optionsRenderer, 100, 0, 100, 255);
-    SDL_RenderFillRect(optionsRenderer, 0);
-    SDL_SetRenderDrawColor(optionsRenderer, 200, 0, 0, 255);
-    SDL_RenderDrawRect(optionsRenderer, 0);
+    SDL_RenderCopy(optionsRenderer, optionsTexture, NULL, NULL);
     exitButton.draw();
     mouse.draw();
     SDL_RenderPresent(optionsRenderer);
@@ -90,9 +89,9 @@ void OptionsMenu::RenderOptionsMenu()
 
 void OptionsMenu::Clear()
 {
+    // Don't use SDL_Quit() because it'll quit the whole window program
     SDL_DestroyWindow(optionsWindow);
     SDL_DestroyRenderer(optionsRenderer);
-    SDL_Quit();
 }
 
 bool OptionsMenu::Running()

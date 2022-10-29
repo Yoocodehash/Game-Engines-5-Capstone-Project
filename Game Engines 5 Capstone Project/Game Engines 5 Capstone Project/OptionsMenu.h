@@ -26,6 +26,8 @@ private:
     Button exitButton;
     SDL_Window* optionsWindow;
     SDL_Renderer* optionsRenderer;
+    SDL_Surface* optionsSurface;
+    SDL_Texture* optionsTexture;
     ThreadPool threadPool;
     MemoryPool* memoryPool;
     bool isRunning;

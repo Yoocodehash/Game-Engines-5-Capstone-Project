@@ -1,1 +1,3 @@
-﻿  Main.cpp
+﻿  Window.cpp
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(148,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(149,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data

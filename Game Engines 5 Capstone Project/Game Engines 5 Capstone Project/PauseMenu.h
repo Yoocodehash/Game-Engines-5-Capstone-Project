@@ -19,15 +19,20 @@ public:
 	void Clear();
 	bool Running();
 
+	static SDL_Event pauseEvent;
+	Button Quit;
+	bool isRunning;
+
+	ThreadPool threadPool;
+	MemoryPool* memoryPool;
+
 private:
 	SDL_Window* pauseWindow;
 	SDL_Renderer* pauseRenderer;
-	Button Options, Quit;
+	SDL_Surface* pauseSurface;
+	SDL_Texture* pauseTexture;
+	Button Resume, Options;
 	Mouse mouse;
-	SDL_Event pauseEvent;
 	OptionsMenu* optionsMenu;
-	bool isRunning;
-	ThreadPool threadPool;
-	MemoryPool* memoryPool;
 };
 
