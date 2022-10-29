@@ -8,11 +8,11 @@ OptionsMenu::OptionsMenu(const char* title_, int x_, int y_, int w_, int h_, int
     optionsWindow = SDL_CreateWindow(title_, x_, y_, w_, h_, flags_);
     optionsRenderer = SDL_CreateRenderer(optionsWindow, -1, SDL_RENDERER_ACCELERATED);
 
+    memoryPool = new MemoryPool();
+
     exitButton.srect.y = 710;
     exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
     exitButton.drect.y = 350;
-
-    memoryPool = new MemoryPool();
 
     threadPool.Start(10);
     memoryPool->AllocatePool(10, 10, 1);

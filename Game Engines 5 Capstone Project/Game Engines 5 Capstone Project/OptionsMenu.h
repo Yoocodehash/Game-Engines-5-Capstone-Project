@@ -19,11 +19,11 @@ public:
 
     bool Running();
 
-    Mouse mouse;
-    Button exitButton;
     static SDL_Event optionsEvent;
 
 private:
+    Mouse mouse;
+    Button exitButton;
     SDL_Window* optionsWindow;
     SDL_Renderer* optionsRenderer;
     ThreadPool threadPool;

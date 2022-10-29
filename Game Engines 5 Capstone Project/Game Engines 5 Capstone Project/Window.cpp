@@ -55,6 +55,8 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 	wallBlock2.AddComponent<ColliderComponent>("Wall2");
 
 	EnemyBird[0] = new Enemy("Enemy Flappy Bird.png", 200, 200);
+
+	isPaused = false;
 }
 
 Window::~Window()
@@ -81,8 +83,24 @@ void Window::HandleEvents()
 				isRunning = false;
 				break;
 
-			case SDLK_p: // Pauses the game for a bit
-				SDL_Delay(5000);
+			case SDLK_p:
+
+				PauseGame = new PauseMenu("Pause Menu", SDL_WINDOWPOS_CENTERED,
+					SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+				
+				while (PauseGame->Running())
+				{
+
+					PauseGame->UpdatePauseMenu();
+					PauseGame->HandleEventPauseMenu();
+					PauseGame->RenderPauseMenu();
+				}
+
+				if (!PauseGame->Running())
+				{
+					PauseGame->Clear();
+				}
+
 				break;
 			}
 
@@ -94,31 +112,39 @@ void Window::HandleEvents()
 
 void Window::Update()
 {
-	level->UpdateLevel();
-	manager.Refresh();
-	manager.Update();
-
-	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
-		wallBlock.GetComponent<ColliderComponent>().collider))
+	if (!isPaused)
 	{
-		PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
+		level->UpdateLevel();
+		manager.Refresh();
+		manager.Update();
+
+		if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
+			wallBlock.GetComponent<ColliderComponent>().collider))
+		{
+			PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
+		}
+
+		if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
+			wallBlock2.GetComponent<ColliderComponent>().collider))
+		{
+			PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
+		}
+
+		Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400;
+		Camera.y = PlayerBird.GetComponent<PlayerTransformComponent>().position.y - 320;
+
+		if (Camera.x < 0) Camera.x = 0;
+		if (Camera.y < 0) Camera.y = 0;
+		if (Camera.x > Camera.w) Camera.x = Camera.w;
+		if (Camera.y > Camera.h) Camera.y = Camera.h;
+
+		EnemyBird[0]->UpdateEnemy();
 	}
 
-	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
-		wallBlock2.GetComponent<ColliderComponent>().collider))
+	else 
 	{
-		PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
+		PauseGame->UpdatePauseMenu();
 	}
-
-	Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400;
-	Camera.y = PlayerBird.GetComponent<PlayerTransformComponent>().position.y - 320;
-
-	if (Camera.x < 0) Camera.x = 0;
-	if (Camera.y < 0) Camera.y = 0;
-	if (Camera.x > Camera.w) Camera.x = Camera.w;
-	if (Camera.y > Camera.h) Camera.y = Camera.h;
-
-	EnemyBird[0]->UpdateEnemy();
 }
 
 void Window::Render()
@@ -129,6 +155,22 @@ void Window::Render()
 	EnemyBird[0]->RenderEnemy();
 	manager.Draw();
 	SDL_RenderPresent(renderer);
+
+	if (isPaused)
+	{
+		PauseGame->RenderPauseMenu();
+	}
+}
+
+void Window::GamePaused()
+{
+	isPaused = true;
+}
+
+void Window::GameUnpaused()
+{
+	isPaused = false;
+	PauseGame = nullptr;
 }
 
 void Window::Clear()

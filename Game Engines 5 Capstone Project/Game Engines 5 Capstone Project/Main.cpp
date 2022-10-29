@@ -162,9 +162,9 @@ int main(int argc, char **argv)
                         optionsMenu = new OptionsMenu("Options", SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, 800, 600, 0);
 
+
                         while (optionsMenu->Running())
                         {
-                            
                             optionsMenu->UpdateOptionsMenu();
                             optionsMenu->OptionsMenuHandleEvents();
                             optionsMenu->RenderOptionsMenu();
@@ -185,11 +185,18 @@ int main(int argc, char **argv)
                         SDL_DestroyWindow(win);
 
                         // Initialize window when the start button is pressed
-                        creditsMenu = new CreditsMenu("Flying Bird Credits", SDL_WINDOWPOS_CENTERED, 
+                        creditsMenu = new CreditsMenu("Flying Bird Credits", SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, 800, 600, IMG_INIT_PNG);
 
                         while (creditsMenu->Running())
                         {
+                            // If music isn't playing
+                            if (Mix_PlayingMusic() == 0)
+                            {
+                                //Play the music
+                                Mix_PlayMusic(audio->creditsMusic, -1);
+                            }
+
                             creditsMenu->CreditsMenuHandleEvents();
                             creditsMenu->RenderCreditsMenu();
                         }
@@ -197,6 +204,8 @@ int main(int argc, char **argv)
                         if (!creditsMenu->Running())
                         {
                             creditsMenu->Clear();
+                            audio->DestroyAudio();
+
                         }
 
                         return 0;

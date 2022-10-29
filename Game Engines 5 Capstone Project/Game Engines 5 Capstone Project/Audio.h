@@ -17,6 +17,7 @@ public:
 
 	//The music that will be played
 	Mix_Music* music;
+	Mix_Music* creditsMusic;
 
 	//The sound effects that will be used
 	Mix_Chunk* BirdSound;

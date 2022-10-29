@@ -7,6 +7,7 @@
 #include <chrono>
 #include <list>
 #include <vector>
+#include "PauseMenu.h"
 
 class ColliderComponent;
 
@@ -25,12 +26,17 @@ public:
 
 	bool Running();
 
+	void GamePaused();
+	void GameUnpaused();
+
 	static SDL_Renderer* renderer;
 	static SDL_Event event;
 
 	static SDL_Rect Camera;
 	static std::vector<ColliderComponent*> colliders;
+	bool isPaused;
 private:
 	bool isRunning;
 	SDL_Window* window;
+	PauseMenu* PauseGame;
 };

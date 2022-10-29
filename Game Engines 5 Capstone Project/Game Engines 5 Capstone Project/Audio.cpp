@@ -4,6 +4,7 @@ Audio::Audio()
 {
     BirdSound = NULL;
     music = NULL;
+    creditsMusic = NULL;
 
     //Initialize SDL Mixer
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
@@ -24,7 +25,12 @@ void Audio::DestroyAudio()
     Mix_FreeMusic(music);
     music = NULL;
     
-    std::cout << "The music has been freed!\n\n";
+    std::cout << "The music has been freed!\n";
+
+    Mix_FreeMusic(creditsMusic);
+    creditsMusic = NULL;
+
+    std::cout << "The credits music has been freed!\n\n";
 
     Mix_Quit();
 }
@@ -33,6 +39,12 @@ bool Audio::LoadAudio()
 {
     //Load music
     music = Mix_LoadMUS("Audio/Free as a Bird.wav");
+    if (music == NULL)
+    {
+        printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+
+    creditsMusic = Mix_LoadMUS("Audio/Credits music.wav");
     if (music == NULL)
     {
         printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
