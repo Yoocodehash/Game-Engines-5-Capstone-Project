@@ -16,10 +16,14 @@ public:
 	bool LoadAudio();
 
 	//The music that will be played
-	Mix_Music* music;
-	Mix_Music* creditsMusic;
+	Mix_Music* GameMusic;
+	Mix_Music* CreditsMusic;
+	Mix_Music* MainMenuMusic;
 
 	//The sound effects that will be used
 	Mix_Chunk* BirdSound;
+	Mix_Chunk* LevelCompletionSound;
+	Mix_Chunk* ButtonPressedSound;
+
 };
 

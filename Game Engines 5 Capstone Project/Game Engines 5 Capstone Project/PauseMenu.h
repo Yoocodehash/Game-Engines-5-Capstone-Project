@@ -5,6 +5,7 @@
 #include "ThreadPool.h"
 #include "Memory.h"
 #include "OptionsMenu.h"
+#include "Audio.h"
 
 class PauseMenu
 {
@@ -22,6 +23,7 @@ public:
 	static SDL_Event pauseEvent;
 	Button Quit;
 	bool isRunning;
+	Audio PauseMenuButtonsSound;
 
 	ThreadPool threadPool;
 	MemoryPool* memoryPool;

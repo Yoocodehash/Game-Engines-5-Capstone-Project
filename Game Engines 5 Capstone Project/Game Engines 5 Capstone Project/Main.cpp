@@ -22,6 +22,9 @@ SDL_Window* win = SDL_CreateWindow("Main Menu", SDL_WINDOWPOS_UNDEFINED,
 
 SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
+SDL_Surface* mainMenuSurface = IMG_Load("Main Menu.png");
+SDL_Texture* mainMenuTexture = SDL_CreateTextureFromSurface(ren, mainMenuSurface);
+
 double delta = .0001;
 double time2 = SDL_GetTicks();
 
@@ -79,6 +82,13 @@ int main(int argc, char **argv)
         backButton.update(mouse);
         exitButton.update(mouse);
 
+        // If music isn't playing
+        if (Mix_PlayingMusic() == 0)
+        {
+            //Play the music
+            Mix_PlayMusic(audio->MainMenuMusic, -1);
+        }
+
         delta = (SDL_GetTicks() - time2) / 1000;
         time2 = SDL_GetTicks();
 
@@ -110,6 +120,8 @@ int main(int argc, char **argv)
                 {
                     if (startButton.isSelected)
                     {
+                        Mix_PlayChannel(-1, audio->ButtonPressedSound, 0);
+
                         // Destroy Main Menu renderer and window
                         SDL_DestroyRenderer(ren);
                         SDL_DestroyWindow(win);
@@ -120,14 +132,18 @@ int main(int argc, char **argv)
                         // Initialize window when the start button is pressed
                         window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, false);
 
+                        //Stop the music
+                        Mix_HaltMusic();
+
                         // While the window is running, handle events, update and render the whole window
                         while (window->Running())
                         {
+
                             // If music isn't playing
                             if (Mix_PlayingMusic() == 0)
                             {
                                 //Play the music
-                                Mix_PlayMusic(audio->music, -1);
+                                Mix_PlayMusic(audio->GameMusic, -1);
                             }
 
                             window->HandleEvents();
@@ -154,6 +170,8 @@ int main(int argc, char **argv)
 
                     if (optionButton.isSelected)
                     {
+                        Mix_PlayChannel(-1, audio->ButtonPressedSound, 0);
+
                         // Destroy Main Menu renderer and window
                         SDL_DestroyRenderer(ren);
                         SDL_DestroyWindow(win);
@@ -180,6 +198,8 @@ int main(int argc, char **argv)
 
                     if (creditsButton.isSelected)
                     {
+                        Mix_PlayChannel(-1, audio->ButtonPressedSound, 0);
+
                         // Destroy Main Menu renderer and window
                         SDL_DestroyRenderer(ren);
                         SDL_DestroyWindow(win);
@@ -194,7 +214,7 @@ int main(int argc, char **argv)
                             if (Mix_PlayingMusic() == 0)
                             {
                                 //Play the music
-                                Mix_PlayMusic(audio->creditsMusic, -1);
+                                Mix_PlayMusic(audio->CreditsMusic, 0);
                             }
 
                             creditsMenu->CreditsMenuHandleEvents();
@@ -216,6 +236,7 @@ int main(int argc, char **argv)
                     {
                         threadPool.Finish();
                         memoryPool->ReleaseMemoryPool();
+                        audio->DestroyAudio();
 
                         return false;
                         break;
@@ -227,12 +248,8 @@ int main(int argc, char **argv)
 
         //rect.x = x;
 
-        SDL_SetRenderDrawColor(ren, 50, 50, 50, 255);
         SDL_RenderClear(ren);
-        SDL_SetRenderDrawColor(ren, 100, 0, 100, 255);
-        SDL_RenderFillRect(ren, 0);
-        SDL_SetRenderDrawColor(ren, 200, 0, 0, 255);
-        SDL_RenderDrawRect(ren, 0);
+        SDL_RenderCopy(ren, mainMenuTexture, NULL, NULL);
         startButton.draw();
         optionButton.draw();
         creditsButton.draw();

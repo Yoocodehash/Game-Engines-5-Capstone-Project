@@ -25,6 +25,8 @@ PauseMenu::PauseMenu(const char* title_, int x_, int y_, int w_, int h_, int fla
 
     memoryPool = new MemoryPool();
 
+    PauseMenuButtonsSound.LoadAudio();
+
     threadPool.Start(10);
     memoryPool->AllocatePool(10, 10, 1);
     memoryPool->AllocateAligned(13, 1);
@@ -77,6 +79,8 @@ void PauseMenu::HandleEventPauseMenu()
             {
                 if (Resume.isSelected)
                 {
+                    Mix_PlayChannel(-1, PauseMenuButtonsSound.ButtonPressedSound, 0);
+
                     threadPool.Finish();
                     memoryPool->ReleaseMemoryPool();
 
@@ -86,6 +90,8 @@ void PauseMenu::HandleEventPauseMenu()
 
                 if (Options.isSelected)
                 {
+                    Mix_PlayChannel(-1, PauseMenuButtonsSound.ButtonPressedSound, 0);
+
                     SDL_DestroyRenderer(pauseRenderer);
                     SDL_DestroyWindow(pauseWindow);
 
