@@ -148,6 +148,7 @@ int main(int argc, char **argv)
 
                             window->HandleEvents();
                             window->Update();
+                            window->ShowLevelCompleteScreen();
                             window->Render();
                         }
 

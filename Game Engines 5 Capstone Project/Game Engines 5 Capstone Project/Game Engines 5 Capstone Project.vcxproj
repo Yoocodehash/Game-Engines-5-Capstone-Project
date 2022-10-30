@@ -138,7 +138,9 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CreditsMenu.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="GameOverScreen.cpp" />
     <ClCompile Include="Level.cpp" />
+    <ClCompile Include="LevelCompleteScreen.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="OptionsMenu.cpp" />
@@ -157,7 +159,9 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EntityComponentSystem.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="GameOverScreen.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="LevelCompleteScreen.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="OptionsMenu.h" />
     <ClInclude Include="PauseMenu.h" />

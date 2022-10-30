@@ -56,6 +56,8 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 
 	EnemyBird[0] = new Enemy("Enemy Flappy Bird.png", 200, 200);
 
+	anyAudio.LoadAudio();
+
 	isPaused = false;
 }
 
@@ -84,6 +86,12 @@ void Window::HandleEvents()
 				break;
 
 			case SDLK_p:
+
+				//Pause the music and any sound effects playing
+				Mix_PauseMusic();
+				Mix_HaltChannel(-1);
+
+				Mix_PlayChannel(-1, anyAudio.PauseSound, 0);
 
 				PauseGame = new PauseMenu("Pause Menu", SDL_WINDOWPOS_CENTERED,
 					SDL_WINDOWPOS_CENTERED, 800, 600, 0);
@@ -114,6 +122,13 @@ void Window::HandleEvents()
 				if (!PauseGame->Running())
 				{
 					PauseGame->Clear();
+
+					//If the music is paused
+					if (Mix_PausedMusic() == 1)
+					{
+						//Resume the music
+						Mix_ResumeMusic();
+					}
 				}
 
 				break;
@@ -132,12 +147,6 @@ void Window::Update()
 		level->UpdateLevel();
 		manager.Refresh();
 		manager.Update();
-
-		if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
-			wallBlock.GetComponent<ColliderComponent>().collider))
-		{
-			PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
-		}
 
 		if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
 			wallBlock2.GetComponent<ColliderComponent>().collider))
@@ -159,6 +168,54 @@ void Window::Update()
 	else 
 	{
 		PauseGame->UpdatePauseMenu();
+	}
+}
+
+void Window::ShowLevelCompleteScreen()
+{
+	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
+		wallBlock.GetComponent<ColliderComponent>().collider))
+	{
+		LevelFinished = new LevelCompleteScreen("Level Completed Screen", SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+
+		//Stop the music and sound playing in the game
+		Mix_HaltMusic();
+		Mix_HaltChannel(-1);
+
+		while (LevelFinished->Running())
+		{
+			SDL_DestroyWindow(window);
+			SDL_DestroyRenderer(renderer);
+
+			Mix_PlayChannel(-1, anyAudio.LevelCompletionSound, 0);
+
+			LevelFinished->UpdateLevelCompleteScreen();
+			LevelFinished->HandleEventLevelCompleteScreen();
+
+			if (LevelFinished->LevelCompleteEvent.button.button == SDL_BUTTON_LEFT)
+			{
+				if (LevelFinished->Exit.isSelected)
+				{
+					LevelFinished->threadPool.Finish();
+					LevelFinished->memoryPool->ReleaseMemoryPool();
+
+					isRunning = false;
+					LevelFinished->isRunning = false;
+					break;
+				}
+			}
+
+			LevelFinished->RenderLevelCompleteScreen();
+
+			isRunning = false;
+			LevelFinished->isRunning = true;
+		}
+
+		if (!LevelFinished->Running())
+		{
+			LevelFinished->Clear();
+		}
 	}
 }
 

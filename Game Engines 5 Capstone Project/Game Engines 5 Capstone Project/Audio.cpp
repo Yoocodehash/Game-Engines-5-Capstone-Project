@@ -8,6 +8,7 @@ Audio::Audio()
     GameMusic = NULL;
     CreditsMusic = NULL;
     MainMenuMusic = NULL;
+    PauseSound = NULL;
 
     //Initialize SDL Mixer
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
@@ -28,6 +29,11 @@ void Audio::DestroyAudio()
     ButtonPressedSound = NULL;
 
     std::cout << "Button sound effect has been freed!\n";
+
+    Mix_FreeChunk(PauseSound);
+    PauseSound = NULL;
+
+    std::cout << "Pause sound effect has been freed!\n";
 
     Mix_FreeChunk(LevelCompletionSound);
     LevelCompletionSound = NULL;
@@ -83,6 +89,12 @@ bool Audio::LoadAudio()
 
     ButtonPressedSound = Mix_LoadWAV("Audio/Select button.wav");
     if (ButtonPressedSound == NULL)
+    {
+        printf("Failed to load Bird Sound sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+
+    PauseSound = Mix_LoadWAV("Audio/Pause sound.wav");
+    if (PauseSound == NULL)
     {
         printf("Failed to load Bird Sound sound effect! SDL_mixer Error: %s\n", Mix_GetError());
     }

@@ -24,6 +24,7 @@ public:
 	Mix_Chunk* BirdSound;
 	Mix_Chunk* LevelCompletionSound;
 	Mix_Chunk* ButtonPressedSound;
+	Mix_Chunk* PauseSound;
 
 };
 
