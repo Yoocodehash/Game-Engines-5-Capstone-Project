@@ -32,7 +32,6 @@ int main(int argc, char **argv)
 {
 	// Initialize memory pool and audio here
 	memoryPool = new MemoryPool();
-	audio = new Audio();
 
     Mouse mouse;
 
@@ -68,12 +67,26 @@ int main(int argc, char **argv)
     exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
     exitButton.drect.y = 350;
 
-    audio->LoadAudio(); // Load music before the window opens
-    threadPool.Start(10);
+    threadPool.Start(1);
     memoryPool->AllocatePool(10, 10, 1);
     memoryPool->AllocateAligned(13, 1);
 
-    while (true) {
+    // Initialize memory files here
+    memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png", "Buttons.png",
+        "Credits.png", "Game Over.png", "Level 1.png", "Level Complete.png", "Main Menu.png", "Options Menu.png",
+        "Pause Menu.png" });
+
+    audio = new Audio();
+    audio->LoadAudio(); // Load music before the window opens
+
+    while (true) 
+    {
+        // If music isn't playing
+        if (Mix_PlayingMusic() == 0)
+        {
+            //Play the music
+            Mix_PlayMusic(audio->MainMenuMusic, -1);
+        }
 
         mouse.update();
         startButton.update(mouse);
@@ -81,13 +94,6 @@ int main(int argc, char **argv)
         creditsButton.update(mouse);
         backButton.update(mouse);
         exitButton.update(mouse);
-
-        // If music isn't playing
-        if (Mix_PlayingMusic() == 0)
-        {
-            //Play the music
-            Mix_PlayMusic(audio->MainMenuMusic, -1);
-        }
 
         delta = (SDL_GetTicks() - time2) / 1000;
         time2 = SDL_GetTicks();
@@ -120,20 +126,17 @@ int main(int argc, char **argv)
                 {
                     if (startButton.isSelected)
                     {
+                        //Stop the music
+                        Mix_HaltMusic();
+
                         Mix_PlayChannel(-1, audio->ButtonPressedSound, 0);
 
                         // Destroy Main Menu renderer and window
                         SDL_DestroyRenderer(ren);
                         SDL_DestroyWindow(win);
 
-                        // Initialize memory files here
-                        memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png" });
-
                         // Initialize window when the start button is pressed
                         window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, false);
-
-                        //Stop the music
-                        Mix_HaltMusic();
 
                         // While the window is running, handle events, update and render the whole window
                         while (window->Running())
@@ -149,6 +152,7 @@ int main(int argc, char **argv)
                             window->HandleEvents();
                             window->Update();
                             window->ShowLevelCompleteScreen();
+                            window->ShowLevelFailedScreen();
                             window->Render();
                         }
 
@@ -164,7 +168,6 @@ int main(int argc, char **argv)
                         threadPool.Finish();
                         memoryPool->ReleaseMemoryPool();
                         memory->~Memory();
-                        memory->TypeNumbers(3);
 
                         return 0;
                     }

@@ -7,6 +7,7 @@
 #include <new>
 #include <string>
 #include <cstddef>
+#include <thread>
 
 class MemoryPool {
 public:
@@ -36,10 +37,10 @@ public:
 	std::size_t	GetElementSize() const;
 	void  ReleaseMemoryPool();
 private:
-	std::size_t  poolSize;    //the size in bytes of the pool
-	std::size_t  elementSize; // size in bytes of each element
-	std::size_t  alignment;         // the element/pool alignment requirement in bytes
-	void* memory;           // pointer to the first address of the pool, used to relase all the memory
+	std::size_t poolSize; //the size in bytes of the pool
+	std::size_t elementSize; // size in bytes of each element
+	std::size_t alignment; // the element/pool alignment requirement in bytes
+	void* memory; // pointer to the first address of the pool, used to relase all the memory
 	void** freeMemory; // pointer to pointer, used to point to the head of the free list
 };
 
@@ -49,8 +50,6 @@ public:
 
 	Memory(std::vector<const char*> file_);
 	~Memory();
-
-	void TypeNumbers(int maxAmount);
 
 private:
 	std::vector<const char*> file;

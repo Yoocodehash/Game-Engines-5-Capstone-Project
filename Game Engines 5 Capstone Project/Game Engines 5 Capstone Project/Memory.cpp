@@ -252,13 +252,22 @@ Memory::Memory(std::vector<const char*> file_)
 	std::cout << "\n";
 	for (int i = 0; i < file_.size(); i++)
 	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(300));
+		std::cout << "File " << file_[i] << " initialized!\n";
+	}
+
+	std::cout << "\n";
+	for (int i = 0; i < file_.size(); i++)
+	{
 		std::ifstream in_file(file_[i], std::ios::binary);
 		in_file.seekg(0, std::ios::end);
 
 		int fileSize = in_file.tellg(); // Determines the size of the file in bytes
 
+		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 		std::cout << "The size of " << file_[i] << " file is " << fileSize << " bytes!\n";
 	}
+	std::cout << "\n";
 }
 
 
@@ -268,43 +277,5 @@ Memory::~Memory()
 	for (int i = 0; i < file.size(); i++)
 	{
 		std::cout << "File " << file[i] << " deleted from memory!\n";
-	}
-}
-
-void Memory::TypeNumbers(int maxAmount)
-{
-	int n;
-	int* p;
-
-	// std::nothrow is used as an argument for operator new and operator new[] to 
-	// indicate that these functions won't throw an exception on failure, but return nullptr
-	p = new (std::nothrow) int[maxAmount];
-
-	if (p == nullptr)
-	{
-		std::cerr << "Memory could not be allocated";
-	}
-
-	else
-	{
-		std::cout << "\nInput numbers: ";
-		for (n = 0; n < maxAmount; n++)
-		{
-			std::cin >> p[n];
-
-			if (!p[n])
-			{
-				std::cerr << "\nYou didn't return a number, try again!\n";
-			}
-		}
-
-		std::cout << "\nReceived numbers: ";
-		for (n = 0; n < p[n]; n++)
-		{
-			std::cout << p[n] << std::endl;
-		}
-
-		delete[] p;
-		std::cout << "Memory has been freed!\n";
 	}
 }

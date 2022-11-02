@@ -91,10 +91,10 @@ void Window::HandleEvents()
 				Mix_PauseMusic();
 				Mix_HaltChannel(-1);
 
-				Mix_PlayChannel(-1, anyAudio.PauseSound, 0);
-
 				PauseGame = new PauseMenu("Pause Menu", SDL_WINDOWPOS_CENTERED,
 					SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+
+				Mix_PlayChannel(-1, anyAudio.PauseSound, 0);
 				
 				while (PauseGame->Running())
 				{
@@ -148,14 +148,9 @@ void Window::Update()
 		manager.Refresh();
 		manager.Update();
 
-		if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
-			wallBlock2.GetComponent<ColliderComponent>().collider))
-		{
-			PlayerBird.GetComponent<PlayerTransformComponent>().velocity * -1;
-		}
 
-		Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400;
-		Camera.y = PlayerBird.GetComponent<PlayerTransformComponent>().position.y - 320;
+		Camera.x = PlayerBird.GetComponent<PlayerTransformComponent>().position.x - 400.0f;
+		Camera.y = PlayerBird.GetComponent<PlayerTransformComponent>().position.y - 320.0f;
 
 		if (Camera.x < 0) Camera.x = 0;
 		if (Camera.y < 0) Camera.y = 0;
@@ -176,19 +171,19 @@ void Window::ShowLevelCompleteScreen()
 	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
 		wallBlock.GetComponent<ColliderComponent>().collider))
 	{
-		LevelFinished = new LevelCompleteScreen("Level Completed Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
-
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
 		Mix_HaltChannel(-1);
+
+		LevelFinished = new LevelCompleteScreen("Level Completed Screen", SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+
+		Mix_PlayChannel(-1, anyAudio.LevelCompletionSound, 0);
 
 		while (LevelFinished->Running())
 		{
 			SDL_DestroyWindow(window);
 			SDL_DestroyRenderer(renderer);
-
-			Mix_PlayChannel(-1, anyAudio.LevelCompletionSound, 0);
 
 			LevelFinished->UpdateLevelCompleteScreen();
 			LevelFinished->HandleEventLevelCompleteScreen();
@@ -215,6 +210,56 @@ void Window::ShowLevelCompleteScreen()
 		if (!LevelFinished->Running())
 		{
 			LevelFinished->Clear();
+		}
+	}
+}
+
+void Window::ShowLevelFailedScreen()
+{
+	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
+		wallBlock2.GetComponent<ColliderComponent>().collider))
+	{
+		LevelFailed = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+
+		//Stop the music and sound playing in the game
+		Mix_HaltMusic();
+		Mix_HaltChannel(-1);
+
+		Mix_PlayChannel(-1, anyAudio.GameOverSound, 0);
+
+		while (LevelFailed->Running())
+		{
+			SDL_DestroyWindow(window);
+			SDL_DestroyRenderer(renderer);
+
+			//Mix_PlayChannel(-1, anyAudio.LevelCompletionSound, 0);
+
+			LevelFailed->UpdateGameOver();
+			LevelFailed->HandleEventGameOver();
+
+			if (LevelFailed->gameoverEvent.button.button == SDL_BUTTON_LEFT)
+			{
+				if (LevelFailed->Quit.isSelected)
+				{
+					LevelFailed->threadPool.Finish();
+					LevelFailed->memoryPool->ReleaseMemoryPool();
+
+					isRunning = false;
+					LevelFailed->isRunning = false;
+					break;
+				}
+			}
+
+			LevelFailed->RenderGameOver();
+
+			isRunning = false;
+			LevelFailed->isRunning = true;
+		}
+
+		if (!LevelFailed->Running())
+		{
+			LevelFailed->Clear();
 		}
 	}
 }

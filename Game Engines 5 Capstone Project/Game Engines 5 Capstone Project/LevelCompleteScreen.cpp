@@ -19,7 +19,7 @@ LevelCompleteScreen::LevelCompleteScreen(const char* title_, int x_, int y_, int
 
     ButtonSound.LoadAudio();
 
-    threadPool.Start(10);
+    threadPool.Start(1);
     memoryPool->AllocatePool(10, 10, 1);
     memoryPool->AllocateAligned(13, 1);
 

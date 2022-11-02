@@ -9,6 +9,7 @@
 #include <vector>
 #include "PauseMenu.h"
 #include "LevelCompleteScreen.h"
+#include "GameOverScreen.h"
 #include "Audio.h"
 
 class ColliderComponent;
@@ -24,6 +25,7 @@ public:
 	void HandleEvents();
 	void Update();
 	void ShowLevelCompleteScreen();
+	void ShowLevelFailedScreen();
 	void Render();
 	void Clear();
 
@@ -43,5 +45,6 @@ private:
 	SDL_Window* window;
 	PauseMenu* PauseGame;
 	LevelCompleteScreen* LevelFinished;
+	GameOverScreen* LevelFailed;
 	Audio anyAudio;
 };

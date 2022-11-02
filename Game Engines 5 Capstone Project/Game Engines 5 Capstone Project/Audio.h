@@ -25,6 +25,7 @@ public:
 	Mix_Chunk* LevelCompletionSound;
 	Mix_Chunk* ButtonPressedSound;
 	Mix_Chunk* PauseSound;
+	Mix_Chunk* GameOverSound;
 
 };
 

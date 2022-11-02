@@ -1,8 +1,8 @@
 #include "GameOverScreen.h"
 
-SDL_Event GameOver::gameoverEvent;
+SDL_Event GameOverScreen::gameoverEvent;
 
-GameOver::GameOver(const char* title_, int x_, int y_, int w_, int h_, int flags_)
+GameOverScreen::GameOverScreen(const char* title_, int x_, int y_, int w_, int h_, int flags_)
 {
     // Initialize window when pause menu is pressed
     gameoverWindow = SDL_CreateWindow(title_, x_, y_, w_, h_, flags_);
@@ -11,41 +11,33 @@ GameOver::GameOver(const char* title_, int x_, int y_, int w_, int h_, int flags
     gameoverSurface = IMG_Load("Game Over.png");
     gameoverTexture = SDL_CreateTextureFromSurface(gameoverRenderer, gameoverSurface);
 
-    Retry.srect.y = 710;
-    Retry.drect.x = 800 / 2 - Retry.drect.w / 2;
-    Retry.drect.y = 250;
-
-    ReturnToMainMenu.srect.y = 310; // This will give me the button name depending on the button's position
-    ReturnToMainMenu.drect.x = 800 / 2 - ReturnToMainMenu.drect.w / 2;
-    ReturnToMainMenu.drect.y = 350;
+    Quit.srect.y = 710;
+    Quit.drect.x = 800 / 2 - Quit.drect.w / 2;
+    Quit.drect.y = 450;
 
     memoryPool = new MemoryPool();
 
-    GameOverButtonsSound.LoadAudio();
+    //GameOverButtonsSound.LoadAudio();
 
-    threadPool.Start(10);
+    threadPool.Start(1);
     memoryPool->AllocatePool(10, 10, 1);
     memoryPool->AllocateAligned(13, 1);
-
-    gameover = nullptr;
 
     isRunning = true;
 }
 
-GameOver::~GameOver()
+GameOverScreen::~GameOverScreen()
 {
 }
 
-void GameOver::UpdateGameOver()
+void GameOverScreen::UpdateGameOver()
 {
     mouse.update();
-    Retry.update(mouse);
-    ReturnToMainMenu.update(mouse);
+    Quit.update(mouse);
 }
 
-void GameOver::HandleEventGameOver()
+void GameOverScreen::HandleEventGameOver()
 {
-    /*
     while (SDL_PollEvent(&gameoverEvent)) {
 
         switch (gameoverEvent.type)
@@ -69,74 +61,28 @@ void GameOver::HandleEventGameOver()
                 break;
             }
 
-        case SDL_MOUSEBUTTONUP:
-            if (gameoverEvent.button.button == SDL_BUTTON_LEFT)
-            {
-                if (Retry.isSelected)
-                {
-                    Mix_PlayChannel(-1, OptionsMenuButtonsSound.ButtonPressedSound, 0);
-
-                    threadPool.Finish();
-                    memoryPool->ReleaseMemoryPool();
-
-                    isRunning = false;
-                    break;
-                }
-
-                if (ReturnToMainMenu.isSelected)
-                {
-                    Mix_PlayChannel(-1, OptionsMenuButtonsSound.ButtonPressedSound, 0);
-
-                    SDL_DestroyRenderer(gameoverRenderer);
-                    SDL_DestroyWindow(gameoverWindow);
-
-                    // Initialize window when the start button is pressed
-                    gameover = new GameOver("GameOver", SDL_WINDOWPOS_CENTERED,
-                        SDL_WINDOWPOS_CENTERED, 800, 600, 0);
-
-                    while (gameover->Running())
-                    {
-
-                        gameover->UpdateGameOver();
-                        gameover->HandleEventGameOver();
-                        gameover->RenderGameOver();
-                    }
-
-                    if (!gameover->Running())
-                    {
-                        gameover->Clear();
-                        isRunning = false;
-                    }
-
-                    break;
-                }
-            }
-
         default:
             break;
         }
     }
-    */
-
 }
 
-void GameOver::RenderGameOver()
+void GameOverScreen::RenderGameOver()
 {
     SDL_RenderClear(gameoverRenderer);
     SDL_RenderCopy(gameoverRenderer, gameoverTexture, NULL, NULL);
-    Retry.draw();
-    ReturnToMainMenu.draw();
+    Quit.draw();
     mouse.draw();
     SDL_RenderPresent(gameoverRenderer);
 }
 
-void GameOver::Clear()
+void GameOverScreen::Clear()
 {
     SDL_DestroyWindow(gameoverWindow);
     SDL_DestroyRenderer(gameoverRenderer);
 }
 
-bool GameOver::Running()
+bool GameOverScreen::Running()
 {
-    return false;
+    return isRunning;
 }

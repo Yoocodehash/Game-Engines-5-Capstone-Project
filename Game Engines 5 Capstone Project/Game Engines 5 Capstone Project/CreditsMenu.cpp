@@ -14,7 +14,7 @@ CreditsMenu::CreditsMenu(const char* title_, int x_, int y_, int w_, int h_, int
 
     memoryPool = new MemoryPool();
 
-    threadPool.Start(10);
+    threadPool.Start(1);
     memoryPool->AllocatePool(10, 10, 1);
     memoryPool->AllocateAligned(13, 1);
 

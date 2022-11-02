@@ -5,6 +5,7 @@
 #include <queue>
 #include <thread>
 #include <future>
+#include <iostream>
 
 class ThreadPool 
 {
@@ -57,6 +58,7 @@ public:
             for (auto&& unused : finished)
             {
                 work.push_back({});
+                std::cout << "This thread is finished!\n";
             }
         }
       conditionVariable.notify_all();

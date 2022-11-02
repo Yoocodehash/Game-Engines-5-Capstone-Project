@@ -8,11 +8,11 @@
 #include "OptionsMenu.h"
 #include "Audio.h"
 
-class GameOver
+class GameOverScreen
 {
 public:
-	GameOver(const char* title_, int x_, int y_, int w_, int h_, int flags_);
-	virtual ~GameOver();
+	GameOverScreen(const char* title_, int x_, int y_, int w_, int h_, int flags_);
+	virtual ~GameOverScreen();
 
 	void UpdateGameOver();
 	void HandleEventGameOver();
@@ -22,9 +22,9 @@ public:
 	bool Running();
 
 	static SDL_Event gameoverEvent;
-	//Button Quit;
+	Button Quit;
 	bool isRunning;
-	Audio GameOverButtonsSound;
+	//Audio GameOverButtonsSound;
 
 	ThreadPool threadPool;
 	MemoryPool* memoryPool;
@@ -34,7 +34,5 @@ private:
 	SDL_Renderer* gameoverRenderer;
 	SDL_Surface* gameoverSurface;
 	SDL_Texture* gameoverTexture;
-	Button Retry, ReturnToMainMenu;
 	Mouse mouse;
-	GameOver* gameover;
 };
