@@ -24,6 +24,7 @@ public:
 
 	void HandleEvents();
 	void Update();
+	void InFrustum(); // Returns true if the player is within the camera frustum
 	void ShowLevelCompleteScreen();
 	void ShowLevelFailedScreen();
 	void Render();

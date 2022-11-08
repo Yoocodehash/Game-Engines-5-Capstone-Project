@@ -7,7 +7,7 @@ Level::Level()
 	position.y = destRect.y;
 
 	destRect.w = 3674;
-	destRect.h = 550;
+	destRect.h = 600;
 	destRect.x = 0;
 	destRect.y = 0;
 

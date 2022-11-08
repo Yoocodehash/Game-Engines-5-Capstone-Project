@@ -155,7 +155,7 @@ void Window::Update()
 		if (Camera.x < 0) Camera.x = 0;
 		if (Camera.y < 0) Camera.y = 0;
 		if (Camera.x > Camera.w) Camera.x = Camera.w;
-		if (Camera.y > Camera.h) Camera.y = Camera.h;
+		if (Camera.y > 5) Camera.y = 5;
 
 		EnemyBird[0]->UpdateEnemy();
 	}
@@ -163,6 +163,24 @@ void Window::Update()
 	else 
 	{
 		PauseGame->UpdatePauseMenu();
+	}
+}
+
+void Window::InFrustum()
+{
+	// These numbers are hard-coded to give better results when the player is outside of the camera view
+
+	if (PlayerBird.GetComponent<PlayerTransformComponent>().position.x > -150 // Within left side of frustum
+		&& PlayerBird.GetComponent<PlayerTransformComponent>().position.x < 1545 // Within right side of frustum
+		&& PlayerBird.GetComponent<PlayerTransformComponent>().position.y > -100 // Below top side of frustum
+		&& PlayerBird.GetComponent<PlayerTransformComponent>().position.y < 570) // Above bottom of frustum
+	{
+		std::cout << "The player is inside the camera frustum\n";
+	}
+
+	else // If the player is outside of the frustum
+	{
+		std::cout << "The player is outside the camera frustum\n";
 	}
 }
 

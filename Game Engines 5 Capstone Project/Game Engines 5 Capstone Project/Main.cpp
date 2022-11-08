@@ -151,6 +151,7 @@ int main(int argc, char **argv)
 
                             window->HandleEvents();
                             window->Update();
+                            window->InFrustum();
                             window->ShowLevelCompleteScreen();
                             window->ShowLevelFailedScreen();
                             window->Render();
