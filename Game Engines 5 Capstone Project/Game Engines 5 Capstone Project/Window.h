@@ -39,13 +39,11 @@ public:
 	static SDL_Event event;
 
 	static SDL_Rect Camera;
-	static std::vector<ColliderComponent*> colliders;
 	bool isPaused;
 private:
 	bool isRunning;
 	SDL_Window* window;
 	PauseMenu* PauseGame;
 	LevelCompleteScreen* LevelFinished;
-	GameOverScreen* LevelFailed;
 	Audio anyAudio;
 };

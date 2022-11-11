@@ -137,7 +137,6 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CreditsMenu.cpp" />
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameOverScreen.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelCompleteScreen.cpp" />
@@ -156,7 +155,6 @@
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="CreditsMenu.h" />
-    <ClInclude Include="Enemy.h" />
     <ClInclude Include="EntityComponentSystem.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="GameOverScreen.h" />

@@ -72,9 +72,11 @@ int main(int argc, char **argv)
     memoryPool->AllocateAligned(13, 1);
 
     // Initialize memory files here
-    memory = new Memory({ "Enemy Flappy Bird.png", "Flappy bird sprite.png", "Buttons.png",
+    memory = new Memory({ "Flappy bird sprite.png", "Buttons.png",
         "Credits.png", "Game Over.png", "Level 1.png", "Level Complete.png", "Main Menu.png", "Options Menu.png",
-        "Pause Menu.png" });
+        "Pause Menu.png", "Long Metal Spike Rotated Vertically.png", "Long Metal Spike.png", 
+        "Long Wood Spike Rotated Vertically.png", "Long Wood Spike.png", "Small Metal Spike Rotated Vertically.png",
+        "Small Metal Spike.png", "Small Wood Spike Rotated Vertically.png", "Small Wood Spike.png"});
 
     audio = new Audio();
     audio->LoadAudio(); // Load music before the window opens
