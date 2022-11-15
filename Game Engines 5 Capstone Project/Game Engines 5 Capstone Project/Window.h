@@ -41,6 +41,7 @@ public:
 	static SDL_Rect Camera;
 	bool isPaused;
 private:
+	int ScreenWidth, ScreenHeight;
 	bool isRunning;
 	SDL_Window* window;
 	PauseMenu* PauseGame;

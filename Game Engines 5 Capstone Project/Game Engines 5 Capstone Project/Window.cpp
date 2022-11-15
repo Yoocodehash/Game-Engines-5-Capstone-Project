@@ -13,7 +13,7 @@ Level* level;
 
 SDL_Renderer* Window::renderer = nullptr;
 SDL_Event Window::event;
-SDL_Rect Window::Camera = { 0,0,800, 3500 };
+SDL_Rect Window::Camera = { 0,0,1000, 4 };
 
 auto& PlayerBird(manager.AddEntity());
 auto& wallBlock(manager.AddEntity());
@@ -45,6 +45,9 @@ Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
 	{
 		flags = SDL_WINDOW_FULLSCREEN;
 	}
+
+	ScreenWidth = w;
+	ScreenHeight = h;
 
 	window = SDL_CreateWindow(name, x, y, w, h, flags);
 	renderer = SDL_CreateRenderer(window, -1, 0);
@@ -233,18 +236,74 @@ void Window::Update()
 
 void Window::InFrustum()
 {
-	// These numbers are hard-coded to give better results when the player is outside of the camera view
+	// Initialize player frustum
+	float LeftSide = PlayerBird.GetComponent<PlayerTransformComponent>().position.x;
 
-	if (PlayerBird.GetComponent<PlayerTransformComponent>().position.x > -150 // Within left side of frustum
-		&& PlayerBird.GetComponent<PlayerTransformComponent>().position.x < 1545 // Within right side of frustum
-		&& PlayerBird.GetComponent<PlayerTransformComponent>().position.y > -100 // Below top side of frustum
-		&& PlayerBird.GetComponent<PlayerTransformComponent>().position.y < 570) // Above bottom of frustum
+	float RightSide = PlayerBird.GetComponent<PlayerTransformComponent>().position.x +
+		PlayerBird.GetComponent<PlayerTransformComponent>().width;
+
+	float TopSide = PlayerBird.GetComponent<PlayerTransformComponent>().position.y;
+
+	float BottomSide = PlayerBird.GetComponent<PlayerTransformComponent>().position.y +
+		PlayerBird.GetComponent<PlayerTransformComponent>().height;
+
+	// Initialize camera frustum
+	float Left = ScreenWidth - (ScreenWidth - Camera.x);
+	float Right = ScreenWidth - Camera.x;
+	float Top = ScreenHeight - (ScreenHeight - Camera.y);
+	float Bottom = ScreenHeight - Camera.y;
+
+	// Extract the planes
+	float FrustumLeft = Left - PlayerBird.GetComponent<PlayerTransformComponent>().width - 60;
+	float FrustumRight = Right + PlayerBird.GetComponent<PlayerTransformComponent>().width + 1960;
+	float FrustumTop = Top - PlayerBird.GetComponent<PlayerTransformComponent>().height - 40;
+	float FrustumBottom = Bottom + PlayerBird.GetComponent<PlayerTransformComponent>().height - 20;
+
+	if (LeftSide > FrustumLeft // Within left side of frustum
+		&& RightSide < FrustumRight // Within right side of frustum
+		&& TopSide > FrustumTop // Below top side of frustum
+		&& BottomSide < FrustumBottom) // Above bottom of frustum
 	{
+		// The player is inside the camera frustum
 		std::cout << "The player is inside the camera frustum\n";
+
+		// Determines where the plane is depending on where the player is in relation to the camera
+		if (PlayerBird.GetComponent<PlayerTransformComponent>().position.x > -150 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.x < 1000 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y > -150 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y < 250)
+		{
+			std::cout << "The player is in the top left plane of the camera frustum\n";
+		}
+
+		if (PlayerBird.GetComponent<PlayerTransformComponent>().position.x > -150 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.x < 1000 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y > 250 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y < 600)
+		{
+			std::cout << "The player is in the bottom left plane of the camera frustum\n";
+		}
+
+		if (PlayerBird.GetComponent<PlayerTransformComponent>().position.x > 1000 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.x < 1900 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y > -150 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y < 250)
+		{
+			std::cout << "The player is in the top right plane of the camera frustum\n";
+		}
+
+		if (PlayerBird.GetComponent<PlayerTransformComponent>().position.x > 1000 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.x < 1900 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y > 250 &&
+			PlayerBird.GetComponent<PlayerTransformComponent>().position.y < 600)
+		{
+			std::cout << "The player is in the bottom right plane of the camera frustum\n";
+		}
 	}
 
-	else // If the player is outside of the frustum
+	else
 	{
+		// The player is outside the camera frustum
 		std::cout << "The player is outside the camera frustum\n";
 	}
 }
