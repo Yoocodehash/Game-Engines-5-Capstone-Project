@@ -1,6 +1,9 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_vulkan.h>
+#include <SDL_opengl.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include "ThreadPool.h"
 #include "Memory.h"

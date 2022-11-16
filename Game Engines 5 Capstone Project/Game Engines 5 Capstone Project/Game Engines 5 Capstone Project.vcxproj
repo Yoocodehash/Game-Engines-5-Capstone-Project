@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\GameDev\SDL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\GameDev\SDL\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\GameDev\OpenGL\include;C:\GameDev\Vulkan\include;C:\GameDev\SDL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\GameDev\OpenGL\lib\x64;C:\GameDev\Vulkan\lib;C:\GameDev\SDL\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2main.lib;SDL2test.lib;SDL2_mixer.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2main.lib;SDL2test.lib;SDL2_mixer.lib;glew32.lib;glew32s.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

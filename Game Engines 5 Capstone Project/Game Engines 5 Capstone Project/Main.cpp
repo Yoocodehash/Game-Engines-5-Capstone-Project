@@ -18,7 +18,7 @@ OptionsMenu* optionsMenu;
 CreditsMenu* creditsMenu;
 
 SDL_Window* win = SDL_CreateWindow("Main Menu", SDL_WINDOWPOS_UNDEFINED,
-    SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+    SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
 
 SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
@@ -28,10 +28,10 @@ SDL_Texture* mainMenuTexture = SDL_CreateTextureFromSurface(ren, mainMenuSurface
 double delta = .0001;
 double time2 = SDL_GetTicks();
 
-int main(int argc, char **argv) 
+int main(int argc, char** argv)
 {
-	// Initialize memory pool and audio here
-	memoryPool = new MemoryPool();
+    // Initialize memory pool and audio here
+    memoryPool = new MemoryPool();
 
     Mouse mouse;
 
@@ -74,14 +74,14 @@ int main(int argc, char **argv)
     // Initialize memory files here
     memory = new Memory({ "Flappy bird sprite.png", "Buttons.png",
         "Credits.png", "Game Over.png", "Level 1.png", "Level Complete.png", "Main Menu.png", "Options Menu.png",
-        "Pause Menu.png", "Long Metal Spike Rotated Vertically.png", "Long Metal Spike.png", 
+        "Pause Menu.png", "Long Metal Spike Rotated Vertically.png", "Long Metal Spike.png",
         "Long Wood Spike Rotated Vertically.png", "Long Wood Spike.png", "Small Metal Spike Rotated Vertically.png",
-        "Small Metal Spike.png", "Small Wood Spike Rotated Vertically.png", "Small Wood Spike.png"});
+        "Small Metal Spike.png", "Small Wood Spike Rotated Vertically.png", "Small Wood Spike.png" });
 
     audio = new Audio();
     audio->LoadAudio(); // Load music before the window opens
 
-    while (true) 
+    while (true)
     {
         // If music isn't playing
         if (Mix_PlayingMusic() == 0)
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
                 break;
 
             case SDL_KEYUP:
-                if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) 
+                if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
                 {
                     threadPool.Finish();
                     memoryPool->ReleaseMemoryPool();
@@ -138,7 +138,8 @@ int main(int argc, char **argv)
                         SDL_DestroyWindow(win);
 
                         // Initialize window when the start button is pressed
-                        window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, false);
+                        window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600,
+                            SDL_WINDOW_OPENGL);
 
                         // While the window is running, handle events, update and render the whole window
                         while (window->Running())
@@ -151,11 +152,11 @@ int main(int argc, char **argv)
                                 Mix_PlayMusic(audio->GameMusic, -1);
                             }
 
-                            window->HandleEvents();
+                            window->HandleEvents(SDL_WINDOW_OPENGL);
                             window->Update();
                             window->InFrustum();
-                            window->ShowLevelCompleteScreen();
-                            window->ShowLevelFailedScreen();
+                            window->ShowLevelCompleteScreen(SDL_WINDOW_OPENGL);
+                            window->ShowLevelFailedScreen(SDL_WINDOW_OPENGL);
                             window->Render();
                         }
 
@@ -185,7 +186,7 @@ int main(int argc, char **argv)
 
                         // Initialize window when the start button is pressed
                         optionsMenu = new OptionsMenu("Options", SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+                            SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
 
 
                         while (optionsMenu->Running())
@@ -212,8 +213,8 @@ int main(int argc, char **argv)
                         SDL_DestroyWindow(win);
 
                         // Initialize window when the start button is pressed
-                        creditsMenu = new CreditsMenu("Flying Bird Credits", SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED, 800, 600, IMG_INIT_PNG);
+                        creditsMenu = new CreditsMenu("Flying Bird Credits", SDL_WINDOWPOS_CENTERED, 
+                            SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
 
                         while (creditsMenu->Running())
                         {
@@ -239,7 +240,7 @@ int main(int argc, char **argv)
                     }
 
                     // If you choose to exit the main menu, the above functions won't show up in the console at all
-                    if (exitButton.isSelected) 
+                    if (exitButton.isSelected)
                     {
                         threadPool.Finish();
                         memoryPool->ReleaseMemoryPool();

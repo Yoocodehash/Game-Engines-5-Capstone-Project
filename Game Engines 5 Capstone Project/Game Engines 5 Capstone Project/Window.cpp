@@ -37,19 +37,71 @@ auto& spike16(manager.AddEntity());
 auto& spike17(manager.AddEntity());
 auto& spike18(manager.AddEntity());
 
-Window::Window(const char* name, int x, int y, int w, int h, bool fullScreen)
+Window::Window(const char* name, int x, int y, int w, int h, int flags_)
 {
-	int flags = 0;
-
-	if (fullScreen)
-	{
-		flags = SDL_WINDOW_FULLSCREEN;
-	}
-
 	ScreenWidth = w;
 	ScreenHeight = h;
 
-	window = SDL_CreateWindow(name, x, y, w, h, flags);
+	if (flags_ == SDL_WINDOW_OPENGL)
+	{
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+		SDL_GLContext mainContext = SDL_GL_CreateContext(window);
+
+		while (isRunning)
+		{
+			SDL_GL_SwapWindow(window);
+		}
+
+		std::cout << "\nGame level is running in OpenGL window\n";
+	}
+
+	if (flags_ == SDL_WINDOW_VULKAN)
+	{
+		uint32_t extensionCount;
+		SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, nullptr);
+		std::vector<const char*> extensionNames(extensionCount);
+		SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, extensionNames.data());
+
+		VkApplicationInfo appInfo{};
+		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		appInfo.pApplicationName = "Flying Bird";
+		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.pEngineName = "Vulkan Engine";
+		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.apiVersion = VK_API_VERSION_1_0;
+
+		std::vector<const char*> layerNames{};
+		// uncomment below if you want to use validation layers
+		//layerNames.push_back("VK_LAYER_LUNARG_standard_validation");
+
+		VkInstanceCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		info.pApplicationInfo = &appInfo;
+		info.enabledLayerCount = layerNames.size();
+		info.ppEnabledLayerNames = layerNames.data();
+		info.enabledExtensionCount = extensionNames.size();
+		info.ppEnabledExtensionNames = extensionNames.data();
+
+		VkResult res;
+		VkInstance instance;
+		res = vkCreateInstance(&info, nullptr, &instance);
+		if (res != VK_SUCCESS) {
+			// do some error checking
+		}
+
+		VkSurfaceKHR surface;
+		if (!SDL_Vulkan_CreateSurface(window, instance, &surface)) {
+			// failed to create a surface!
+		}
+
+		std::cout << "\nGame level is running in Vulkan window\n";
+	}
+
+	window = SDL_CreateWindow(name, x, y, w, h, flags_);
 	renderer = SDL_CreateRenderer(window, -1, 0);
 
 	if (renderer)
@@ -136,13 +188,13 @@ Window::~Window()
 
 }
 
-void Window::HandleEvents()
+void Window::HandleEvents(int flags_)
 {
 	if (SDL_PollEvent(&event))
 	{
 		switch (event.type)
 		{
-		// The window will either close if you press ESC or press the X button with the mouse
+			// The window will either close if you press ESC or press the X button with the mouse
 		case SDL_QUIT:
 			isRunning = false;
 			break;
@@ -150,7 +202,7 @@ void Window::HandleEvents()
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)
 			{
-			// I included ESC key because if you're going to play in full screen then you can't press X and you're stuck
+				// I included ESC key because if you're going to play in full screen then you can't press X and you're stuck
 			case SDLK_ESCAPE:
 				isRunning = false;
 				break;
@@ -162,10 +214,10 @@ void Window::HandleEvents()
 				Mix_HaltChannel(-1);
 
 				PauseGame = new PauseMenu("Pause Menu", SDL_WINDOWPOS_CENTERED,
-					SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+					SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 				Mix_PlayChannel(-1, anyAudio.PauseSound, 0);
-				
+
 				while (PauseGame->Running())
 				{
 
@@ -186,7 +238,7 @@ void Window::HandleEvents()
 					}
 				}
 
-					PauseGame->RenderPauseMenu();
+				PauseGame->RenderPauseMenu();
 				}
 
 				if (!PauseGame->Running())
@@ -228,7 +280,7 @@ void Window::Update()
 		if (Camera.y > 5) Camera.y = 5;
 	}
 
-	else 
+	else
 	{
 		PauseGame->UpdatePauseMenu();
 	}
@@ -308,7 +360,7 @@ void Window::InFrustum()
 	}
 }
 
-void Window::ShowLevelCompleteScreen()
+void Window::ShowLevelCompleteScreen(int flags_)
 {
 	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
 		wallBlock.GetComponent<ColliderComponent>().collider))
@@ -318,7 +370,7 @@ void Window::ShowLevelCompleteScreen()
 		Mix_HaltChannel(-1);
 
 		LevelFinished = new LevelCompleteScreen("Level Completed Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		Mix_PlayChannel(-1, anyAudio.LevelCompletionSound, 0);
 
@@ -356,13 +408,13 @@ void Window::ShowLevelCompleteScreen()
 	}
 }
 
-void Window::ShowLevelFailedScreen()
+void Window::ShowLevelFailedScreen(int flags_)
 {
 	if (Collision::AABB(PlayerBird.GetComponent<ColliderComponent>().collider,
 		wallBlock2.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -409,7 +461,7 @@ void Window::ShowLevelFailedScreen()
 		spike1.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed2 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -456,7 +508,7 @@ void Window::ShowLevelFailedScreen()
 		spike2.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed3 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -503,7 +555,7 @@ void Window::ShowLevelFailedScreen()
 		spike3.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed4 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -550,7 +602,7 @@ void Window::ShowLevelFailedScreen()
 		spike4.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed5 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -597,7 +649,7 @@ void Window::ShowLevelFailedScreen()
 		spike5.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed6 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -644,7 +696,7 @@ void Window::ShowLevelFailedScreen()
 		spike6.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed7 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -691,7 +743,7 @@ void Window::ShowLevelFailedScreen()
 		spike7.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed8 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -738,7 +790,7 @@ void Window::ShowLevelFailedScreen()
 		spike8.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed9 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -785,7 +837,7 @@ void Window::ShowLevelFailedScreen()
 		spike9.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed10 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -832,7 +884,7 @@ void Window::ShowLevelFailedScreen()
 		spike10.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed11 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -879,7 +931,7 @@ void Window::ShowLevelFailedScreen()
 		spike11.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed12 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -926,7 +978,7 @@ void Window::ShowLevelFailedScreen()
 		spike12.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed13 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -973,7 +1025,7 @@ void Window::ShowLevelFailedScreen()
 		spike13.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed14 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -1020,7 +1072,7 @@ void Window::ShowLevelFailedScreen()
 		spike14.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed15 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -1067,7 +1119,7 @@ void Window::ShowLevelFailedScreen()
 		spike15.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed16 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -1114,7 +1166,7 @@ void Window::ShowLevelFailedScreen()
 		spike16.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed17 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -1161,7 +1213,7 @@ void Window::ShowLevelFailedScreen()
 		spike17.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed18 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();
@@ -1208,7 +1260,7 @@ void Window::ShowLevelFailedScreen()
 		spike18.GetComponent<ColliderComponent>().collider))
 	{
 		GameOverScreen* LevelFailed19 = new GameOverScreen("Game Over Screen", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+			SDL_WINDOWPOS_CENTERED, 800, 600, flags_);
 
 		//Stop the music and sound playing in the game
 		Mix_HaltMusic();

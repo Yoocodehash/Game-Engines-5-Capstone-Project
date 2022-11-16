@@ -2,6 +2,9 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_vulkan.h>
+#include <SDL_opengl.h>
+#include <vulkan/vulkan.hpp>
 #include "Button.h"
 #include "ThreadPool.h"
 #include "Memory.h"

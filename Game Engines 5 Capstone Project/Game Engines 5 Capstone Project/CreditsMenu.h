@@ -1,7 +1,11 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_opengl.h>
+#include <SDL_vulkan.h>
+#include <vulkan/vulkan.h>
 #include <string>
+#include <set>
 #include "ThreadPool.h"
 #include "Memory.h"
 
