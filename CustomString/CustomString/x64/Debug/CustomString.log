@@ -1,0 +1,3 @@
+﻿  CustomString.cpp
+C:\GitHub\Game-Engines-5-Capstone-Project\CustomString\CustomString\CustomString.cpp(40,34): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\CustomString\CustomString\CustomString.cpp(49,43): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
