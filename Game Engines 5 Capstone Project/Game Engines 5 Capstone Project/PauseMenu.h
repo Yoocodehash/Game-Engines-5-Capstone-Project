@@ -6,6 +6,7 @@
 #include <gl/GLU.h>
 #include <vulkan/vulkan.h>
 #include "Button.h"
+#include "Profiler.h"
 #include "ThreadPool.h"
 #include "Memory.h"
 #include "OptionsMenu.h"
@@ -39,6 +40,7 @@ private:
 	SDL_Texture* pauseTexture;
 	Button Resume, Options;
 	Mouse mouse;
+	Profiler* profiler;
 	OptionsMenu* optionsMenu;
 };
 

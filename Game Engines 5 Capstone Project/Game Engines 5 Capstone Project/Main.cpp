@@ -18,7 +18,7 @@ OptionsMenu* optionsMenu;
 CreditsMenu* creditsMenu;
 
 SDL_Window* win = SDL_CreateWindow("Main Menu", SDL_WINDOWPOS_UNDEFINED,
-    SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
+    SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
 
 SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
 
                         // Initialize window when the start button is pressed
                         window = new Window("Flying Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600,
-                            SDL_WINDOW_OPENGL);
+                            0);
 
                         // While the window is running, handle events, update and render the whole window
                         while (window->Running())
@@ -152,11 +152,11 @@ int main(int argc, char** argv)
                                 Mix_PlayMusic(audio->GameMusic, -1);
                             }
 
-                            window->HandleEvents(SDL_WINDOW_OPENGL);
+                            window->HandleEvents(0);
                             window->Update();
                             window->InFrustum();
-                            window->ShowLevelCompleteScreen(SDL_WINDOW_OPENGL);
-                            window->ShowLevelFailedScreen(SDL_WINDOW_OPENGL);
+                            window->ShowLevelCompleteScreen(0);
+                            window->ShowLevelFailedScreen(0);
                             window->Render();
                         }
 
@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 
                         // Initialize window when the start button is pressed
                         optionsMenu = new OptionsMenu("Options", SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
+                            SDL_WINDOWPOS_CENTERED, 800, 600, 0);
 
 
                         while (optionsMenu->Running())
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 
                         // Initialize window when the start button is pressed
                         creditsMenu = new CreditsMenu("Flying Bird Credits", SDL_WINDOWPOS_CENTERED, 
-                            SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
+                            SDL_WINDOWPOS_CENTERED, 800, 600, 0);
 
                         while (creditsMenu->Running())
                         {

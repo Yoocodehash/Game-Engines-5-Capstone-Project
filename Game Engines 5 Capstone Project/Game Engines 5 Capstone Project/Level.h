@@ -1,6 +1,7 @@
 #pragma once
 #include "Window.h"
 #include "Vec2.h"
+#include "Profiler.h"
 
 class Level
 {
@@ -16,5 +17,6 @@ public:
 private:
 	SDL_Rect srcRect, destRect;
 	SDL_Texture* level;
+	Profiler* profiler;
 };
 

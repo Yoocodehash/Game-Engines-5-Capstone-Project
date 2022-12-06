@@ -12,6 +12,7 @@
 #include "PauseMenu.h"
 #include "LevelCompleteScreen.h"
 #include "GameOverScreen.h"
+#include "Profiler.h"
 #include "Audio.h"
 
 class ColliderComponent;
@@ -47,5 +48,6 @@ private:
 	SDL_Window* window;
 	PauseMenu* PauseGame;
 	LevelCompleteScreen* LevelFinished;
+	Profiler* profiler;
 	Audio anyAudio;
 };

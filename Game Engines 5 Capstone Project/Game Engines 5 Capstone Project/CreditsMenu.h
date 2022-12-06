@@ -7,6 +7,7 @@
 #include <string>
 #include <set>
 #include "ThreadPool.h"
+#include "Profiler.h"
 #include "Memory.h"
 
 class CreditsMenu
@@ -27,6 +28,8 @@ private:
     SDL_Renderer* creditsRenderer;
     SDL_Surface* creditsSurface;
     SDL_Texture* creditsTexture;
+
+    Profiler* profiler;
 
     ThreadPool threadPool;
     MemoryPool* memoryPool;

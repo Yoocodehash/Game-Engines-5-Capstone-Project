@@ -8,6 +8,7 @@
 #include <string>
 #include <cstddef>
 #include <thread>
+#include "Profiler.h"
 
 class MemoryPool {
 public:
@@ -52,6 +53,7 @@ public:
 	~Memory();
 
 private:
+	Profiler* profiler;
 	std::vector<const char*> file;
 
 };

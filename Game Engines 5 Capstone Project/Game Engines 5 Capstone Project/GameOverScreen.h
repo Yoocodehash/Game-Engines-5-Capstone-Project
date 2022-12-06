@@ -7,6 +7,7 @@
 #include <vulkan/vulkan.h>
 #include "ThreadPool.h"
 #include "Memory.h"
+#include "Profiler.h"
 #include "OptionsMenu.h"
 #include "Audio.h"
 
@@ -36,5 +37,6 @@ private:
 	SDL_Renderer* gameoverRenderer;
 	SDL_Surface* gameoverSurface;
 	SDL_Texture* gameoverTexture;
+	Profiler* profiler;
 	Mouse mouse;
 };

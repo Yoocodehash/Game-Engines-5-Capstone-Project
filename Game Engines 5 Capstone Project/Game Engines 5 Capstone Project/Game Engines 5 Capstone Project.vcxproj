@@ -144,6 +144,7 @@
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="OptionsMenu.cpp" />
     <ClCompile Include="PauseMenu.cpp" />
+    <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Vec2.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="OptionsMenu.h" />
     <ClInclude Include="PauseMenu.h" />
     <ClInclude Include="PlayerSpriteComponent.h" />
+    <ClInclude Include="Profiler.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="PlayerTransformComponent.h" />
     <ClInclude Include="ThreadPool.h" />

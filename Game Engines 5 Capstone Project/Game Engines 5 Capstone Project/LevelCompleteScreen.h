@@ -9,6 +9,7 @@
 #include "ThreadPool.h"
 #include "Memory.h"
 #include "Audio.h"
+#include "Profiler.h"
 
 class LevelCompleteScreen
 {
@@ -36,5 +37,6 @@ private:
 	SDL_Surface* LevelCompleteSurface;
 	SDL_Texture* LevelCompleteTexture;
 	Audio ButtonSound;
+	Profiler* profiler;
 	Mouse mouse;
 };
