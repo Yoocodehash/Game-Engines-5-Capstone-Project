@@ -48,7 +48,7 @@ private:
 	bool isRunning;
 	SDL_Window* window;
 	PauseMenu* PauseGame;
-	ParticleEffects* p;
+	ParticleEffects* particle;
 	LevelCompleteScreen* LevelFinished;
 	Profiler* profiler;
 	Audio anyAudio;

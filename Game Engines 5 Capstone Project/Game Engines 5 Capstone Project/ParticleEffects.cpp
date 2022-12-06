@@ -13,13 +13,13 @@ inline float Rad2Deg(float a)
     return a * 57.29577951f;
 }
 
-inline float clampf(float value, float min_inclusive, float max_inclusive)
+inline float clampf(float value, float min_inclusive, float maxinclusive)
 {
-    if (min_inclusive > max_inclusive)
+    if (min_inclusive > maxinclusive)
     {
-        std::swap(min_inclusive, max_inclusive);
+        std::swap(min_inclusive, maxinclusive);
     }
-    return value < min_inclusive ? min_inclusive : value < max_inclusive ? value : max_inclusive;
+    return value < min_inclusive ? min_inclusive : value < maxinclusive ? value : maxinclusive;
 }
 
 inline void normalize_point(float x, float y, Point* out)
@@ -66,11 +66,11 @@ void ParticleEffects::ParticleSystem()
 
 bool ParticleEffects::initWithTotalParticles(int numberOfParticles)
 {
-    _totalParticles = numberOfParticles;
-    _isActive = true;
-    _emitterMode = Mode::GRAVITY;
-    _isAutoRemoveOnFinish = false;
-    _transformSystemDirty = false;
+    totalParticles = numberOfParticles;
+    isParticleActive = true;
+    emitterMode = Mode::GRAVITY;
+    isAutoRemovedOnFinish = false;
+    isTransformSystemDirty = false;
 
     resetTotalParticles(numberOfParticles);
 
@@ -79,9 +79,9 @@ bool ParticleEffects::initWithTotalParticles(int numberOfParticles)
 
 void ParticleEffects::resetTotalParticles(int numberOfParticles)
 {
-    if (particle_data_.size() < numberOfParticles)
+    if (particleInfo.size() < numberOfParticles)
     {
-        particle_data_.resize(numberOfParticles);
+        particleInfo.resize(numberOfParticles);
     }
 }
 
@@ -91,54 +91,54 @@ void ParticleEffects::DestroyParticleSystem()
 
 void ParticleEffects::addParticles(int count)
 {
-    if (_paused)
+    if (isParticlePaused)
     {
         return;
     }
     uint32_t RANDSEED = rand();
 
-    int start = _particleCount;
-    _particleCount += count;
+    int start = particleCount;
+    particleCount += count;
 
     //life
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        float theLife = _life + _lifeVar * RANDOM_M11(&RANDSEED);
-        particle_data_[i].timeToLive = (std::max)(0.0f, theLife);
+        float theLife = life + lifeVar * RANDOM_M11(&RANDSEED);
+        particleInfo[i].timeToLive = (std::max)(0.0f, theLife);
     }
 
     //position
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        particle_data_[i].posx = _sourcePosition.x + _posVar.x * RANDOM_M11(&RANDSEED);
+        particleInfo[i].posx = sourcePos.x + posVariance.x * RANDOM_M11(&RANDSEED);
     }
 
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        particle_data_[i].posy = _sourcePosition.y + _posVar.y * RANDOM_M11(&RANDSEED);
+        particleInfo[i].posy = sourcePos.y + posVariance.y * RANDOM_M11(&RANDSEED);
     }
 
     //color
 #define SET_COLOR(c, b, v)                                                 \
-    for (int i = start; i < _particleCount; ++i)                           \
+    for (int i = start; i < particleCount; ++i)                           \
     {                                                                      \
-        particle_data_[i].c = clampf(b + v * RANDOM_M11(&RANDSEED), 0, 1); \
+        particleInfo[i].c = clampf(b + v * RANDOM_M11(&RANDSEED), 0, 1); \
     }
 
-    SET_COLOR(colorR, _startColor.r, _startColorVar.r);
-    SET_COLOR(colorG, _startColor.g, _startColorVar.g);
-    SET_COLOR(colorB, _startColor.b, _startColorVar.b);
-    SET_COLOR(colorA, _startColor.a, _startColorVar.a);
+    SET_COLOR(colorR, startColor.r, startColorVar.r);
+    SET_COLOR(colorG, startColor.g, startColorVar.g);
+    SET_COLOR(colorB, startColor.b, startColorVar.b);
+    SET_COLOR(colorA, startColor.a, startColorVar.a);
 
-    SET_COLOR(deltaColorR, _endColor.r, _endColorVar.r);
-    SET_COLOR(deltaColorG, _endColor.g, _endColorVar.g);
-    SET_COLOR(deltaColorB, _endColor.b, _endColorVar.b);
-    SET_COLOR(deltaColorA, _endColor.a, _endColorVar.a);
+    SET_COLOR(deltaColorR, endColor.r, endColorVar.r);
+    SET_COLOR(deltaColorG, endColor.g, endColorVar.g);
+    SET_COLOR(deltaColorB, endColor.b, endColorVar.b);
+    SET_COLOR(deltaColorA, endColor.a, endColorVar.a);
 
 #define SET_DELTA_COLOR(c, dc)                                                                              \
-    for (int i = start; i < _particleCount; ++i)                                                            \
+    for (int i = start; i < particleCount; ++i)                                                            \
     {                                                                                                       \
-        particle_data_[i].dc = (particle_data_[i].dc - particle_data_[i].c) / particle_data_[i].timeToLive; \
+        particleInfo[i].dc = (particleInfo[i].dc - particleInfo[i].c) / particleInfo[i].timeToLive; \
     }
 
     SET_DELTA_COLOR(colorR, deltaColorR);
@@ -147,94 +147,94 @@ void ParticleEffects::addParticles(int count)
     SET_DELTA_COLOR(colorA, deltaColorA);
 
     //size
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        particle_data_[i].size = _startSize + _startSizeVar * RANDOM_M11(&RANDSEED);
-        particle_data_[i].size = (std::max)(0.0f, particle_data_[i].size);
+        particleInfo[i].size = startSize + startSizeVar * RANDOM_M11(&RANDSEED);
+        particleInfo[i].size = (std::max)(0.0f, particleInfo[i].size);
     }
 
-    if (_endSize != START_SIZE_EQUAL_TO_END_SIZE)
+    if (endSize != START_SIZE_EQUAL_TO_END_SIZE)
     {
-        for (int i = start; i < _particleCount; ++i)
+        for (int i = start; i < particleCount; ++i)
         {
-            float endSize = _endSize + _endSizeVar * RANDOM_M11(&RANDSEED);
-            endSize = (std::max)(0.0f, endSize);
-            particle_data_[i].deltaSize = (endSize - particle_data_[i].size) / particle_data_[i].timeToLive;
+            float localEndSize = endSize + endSizeVar * RANDOM_M11(&RANDSEED);
+            localEndSize = (std::max)(0.0f, localEndSize);
+            particleInfo[i].deltaSize = (localEndSize - particleInfo[i].size) / particleInfo[i].timeToLive;
         }
     }
     else
     {
-        for (int i = start; i < _particleCount; ++i)
+        for (int i = start; i < particleCount; ++i)
         {
-            particle_data_[i].deltaSize = 0.0f;
+            particleInfo[i].deltaSize = 0.0f;
         }
     }
 
     // rotation
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        particle_data_[i].rotation = _startSpin + _startSpinVar * RANDOM_M11(&RANDSEED);
+        particleInfo[i].rotation = startSpin + startSpinVar * RANDOM_M11(&RANDSEED);
     }
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        float endA = _endSpin + _endSpinVar * RANDOM_M11(&RANDSEED);
-        particle_data_[i].deltaRotation = (endA - particle_data_[i].rotation) / particle_data_[i].timeToLive;
+        float endA = endSpin + endSpinVar * RANDOM_M11(&RANDSEED);
+        particleInfo[i].deltaRotation = (endA - particleInfo[i].rotation) / particleInfo[i].timeToLive;
     }
 
     // position
     Vector2 pos;
-    pos.x = x_;
-    pos.y = y_;
+    pos.x = x;
+    pos.y = y;
 
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        particle_data_[i].startPosX = pos.x;
+        particleInfo[i].startPosX = pos.x;
     }
-    for (int i = start; i < _particleCount; ++i)
+    for (int i = start; i < particleCount; ++i)
     {
-        particle_data_[i].startPosY = pos.y;
+        particleInfo[i].startPosY = pos.y;
     }
 
     // Mode Gravity: A
-    if (_emitterMode == Mode::GRAVITY)
+    if (emitterMode == Mode::GRAVITY)
     {
 
         // radial accel
-        for (int i = start; i < _particleCount; ++i)
+        for (int i = start; i < particleCount; ++i)
         {
-            particle_data_[i].gravityMode.radialAccel = gravityMode.radialAccel + gravityMode.radialAccelVar * RANDOM_M11(&RANDSEED);
+            particleInfo[i].gravityMode.radialAccel = gravityMode.radialAccel + gravityMode.radialAccelVar * RANDOM_M11(&RANDSEED);
         }
 
         // tangential accel
-        for (int i = start; i < _particleCount; ++i)
+        for (int i = start; i < particleCount; ++i)
         {
-            particle_data_[i].gravityMode.tangentialAccel = gravityMode.tangentialAccel + gravityMode.tangentialAccelVar * RANDOM_M11(&RANDSEED);
+            particleInfo[i].gravityMode.tangentialAccel = gravityMode.tangentialAccel + gravityMode.tangentialAccelVar * RANDOM_M11(&RANDSEED);
         }
 
         // rotation is dir
         if (gravityMode.rotationIsDir)
         {
-            for (int i = start; i < _particleCount; ++i)
+            for (int i = start; i < particleCount; ++i)
             {
-                float a = Deg2Rad(_angle + _angleVar * RANDOM_M11(&RANDSEED));
+                float a = Deg2Rad(angle + angleVar * RANDOM_M11(&RANDSEED));
                 Vector2 v(cosf(a), sinf(a));
                 float s = gravityMode.speed + gravityMode.speedVar * RANDOM_M11(&RANDSEED);
                 Vector2 dir = v * s;
-                particle_data_[i].gravityMode.dirX = dir.x;    //v * s ;
-                particle_data_[i].gravityMode.dirY = dir.y;
-                particle_data_[i].rotation = -Rad2Deg(dir.getAngle());
+                particleInfo[i].gravityMode.dirX = dir.x;    //v * s ;
+                particleInfo[i].gravityMode.dirY = dir.y;
+                particleInfo[i].rotation = -Rad2Deg(dir.getAngle());
             }
         }
         else
         {
-            for (int i = start; i < _particleCount; ++i)
+            for (int i = start; i < particleCount; ++i)
             {
-                float a = Deg2Rad(_angle + _angleVar * RANDOM_M11(&RANDSEED));
+                float a = Deg2Rad(angle + angleVar * RANDOM_M11(&RANDSEED));
                 Vector2 v(cosf(a), sinf(a));
                 float s = gravityMode.speed + gravityMode.speedVar * RANDOM_M11(&RANDSEED);
                 Vector2 dir = v * s;
-                particle_data_[i].gravityMode.dirX = dir.x;    //v * s ;
-                particle_data_[i].gravityMode.dirY = dir.y;
+                particleInfo[i].gravityMode.dirX = dir.x;    //v * s ;
+                particleInfo[i].gravityMode.dirY = dir.y;
             }
         }
     }
@@ -242,34 +242,34 @@ void ParticleEffects::addParticles(int count)
     // Mode Radius: B
     else
     {
-        for (int i = start; i < _particleCount; ++i)
+        for (int i = start; i < particleCount; ++i)
         {
-            particle_data_[i].radiusMode.radius = radiusMode.startRadius + radiusMode.startRadiusVar * RANDOM_M11(&RANDSEED);
+            particleInfo[i].radiusMode.radius = radiusMode.startRadius + radiusMode.startRadiusVar * RANDOM_M11(&RANDSEED);
         }
 
-        for (int i = start; i < _particleCount; ++i)
+        for (int i = start; i < particleCount; ++i)
         {
-            particle_data_[i].radiusMode.angle = Deg2Rad(_angle + _angleVar * RANDOM_M11(&RANDSEED));
+            particleInfo[i].radiusMode.angle = Deg2Rad(angle + angleVar * RANDOM_M11(&RANDSEED));
         }
 
-        for (int i = start; i < _particleCount; ++i)
+        for (int i = start; i < particleCount; ++i)
         {
-            particle_data_[i].radiusMode.degreesPerSecond = Deg2Rad(radiusMode.rotatePerSecond + radiusMode.rotatePerSecondVar * RANDOM_M11(&RANDSEED));
+            particleInfo[i].radiusMode.degreesPerSecond = Deg2Rad(radiusMode.rotatePerSecond + radiusMode.rotatePerSecondVar * RANDOM_M11(&RANDSEED));
         }
 
         if (radiusMode.endRadius == START_RADIUS_EQUAL_TO_END_RADIUS)
         {
-            for (int i = start; i < _particleCount; ++i)
+            for (int i = start; i < particleCount; ++i)
             {
-                particle_data_[i].radiusMode.deltaRadius = 0.0f;
+                particleInfo[i].radiusMode.deltaRadius = 0.0f;
             }
         }
         else
         {
-            for (int i = start; i < _particleCount; ++i)
+            for (int i = start; i < particleCount; ++i)
             {
                 float endRadius = radiusMode.endRadius + radiusMode.endRadiusVar * RANDOM_M11(&RANDSEED);
-                particle_data_[i].radiusMode.deltaRadius = (endRadius - particle_data_[i].radiusMode.radius) / particle_data_[i].timeToLive;
+                particleInfo[i].radiusMode.deltaRadius = (endRadius - particleInfo[i].radiusMode.radius) / particleInfo[i].timeToLive;
             }
         }
     }
@@ -277,100 +277,100 @@ void ParticleEffects::addParticles(int count)
 
 void ParticleEffects::stopSystem()
 {
-    _isActive = false;
-    _elapsed = _duration;
-    _emitCounter = 0;
+    isParticleActive = false;
+    elapsedTIme = duration;
+    emitterCounter = 0;
 }
 
 void ParticleEffects::resetSystem()
 {
-    _isActive = true;
-    _elapsed = 0;
-    for (int i = 0; i < _particleCount; ++i)
+    isParticleActive = true;
+    elapsedTIme = 0;
+    for (int i = 0; i < particleCount; ++i)
     {
-        //particle_data_[i].timeToLive = 0.0f;
+        //particleInfo[i].timeToLive = 0.0f;
     }
 }
 
 bool ParticleEffects::isFull()
 {
-    return (_particleCount == _totalParticles);
+    return (particleCount == totalParticles);
 }
 
 // ParticleEffects - MainLoop
 void ParticleEffects::update()
 {
     float dt = 1.0 / 25;
-    if (_isActive && _emissionRate)
+    if (isParticleActive && emissionRate)
     {
-        float rate = 1.0f / _emissionRate;
-        int totalParticles = _totalParticles;
+        float rate = 1.0f / emissionRate;
+        int totalNumOfParticles = totalParticles;
 
         //issue #1201, prevent bursts of particles, due to too high emitCounter
-        if (_particleCount < totalParticles)
+        if (particleCount < totalNumOfParticles)
         {
-            _emitCounter += dt;
-            if (_emitCounter < 0.f)
+            emitterCounter += dt;
+            if (emitterCounter < 0.f)
             {
-                _emitCounter = 0.f;
+                emitterCounter = 0.f;
             }
         }
 
-        int emitCount = (std::min)(1.0f * (totalParticles - _particleCount), _emitCounter / rate);
+        int emitCount = (std::min)(1.0f * (totalNumOfParticles - particleCount), emitterCounter / rate);
         addParticles(emitCount);
-        _emitCounter -= rate * emitCount;
+        emitterCounter -= rate * emitCount;
 
-        _elapsed += dt;
-        if (_elapsed < 0.f)
+        elapsedTIme += dt;
+        if (elapsedTIme < 0.f)
         {
-            _elapsed = 0.f;
+            elapsedTIme = 0.f;
         }
-        if (_duration != DURATION_INFINITY && _duration < _elapsed)
+        if (duration != DURATION_INFINITY && duration < elapsedTIme)
         {
             this->stopSystem();
         }
     }
 
-    for (int i = 0; i < _particleCount; ++i)
+    for (int i = 0; i < particleCount; ++i)
     {
-        particle_data_[i].timeToLive -= dt;
+        particleInfo[i].timeToLive -= dt;
     }
 
     // rebirth
-    for (int i = 0; i < _particleCount; ++i)
+    for (int i = 0; i < particleCount; ++i)
     {
-        if (particle_data_[i].timeToLive <= 0.0f)
+        if (particleInfo[i].timeToLive <= 0.0f)
         {
-            int j = _particleCount - 1;
-            //while (j > 0 && particle_data_[i].timeToLive <= 0)
+            int j = particleCount - 1;
+            //while (j > 0 && particleInfo[i].timeToLive <= 0)
             //{
-            //    _particleCount--;
+            //    particleCount--;
             //    j--;
             //}
-            particle_data_[i] = particle_data_[_particleCount - 1];
-            --_particleCount;
+            particleInfo[i] = particleInfo[particleCount - 1];
+            --particleCount;
         }
     }
 
-    if (_emitterMode == Mode::GRAVITY)
+    if (emitterMode == Mode::GRAVITY)
     {
-        for (int i = 0; i < _particleCount; ++i)
+        for (int i = 0; i < particleCount; ++i)
         {
             Point tmp, radial = { 0.0f, 0.0f }, tangential;
 
             // radial acceleration
-            if (particle_data_[i].posx || particle_data_[i].posy)
+            if (particleInfo[i].posx || particleInfo[i].posy)
             {
-                normalize_point(particle_data_[i].posx, particle_data_[i].posy, &radial);
+                normalize_point(particleInfo[i].posx, particleInfo[i].posy, &radial);
             }
             tangential = radial;
-            radial.x *= particle_data_[i].gravityMode.radialAccel;
-            radial.y *= particle_data_[i].gravityMode.radialAccel;
+            radial.x *= particleInfo[i].gravityMode.radialAccel;
+            radial.y *= particleInfo[i].gravityMode.radialAccel;
 
             // tangential acceleration
             std::swap(tangential.x, tangential.y);
-            tangential.x *= -particle_data_[i].gravityMode.tangentialAccel;
-            tangential.y *= particle_data_[i].gravityMode.tangentialAccel;
+            tangential.x *= -particleInfo[i].gravityMode.tangentialAccel;
+            tangential.y *= particleInfo[i].gravityMode.tangentialAccel;
 
             // (gravity + radial + tangential) * dt
             tmp.x = radial.x + tangential.x + gravityMode.gravity.x;
@@ -378,78 +378,78 @@ void ParticleEffects::update()
             tmp.x *= dt;
             tmp.y *= dt;
 
-            particle_data_[i].gravityMode.dirX += tmp.x;
-            particle_data_[i].gravityMode.dirY += tmp.y;
+            particleInfo[i].gravityMode.dirX += tmp.x;
+            particleInfo[i].gravityMode.dirY += tmp.y;
 
             // this is cocos2d-x v3.0
-            // if (_configName.length()>0 && _yCoordFlipped != -1)
+            // if (emitterName.length()>0 && flippedY != -1)
 
             // this is cocos2d-x v3.0
-            tmp.x = particle_data_[i].gravityMode.dirX * dt * _yCoordFlipped;
-            tmp.y = particle_data_[i].gravityMode.dirY * dt * _yCoordFlipped;
-            particle_data_[i].posx += tmp.x;
-            particle_data_[i].posy += tmp.y;
+            tmp.x = particleInfo[i].gravityMode.dirX * dt * flippedY;
+            tmp.y = particleInfo[i].gravityMode.dirY * dt * flippedY;
+            particleInfo[i].posx += tmp.x;
+            particleInfo[i].posy += tmp.y;
         }
     }
     else
     {
-        for (int i = 0; i < _particleCount; ++i)
+        for (int i = 0; i < particleCount; ++i)
         {
-            particle_data_[i].radiusMode.angle += particle_data_[i].radiusMode.degreesPerSecond * dt;
-            particle_data_[i].radiusMode.radius += particle_data_[i].radiusMode.deltaRadius * dt;
-            particle_data_[i].posx = -cosf(particle_data_[i].radiusMode.angle) * particle_data_[i].radiusMode.radius;
-            particle_data_[i].posy = -sinf(particle_data_[i].radiusMode.angle) * particle_data_[i].radiusMode.radius * _yCoordFlipped;
+            particleInfo[i].radiusMode.angle += particleInfo[i].radiusMode.degreesPerSecond * dt;
+            particleInfo[i].radiusMode.radius += particleInfo[i].radiusMode.deltaRadius * dt;
+            particleInfo[i].posx = -cosf(particleInfo[i].radiusMode.angle) * particleInfo[i].radiusMode.radius;
+            particleInfo[i].posy = -sinf(particleInfo[i].radiusMode.angle) * particleInfo[i].radiusMode.radius * flippedY;
         }
     }
 
     //color, size, rotation
-    for (int i = 0; i < _particleCount; ++i)
+    for (int i = 0; i < particleCount; ++i)
     {
-        particle_data_[i].colorR += particle_data_[i].deltaColorR * dt;
-        particle_data_[i].colorG += particle_data_[i].deltaColorG * dt;
-        particle_data_[i].colorB += particle_data_[i].deltaColorB * dt;
-        particle_data_[i].colorA += particle_data_[i].deltaColorA * dt;
-        particle_data_[i].size += (particle_data_[i].deltaSize * dt);
-        particle_data_[i].size = (std::max)(0.0f, particle_data_[i].size);
-        particle_data_[i].rotation += particle_data_[i].deltaRotation * dt;
+        particleInfo[i].colorR += particleInfo[i].deltaColorR * dt;
+        particleInfo[i].colorG += particleInfo[i].deltaColorG * dt;
+        particleInfo[i].colorB += particleInfo[i].deltaColorB * dt;
+        particleInfo[i].colorA += particleInfo[i].deltaColorA * dt;
+        particleInfo[i].size += (particleInfo[i].deltaSize * dt);
+        particleInfo[i].size = (std::max)(0.0f, particleInfo[i].size);
+        particleInfo[i].rotation += particleInfo[i].deltaRotation * dt;
     }
 }
 
 // ParticleEffects - Texture protocol
 void ParticleEffects::setTexture(SDL_Texture* var)
 {
-    if (_texture != var)
+    if (particleTex != var)
     {
-        _texture = var;
+        particleTex = var;
     }
 }
 
 void ParticleEffects::draw()
 {
-    if (_texture == nullptr)
+    if (particleTex == nullptr)
     {
         return;
     }
-    for (int i = 0; i < _particleCount; i++)
+    for (int i = 0; i < particleCount; i++)
     {
-        auto& p = particle_data_[i];
+        auto& p = particleInfo[i];
         if (p.size <= 0 || p.colorA <= 0)
         {
             continue;
         }
         SDL_Rect r = { int(p.posx + p.startPosX - p.size / 2), int(p.posy + p.startPosY - p.size / 2), int(p.size), int(p.size) };
         SDL_Color c = { Uint8(p.colorR * 255), Uint8(p.colorG * 255), Uint8(p.colorB * 255), Uint8(p.colorA * 255) };
-        SDL_SetTextureColorMod(_texture, c.r, c.g, c.b);
-        SDL_SetTextureAlphaMod(_texture, c.a);
-        SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopyEx(_renderer, _texture, nullptr, &r, p.rotation, nullptr, SDL_FLIP_NONE);
+        SDL_SetTextureColorMod(particleTex, c.r, c.g, c.b);
+        SDL_SetTextureAlphaMod(particleTex, c.a);
+        SDL_SetTextureBlendMode(particleTex, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyEx(renderer, particleTex, nullptr, &r, p.rotation, nullptr, SDL_FLIP_NONE);
     }
     update();
 }
 
 SDL_Texture* ParticleEffects::getTexture()
 {
-    return _texture;
+    return particleTex;
 }
 
 // ParticleEffects - Properties of Gravity Mode
@@ -599,95 +599,95 @@ float ParticleEffects::getRotatePerSecondVar() const
 
 bool ParticleEffects::isActive() const
 {
-    return _isActive;
+    return isParticleActive;
 }
 
 int ParticleEffects::getTotalParticles() const
 {
-    return _totalParticles;
+    return totalParticles;
 }
 
 void ParticleEffects::setTotalParticles(int var)
 {
-    _totalParticles = var;
+    totalParticles = var;
 }
 
 bool ParticleEffects::isAutoRemoveOnFinish() const
 {
-    return _isAutoRemoveOnFinish;
+    return isAutoRemovedOnFinish;
 }
 
 void ParticleEffects::setAutoRemoveOnFinish(bool var)
 {
-    _isAutoRemoveOnFinish = var;
+    isAutoRemovedOnFinish = var;
 }
 
 ////don't use a transform matrix, this is faster
 //void ParticleEffects::setScale(float s)
 //{
-//    _transformSystemDirty = true;
+//    isTransformSystemDirty = true;
 //    Node::setScale(s);
 //}
 //
 //void ParticleEffects::setRotation(float newRotation)
 //{
-//    _transformSystemDirty = true;
+//    isTransformSystemDirty = true;
 //    Node::setRotation(newRotation);
 //}
 //
 //void ParticleEffects::setScaleX(float newScaleX)
 //{
-//    _transformSystemDirty = true;
+//    isTransformSystemDirty = true;
 //    Node::setScaleX(newScaleX);
 //}
 //
 //void ParticleEffects::setScaleY(float newScaleY)
 //{
-//    _transformSystemDirty = true;
+//    isTransformSystemDirty = true;
 //    Node::setScaleY(newScaleY);
 //}
 
 bool ParticleEffects::isPaused() const
 {
-    return _paused;
+    return isParticlePaused;
 }
 
 void ParticleEffects::pauseEmissions()
 {
-    _paused = true;
+    isParticlePaused = true;
 }
 
 void ParticleEffects::resumeEmissions()
 {
-    _paused = false;
+    isParticlePaused = false;
 }
 
-void ParticleEffects::setStyle(ParticleStyle style)
+void ParticleEffects::setParticle(Particles type_)
 {
-    if (style_ == style)
+    if (particleType == type_)
     {
         return;
     }
-    style_ = style;
-    if (style == NONE)
+    particleType = type_;
+    if (type_ == NONE)
     {
         stopSystem();
     }
-    if (_texture == nullptr)
+    if (particleTex == nullptr)
     {
         setTexture(getDefaultTexture());
     }
-    switch (style)
+    switch (type_)
     {
     case ParticleEffects::FIRE:
     {
         initWithTotalParticles(250);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Gravity Mode
-        this->_emitterMode = Mode::GRAVITY;
+        this->emitterMode = Mode::GRAVITY;
 
         // Gravity Mode: gravity
         this->gravityMode.gravity = { 0, 0 };
@@ -701,40 +701,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         this->gravityMode.speedVar = 20;
 
         // starting angle
-        _angle = 90;
-        _angleVar = 10;
+        angle = 90;
+        angleVar = 10;
 
         // life of particles
-        _life = 3;
-        _lifeVar = 0.25f;
+        life = 3;
+        lifeVar = 0.25f;
 
         // size, in pixels
-        _startSize = 54.0f;
-        _startSizeVar = 10.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 54.0f;
+        startSizeVar = 10.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per frame
-        _emissionRate = _totalParticles / _life;
+        emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.76f;
-        _startColor.g = 0.25f;
-        _startColor.b = 0.12f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.0f;
-        _startColorVar.g = 0.0f;
-        _startColorVar.b = 0.0f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 0.0f;
-        _endColor.g = 0.0f;
-        _endColor.b = 0.0f;
-        _endColor.a = 0.0f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.76f;
+        startColor.g = 0.25f;
+        startColor.b = 0.12f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.0f;
+        startColorVar.g = 0.0f;
+        startColorVar.b = 0.0f;
+        startColorVar.a = 0.0f;
+        endColor.r = 0.0f;
+        endColor.g = 0.0f;
+        endColor.b = 0.0f;
+        endColor.a = 0.0f;
+        endColorVar.r = 0.0f;
+        endColorVar.g = 0.0f;
+        endColorVar.b = 0.0f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 40.0f, 20.0f };
+        posVariance = { 40.0f, 20.0f };
         break;
     }
     case ParticleEffects::FIRE_WORK:
@@ -742,10 +742,10 @@ void ParticleEffects::setStyle(ParticleStyle style)
         initWithTotalParticles(1500);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Gravity Mode
-        this->_emitterMode = Mode::GRAVITY;
+        this->emitterMode = Mode::GRAVITY;
 
         // Gravity Mode: gravity
         this->gravityMode.gravity = { 0.0f, 90.0f };
@@ -759,40 +759,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         this->gravityMode.speedVar = 50.0f;
 
         // angle
-        this->_angle = 90.0f;
-        this->_angleVar = 20.0f;
+        this->angle = 90.0f;
+        this->angleVar = 20.0f;
 
         // life of particles
-        this->_life = 3.5f;
-        this->_lifeVar = 1.0f;
+        this->life = 3.5f;
+        this->lifeVar = 1.0f;
 
         // emits per frame
-        this->_emissionRate = _totalParticles / _life;
+        this->emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.5f;
-        _startColor.g = 0.5f;
-        _startColor.b = 0.5f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.5f;
-        _startColorVar.g = 0.5f;
-        _startColorVar.b = 0.5f;
-        _startColorVar.a = 0.1f;
-        _endColor.r = 0.1f;
-        _endColor.g = 0.1f;
-        _endColor.b = 0.1f;
-        _endColor.a = 0.2f;
-        _endColorVar.r = 0.1f;
-        _endColorVar.g = 0.1f;
-        _endColorVar.b = 0.1f;
-        _endColorVar.a = 0.2f;
+        startColor.r = 0.5f;
+        startColor.g = 0.5f;
+        startColor.b = 0.5f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.5f;
+        startColorVar.g = 0.5f;
+        startColorVar.b = 0.5f;
+        startColorVar.a = 0.1f;
+        endColor.r = 0.1f;
+        endColor.g = 0.1f;
+        endColor.b = 0.1f;
+        endColor.a = 0.2f;
+        endColorVar.r = 0.1f;
+        endColorVar.g = 0.1f;
+        endColorVar.b = 0.1f;
+        endColorVar.a = 0.2f;
 
         // size, in pixels
-        _startSize = 8.0f;
-        _startSizeVar = 2.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 8.0f;
+        startSizeVar = 2.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
-        _posVar = { 0, 0 };
+        posVariance = { 0, 0 };
         break;
     }
     case ParticleEffects::SUN:
@@ -803,7 +803,7 @@ void ParticleEffects::setStyle(ParticleStyle style)
         //this->setBlendAdditive(true);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Gravity Mode
         setEmitterMode(Mode::GRAVITY);
@@ -820,47 +820,47 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setSpeedVar(5);
 
         // angle
-        _angle = 90;
-        _angleVar = 360;
+        angle = 90;
+        angleVar = 360;
 
         // life of particles
-        _life = 1;
-        _lifeVar = 0.5f;
+        life = 1;
+        lifeVar = 0.5f;
 
         // size, in pixels
-        _startSize = 30.0f;
-        _startSizeVar = 10.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 30.0f;
+        startSizeVar = 10.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per seconds
-        _emissionRate = _totalParticles / _life;
+        emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.76f;
-        _startColor.g = 0.25f;
-        _startColor.b = 0.12f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.0f;
-        _startColorVar.g = 0.0f;
-        _startColorVar.b = 0.0f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 0.0f;
-        _endColor.g = 0.0f;
-        _endColor.b = 0.0f;
-        _endColor.a = 1.0f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.76f;
+        startColor.g = 0.25f;
+        startColor.b = 0.12f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.0f;
+        startColorVar.g = 0.0f;
+        startColorVar.b = 0.0f;
+        startColorVar.a = 0.0f;
+        endColor.r = 0.0f;
+        endColor.g = 0.0f;
+        endColor.b = 0.0f;
+        endColor.a = 1.0f;
+        endColorVar.r = 0.0f;
+        endColorVar.g = 0.0f;
+        endColorVar.b = 0.0f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 0, 0 };
+        posVariance = { 0, 0 };
         break;
     }
     case ParticleEffects::GALAXY:
     {
         initWithTotalParticles(200);
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Gravity Mode
         setEmitterMode(Mode::GRAVITY);
@@ -881,40 +881,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setTangentialAccelVar(0);
 
         // angle
-        _angle = 90;
-        _angleVar = 360;
+        angle = 90;
+        angleVar = 360;
 
         // life of particles
-        _life = 4;
-        _lifeVar = 1;
+        life = 4;
+        lifeVar = 1;
 
         // size, in pixels
-        _startSize = 37.0f;
-        _startSizeVar = 10.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 37.0f;
+        startSizeVar = 10.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per second
-        _emissionRate = _totalParticles / _life;
+        emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.12f;
-        _startColor.g = 0.25f;
-        _startColor.b = 0.76f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.0f;
-        _startColorVar.g = 0.0f;
-        _startColorVar.b = 0.0f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 0.0f;
-        _endColor.g = 0.0f;
-        _endColor.b = 0.0f;
-        _endColor.a = 1.0f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.12f;
+        startColor.g = 0.25f;
+        startColor.b = 0.76f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.0f;
+        startColorVar.g = 0.0f;
+        startColorVar.b = 0.0f;
+        startColorVar.a = 0.0f;
+        endColor.r = 0.0f;
+        endColor.g = 0.0f;
+        endColor.b = 0.0f;
+        endColor.a = 1.0f;
+        endColorVar.r = 0.0f;
+        endColorVar.g = 0.0f;
+        endColorVar.b = 0.0f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 0, 0 };
+        posVariance = { 0, 0 };
         break;
     }
     case ParticleEffects::FLOWER:
@@ -922,7 +922,7 @@ void ParticleEffects::setStyle(ParticleStyle style)
         initWithTotalParticles(250);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Gravity Mode
         setEmitterMode(Mode::GRAVITY);
@@ -943,40 +943,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setTangentialAccelVar(0);
 
         // angle
-        _angle = 90;
-        _angleVar = 360;
+        angle = 90;
+        angleVar = 360;
 
         // life of particles
-        _life = 4;
-        _lifeVar = 1;
+        life = 4;
+        lifeVar = 1;
 
         // size, in pixels
-        _startSize = 30.0f;
-        _startSizeVar = 10.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 30.0f;
+        startSizeVar = 10.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per second
-        _emissionRate = _totalParticles / _life;
+        emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.50f;
-        _startColor.g = 0.50f;
-        _startColor.b = 0.50f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.5f;
-        _startColorVar.g = 0.5f;
-        _startColorVar.b = 0.5f;
-        _startColorVar.a = 0.5f;
-        _endColor.r = 0.0f;
-        _endColor.g = 0.0f;
-        _endColor.b = 0.0f;
-        _endColor.a = 1.0f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.50f;
+        startColor.g = 0.50f;
+        startColor.b = 0.50f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.5f;
+        startColorVar.g = 0.5f;
+        startColorVar.b = 0.5f;
+        startColorVar.a = 0.5f;
+        endColor.r = 0.0f;
+        endColor.g = 0.0f;
+        endColor.b = 0.0f;
+        endColor.a = 1.0f;
+        endColorVar.r = 0.0f;
+        endColorVar.g = 0.0f;
+        endColorVar.b = 0.0f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 0, 0 };
+        posVariance = { 0, 0 };
         break;
     }
     case ParticleEffects::METEOR:
@@ -984,7 +984,7 @@ void ParticleEffects::setStyle(ParticleStyle style)
         initWithTotalParticles(150);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Gravity Mode
         setEmitterMode(Mode::GRAVITY);
@@ -1005,40 +1005,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setTangentialAccelVar(0);
 
         // angle
-        _angle = 90;
-        _angleVar = 360;
+        angle = 90;
+        angleVar = 360;
 
         // life of particles
-        _life = 2;
-        _lifeVar = 1;
+        life = 2;
+        lifeVar = 1;
 
         // size, in pixels
-        _startSize = 60.0f;
-        _startSizeVar = 10.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 60.0f;
+        startSizeVar = 10.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per second
-        _emissionRate = _totalParticles / _life;
+        emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.2f;
-        _startColor.g = 0.4f;
-        _startColor.b = 0.7f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.0f;
-        _startColorVar.g = 0.0f;
-        _startColorVar.b = 0.2f;
-        _startColorVar.a = 0.1f;
-        _endColor.r = 0.0f;
-        _endColor.g = 0.0f;
-        _endColor.b = 0.0f;
-        _endColor.a = 1.0f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.2f;
+        startColor.g = 0.4f;
+        startColor.b = 0.7f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.0f;
+        startColorVar.g = 0.0f;
+        startColorVar.b = 0.2f;
+        startColorVar.a = 0.1f;
+        endColor.r = 0.0f;
+        endColor.g = 0.0f;
+        endColor.b = 0.0f;
+        endColor.a = 1.0f;
+        endColorVar.r = 0.0f;
+        endColorVar.g = 0.0f;
+        endColorVar.b = 0.0f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 0, 0 };
+        posVariance = { 0, 0 };
         break;
     }
     case ParticleEffects::SPIRAL:
@@ -1046,7 +1046,7 @@ void ParticleEffects::setStyle(ParticleStyle style)
         initWithTotalParticles(500);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Gravity Mode
         setEmitterMode(Mode::GRAVITY);
@@ -1067,40 +1067,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setTangentialAccelVar(0);
 
         // angle
-        _angle = 90;
-        _angleVar = 0;
+        angle = 90;
+        angleVar = 0;
 
         // life of particles
-        _life = 12;
-        _lifeVar = 0;
+        life = 12;
+        lifeVar = 0;
 
         // size, in pixels
-        _startSize = 20.0f;
-        _startSizeVar = 0.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 20.0f;
+        startSizeVar = 0.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per second
-        _emissionRate = _totalParticles / _life;
+        emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.5f;
-        _startColor.g = 0.5f;
-        _startColor.b = 0.5f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.5f;
-        _startColorVar.g = 0.5f;
-        _startColorVar.b = 0.5f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 0.5f;
-        _endColor.g = 0.5f;
-        _endColor.b = 0.5f;
-        _endColor.a = 1.0f;
-        _endColorVar.r = 0.5f;
-        _endColorVar.g = 0.5f;
-        _endColorVar.b = 0.5f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.5f;
+        startColor.g = 0.5f;
+        startColor.b = 0.5f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.5f;
+        startColorVar.g = 0.5f;
+        startColorVar.b = 0.5f;
+        startColorVar.a = 0.0f;
+        endColor.r = 0.5f;
+        endColor.g = 0.5f;
+        endColor.b = 0.5f;
+        endColor.a = 1.0f;
+        endColorVar.r = 0.5f;
+        endColorVar.g = 0.5f;
+        endColorVar.b = 0.5f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 0, 0 };
+        posVariance = { 0, 0 };
         break;
     }
     case ParticleEffects::EXPLOSION:
@@ -1108,7 +1108,7 @@ void ParticleEffects::setStyle(ParticleStyle style)
         initWithTotalParticles(700);
 
         // duration
-        _duration = 0.1f;
+        duration = 0.1f;
 
         setEmitterMode(Mode::GRAVITY);
 
@@ -1128,40 +1128,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setTangentialAccelVar(0);
 
         // angle
-        _angle = 90;
-        _angleVar = 360;
+        angle = 90;
+        angleVar = 360;
 
         // life of particles
-        _life = 5.0f;
-        _lifeVar = 2;
+        life = 5.0f;
+        lifeVar = 2;
 
         // size, in pixels
-        _startSize = 15.0f;
-        _startSizeVar = 10.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 15.0f;
+        startSizeVar = 10.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per second
-        _emissionRate = _totalParticles / _duration;
+        emissionRate = totalParticles / duration;
 
         // color of particles
-        _startColor.r = 0.7f;
-        _startColor.g = 0.1f;
-        _startColor.b = 0.2f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.5f;
-        _startColorVar.g = 0.5f;
-        _startColorVar.b = 0.5f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 0.5f;
-        _endColor.g = 0.5f;
-        _endColor.b = 0.5f;
-        _endColor.a = 0.0f;
-        _endColorVar.r = 0.5f;
-        _endColorVar.g = 0.5f;
-        _endColorVar.b = 0.5f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.7f;
+        startColor.g = 0.1f;
+        startColor.b = 0.2f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.5f;
+        startColorVar.g = 0.5f;
+        startColorVar.b = 0.5f;
+        startColorVar.a = 0.0f;
+        endColor.r = 0.5f;
+        endColor.g = 0.5f;
+        endColor.b = 0.5f;
+        endColor.a = 0.0f;
+        endColorVar.r = 0.5f;
+        endColorVar.g = 0.5f;
+        endColorVar.b = 0.5f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 0, 0 };
+        posVariance = { 0, 0 };
         break;
     }
     case ParticleEffects::SMOKE:
@@ -1169,7 +1169,7 @@ void ParticleEffects::setStyle(ParticleStyle style)
         initWithTotalParticles(200);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // Emitter mode: Gravity Mode
         setEmitterMode(Mode::GRAVITY);
@@ -1186,40 +1186,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setSpeedVar(10);
 
         // angle
-        _angle = 90;
-        _angleVar = 5;
+        angle = 90;
+        angleVar = 5;
 
         // life of particles
-        _life = 4;
-        _lifeVar = 1;
+        life = 4;
+        lifeVar = 1;
 
         // size, in pixels
-        _startSize = 60.0f;
-        _startSizeVar = 10.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 60.0f;
+        startSizeVar = 10.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per frame
-        _emissionRate = _totalParticles / _life;
+        emissionRate = totalParticles / life;
 
         // color of particles
-        _startColor.r = 0.8f;
-        _startColor.g = 0.8f;
-        _startColor.b = 0.8f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.02f;
-        _startColorVar.g = 0.02f;
-        _startColorVar.b = 0.02f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 0.0f;
-        _endColor.g = 0.0f;
-        _endColor.b = 0.0f;
-        _endColor.a = 1.0f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 0.8f;
+        startColor.g = 0.8f;
+        startColor.b = 0.8f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.02f;
+        startColorVar.g = 0.02f;
+        startColorVar.b = 0.02f;
+        startColorVar.a = 0.0f;
+        endColor.r = 0.0f;
+        endColor.g = 0.0f;
+        endColor.b = 0.0f;
+        endColor.a = 1.0f;
+        endColorVar.r = 0.0f;
+        endColorVar.g = 0.0f;
+        endColorVar.b = 0.0f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 20.0f, 0.0f };
+        posVariance = { 20.0f, 0.0f };
         break;
     }
     case ParticleEffects::SNOW:
@@ -1227,7 +1227,7 @@ void ParticleEffects::setStyle(ParticleStyle style)
         initWithTotalParticles(700);
 
         // duration
-        _duration = DURATION_INFINITY;
+        duration = DURATION_INFINITY;
 
         // set gravity mode.
         setEmitterMode(Mode::GRAVITY);
@@ -1248,101 +1248,40 @@ void ParticleEffects::setStyle(ParticleStyle style)
         setTangentialAccelVar(1);
 
         // angle
-        _angle = -90;
-        _angleVar = 5;
+        angle = -90;
+        angleVar = 5;
 
         // life of particles
-        _life = 45;
-        _lifeVar = 15;
+        life = 45;
+        lifeVar = 15;
 
         // size, in pixels
-        _startSize = 10.0f;
-        _startSizeVar = 5.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
+        startSize = 10.0f;
+        startSizeVar = 5.0f;
+        endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
         // emits per second
-        _emissionRate = 10;
+        emissionRate = 10;
 
         // color of particles
-        _startColor.r = 1.0f;
-        _startColor.g = 1.0f;
-        _startColor.b = 1.0f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.0f;
-        _startColorVar.g = 0.0f;
-        _startColorVar.b = 0.0f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 1.0f;
-        _endColor.g = 1.0f;
-        _endColor.b = 1.0f;
-        _endColor.a = 0.0f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
+        startColor.r = 1.0f;
+        startColor.g = 1.0f;
+        startColor.b = 1.0f;
+        startColor.a = 1.0f;
+        startColorVar.r = 0.0f;
+        startColorVar.g = 0.0f;
+        startColorVar.b = 0.0f;
+        startColorVar.a = 0.0f;
+        endColor.r = 1.0f;
+        endColor.g = 1.0f;
+        endColor.b = 1.0f;
+        endColor.a = 0.0f;
+        endColorVar.r = 0.0f;
+        endColorVar.g = 0.0f;
+        endColorVar.b = 0.0f;
+        endColorVar.a = 0.0f;
 
-        _posVar = { 1.0f * x_, 0.0f };
-        break;
-    }
-    case ParticleEffects::RAIN:
-    {
-        initWithTotalParticles(1000);
-
-        // duration
-        _duration = DURATION_INFINITY;
-
-        setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
-        setGravity(Vector2(10, 10));
-
-        // Gravity Mode: radial
-        setRadialAccel(0);
-        setRadialAccelVar(1);
-
-        // Gravity Mode: tangential
-        setTangentialAccel(0);
-        setTangentialAccelVar(1);
-
-        // Gravity Mode: speed of particles
-        setSpeed(-130);
-        setSpeedVar(30);
-
-        // angle
-        _angle = -90;
-        _angleVar = 5;
-
-        // life of particles
-        _life = 4.5f;
-        _lifeVar = 0;
-
-        // size, in pixels
-        _startSize = 4.0f;
-        _startSizeVar = 2.0f;
-        _endSize = START_SIZE_EQUAL_TO_END_SIZE;
-
-        // emits per second
-        _emissionRate = 20;
-
-        // color of particles
-        _startColor.r = 0.7f;
-        _startColor.g = 0.8f;
-        _startColor.b = 1.0f;
-        _startColor.a = 1.0f;
-        _startColorVar.r = 0.0f;
-        _startColorVar.g = 0.0f;
-        _startColorVar.b = 0.0f;
-        _startColorVar.a = 0.0f;
-        _endColor.r = 0.7f;
-        _endColor.g = 0.8f;
-        _endColor.b = 1.0f;
-        _endColor.a = 0.5f;
-        _endColorVar.r = 0.0f;
-        _endColorVar.g = 0.0f;
-        _endColorVar.b = 0.0f;
-        _endColorVar.a = 0.0f;
-
-        _posVar = { 1.0f * x_, 0.0f };
+        posVariance = { 1.0f * x, 0.0f };
         break;
     }
     default:

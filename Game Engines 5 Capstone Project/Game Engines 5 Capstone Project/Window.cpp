@@ -123,14 +123,14 @@ Window::Window(const char* name, int x, int y, int w, int h, int flags_)
 
 	profiler = new Profiler();
 
-	p = new ParticleEffects();
-	p->setRenderer(renderer);
-	p->setPosition(500, 300);
-	p->setStyle(ParticleEffects::SNOW);
-	p->setStartSpin(0);
-	p->setStartSpinVar(90);
-	p->setEndSpin(90);
-	p->setStartSpinVar(90);
+	particle = new ParticleEffects();
+	particle->setRenderer(renderer);
+	particle->setPosition(500, 100);
+	particle->setParticle(ParticleEffects::SNOW);
+	particle->setStartSpin(0);
+	particle->setStartSpinVar(90);
+	particle->setEndSpin(90);
+	particle->setStartSpinVar(90);
 
 	isPaused = false;
 }
@@ -1265,7 +1265,7 @@ void Window::Render()
 	SDL_RenderClear(renderer);
 	level->RenderLevel();
 
-	p->draw();    // you have to draw it in each loop
+	particle->draw();    // you have to draw it in each loop
 
 	manager.Draw();
 	SDL_RenderPresent(renderer);

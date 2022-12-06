@@ -29,8 +29,6 @@ public:
 
 typedef Point Vector2;
 
-//class ParticleBatchNode;
-
 struct ParticleColor
 {
     float r = 0, g = 0, b = 0, a = 0;
@@ -61,7 +59,6 @@ public:
     float timeToLive = 0;
     unsigned int atlasIndex = 0;
 
-    //! Mode A: gravity, direction, radial accel, tangential accel
     struct
     {
         float dirX = 0;
@@ -166,79 +163,79 @@ public:
 
     virtual bool isActive() const;
 
-    int getAtlasIndex() const { return _atlasIndex; }
-    void setAtlasIndex(int index) { _atlasIndex = index; }
+    int getAtlasIndex() const { return atlasIndexSignedInt; }
+    void setAtlasIndex(int index) { atlasIndexSignedInt = index; }
 
-    unsigned int getParticleCount() const { return _particleCount; }
+    unsigned int getParticleCount() const { return particleCount; }
 
-    float getDuration() const { return _duration; }
-    void setDuration(float duration) { _duration = duration; }
+    float getDuration() const { return duration; }
+    void setDuration(float duration) { duration = duration; }
 
-    const Vector2& getSourcePosition() const { return _sourcePosition; }
-    void setSourcePosition(const Vector2& pos) { _sourcePosition = pos; }
+    const Vector2& getSourcePosition() const { return sourcePos; }
+    void setSourcePosition(const Vector2& pos) { sourcePos = pos; }
 
-    const Vector2& getPosVar() const { return _posVar; }
-    void setPosVar(const Vector2& pos) { _posVar = pos; }
+    const Vector2& getPosVar() const { return posVariance; }
+    void setPosVar(const Vector2& pos) { posVariance = pos; }
 
-    float getLife() const { return _life; }
-    void setLife(float life) { _life = life; }
+    float getLife() const { return life; }
+    void setLife(float life) { life = life; }
 
-    float getLifeVar() const { return _lifeVar; }
-    void setLifeVar(float lifeVar) { _lifeVar = lifeVar; }
+    float getLifeVar() const { return lifeVar; }
+    void setLifeVar(float lifeVar) { lifeVar = lifeVar; }
 
-    float getAngle() const { return _angle; }
-    void setAngle(float angle) { _angle = angle; }
+    float getAngle() const { return angle; }
+    void setAngle(float angle) { angle = angle; }
 
-    float getAngleVar() const { return _angleVar; }
-    void setAngleVar(float angleVar) { _angleVar = angleVar; }
+    float getAngleVar() const { return angleVar; }
+    void setAngleVar(float angleVar) { angleVar = angleVar; }
     
-    Mode getEmitterMode() const { return _emitterMode; }
-    void setEmitterMode(Mode mode) { _emitterMode = mode; }
+    Mode getEmitterMode() const { return emitterMode; }
+    void setEmitterMode(Mode mode) { emitterMode = mode; }
 
-    float getStartSize() const { return _startSize; }
-    void setStartSize(float startSize) { _startSize = startSize; }
+    float getStartSize() const { return startSize; }
+    void setStartSize(float startSize) { startSize = startSize; }
 
-    float getStartSizeVar() const { return _startSizeVar; }
-    void setStartSizeVar(float sizeVar) { _startSizeVar = sizeVar; }
+    float getStartSizeVar() const { return startSizeVar; }
+    void setStartSizeVar(float sizeVar) { startSizeVar = sizeVar; }
 
-    float getEndSize() const { return _endSize; }
-    void setEndSize(float endSize) { _endSize = endSize; }
+    float getEndSize() const { return endSize; }
+    void setEndSize(float endSize) { endSize = endSize; }
 
-    float getEndSizeVar() const { return _endSizeVar; }
-    void setEndSizeVar(float sizeVar) { _endSizeVar = sizeVar; }
+    float getEndSizeVar() const { return endSizeVar; }
+    void setEndSizeVar(float sizeVar) { endSizeVar = sizeVar; }
 
-    const ParticleColor& getStartColor() const { return _startColor; }
-    void setStartColor(const ParticleColor& color) { _startColor = color; }
+    const ParticleColor& getStartColor() const { return startColor; }
+    void setStartColor(const ParticleColor& color) { startColor = color; }
 
-    const ParticleColor& getStartColorVar() const { return _startColorVar; }
-    void setStartColorVar(const ParticleColor& color) { _startColorVar = color; }
+    const ParticleColor& getStartColorVar() const { return startColorVar; }
+    void setStartColorVar(const ParticleColor& color) { startColorVar = color; }
 
-    const ParticleColor& getEndColor() const { return _endColor; }
-    void setEndColor(const ParticleColor& color) { _endColor = color; }
+    const ParticleColor& getEndColor() const { return endColor; }
+    void setEndColor(const ParticleColor& color) { endColor = color; }
 
-    const ParticleColor& getEndColorVar() const { return _endColorVar; }
-    void setEndColorVar(const ParticleColor& color) { _endColorVar = color; }
+    const ParticleColor& getEndColorVar() const { return endColorVar; }
+    void setEndColorVar(const ParticleColor& color) { endColorVar = color; }
 
-    float getStartSpin() const { return _startSpin; }
-    void setStartSpin(float spin) { _startSpin = spin; }
+    float getStartSpin() const { return startSpin; }
+    void setStartSpin(float spin) { startSpin = spin; }
 
-    float getStartSpinVar() const { return _startSpinVar; }
-    void setStartSpinVar(float pinVar) { _startSpinVar = pinVar; }
+    float getStartSpinVar() const { return startSpinVar; }
+    void setStartSpinVar(float pinVar) { startSpinVar = pinVar; }
 
-    float getEndSpin() const { return _endSpin; }
-    void setEndSpin(float endSpin) { _endSpin = endSpin; }
+    float getEndSpin() const { return endSpin; }
+    void setEndSpin(float endSpin) { endSpin = endSpin; }
 
-    float getEndSpinVar() const { return _endSpinVar; }
-    void setEndSpinVar(float endSpinVar) { _endSpinVar = endSpinVar; }
+    float getEndSpinVar() const { return endSpinVar; }
+    void setEndSpinVar(float endSpinVar) { endSpinVar = endSpinVar; }
 
-    float getEmissionRate() const { return _emissionRate; }
-    void setEmissionRate(float rate) { _emissionRate = rate; }
+    float getEmissionRate() const { return emissionRate; }
+    void setEmissionRate(float rate) { emissionRate = rate; }
 
     virtual int getTotalParticles() const;
     virtual void setTotalParticles(int totalParticles);
 
-    void setOpacityModifyRGB(bool opacityModifyRGB) { _opacityModifyRGB = opacityModifyRGB; }
-    bool isOpacityModifyRGB() const { return _opacityModifyRGB; }
+    void setOpacityModifyRGB(bool opacityModifyRGB) { opacityModiftRGB = opacityModifyRGB; }
+    bool isOpacityModifyRGB() const { return opacityModiftRGB; }
 
     SDL_Texture* getTexture();
     void setTexture(SDL_Texture* texture);
@@ -257,76 +254,74 @@ public:
 protected:
     //virtual void updateBlendFunc();
 
-protected:
-    bool _isBlendAdditive = true;
-    bool _isAutoRemoveOnFinish = false;
+    bool isBlendAdditive = true;
+    bool isAutoRemovedOnFinish = false;
 
-    std::string _plistFile;
+    std::string particleListFile;
 
-    float _elapsed = 0;
+    float elapsedTIme = 0;
 
-    std::vector<ParticleEffects> particle_data_;
+    std::vector<ParticleEffects> particleInfo;
 
-    std::string _configName;
+    std::string emitterName;
 
-    float _emitCounter = 0;
+    float emitterCounter = 0;
 
-    int _atlasIndex = 0;
+    int atlasIndexSignedInt = 0;
 
-    //true if scaled or rotated
-    bool _transformSystemDirty = false;
+    bool isTransformSystemDirty = false;
 
-    int _allocatedParticles = 0;
-    bool _isActive = true;
-    int _particleCount = 0;
-    float _duration = 0;
+    int allocatedParticles = 0;
+    bool isParticleActive = true;
+    int particleCount = 0;
+    float duration = 0;
 
-    Vector2 _sourcePosition;
-    Vector2 _posVar;
-    float _life = 0;
-    float _lifeVar = 0;
-    float _angle = 0;
-    float _angleVar = 0;
+    Vector2 sourcePos;
+    Vector2 posVariance;
+    float life = 0;
+    float lifeVar = 0;
+    float angle = 0;
+    float angleVar = 0;
 
-    Mode _emitterMode = Mode::GRAVITY;
+    Mode emitterMode = Mode::GRAVITY;
 
-    float _startSize = 0;
-    float _startSizeVar = 0;
-    float _endSize = 0;
-    float _endSizeVar = 0;
+    float startSize = 0;
+    float startSizeVar = 0;
+    float endSize = 0;
+    float endSizeVar = 0;
 
-    ParticleColor _startColor;
-    ParticleColor _startColorVar;
-    ParticleColor _endColor;
-    ParticleColor _endColorVar;
+    ParticleColor startColor;
+    ParticleColor startColorVar;
+    ParticleColor endColor;
+    ParticleColor endColorVar;
 
-    float _startSpin = 0;
-    float _startSpinVar = 0;
-    float _endSpin = 0;
-    float _endSpinVar = 0;
-    float _emissionRate = 0;
-    int _totalParticles = 0;
+    float startSpin = 0;
+    float startSpinVar = 0;
+    float endSpin = 0;
+    float endSpinVar = 0;
+    float emissionRate = 0;
+    int totalParticles = 0;
 
-    SDL_Texture* _texture = nullptr;
+    SDL_Texture* particleTex = nullptr;
 
-    bool _opacityModifyRGB = false;
+    bool opacityModiftRGB = false;
 
-    int _yCoordFlipped = 1;
+    int flippedY = 1;
 
-    bool _paused = false;
+    bool isParticlePaused = false;
 
-    bool _sourcePositionCompatible = false;
+    bool sourcePosCompatible = false;
 
-    SDL_Renderer* _renderer = nullptr;
-    int x_ = 0, y_ = 0;
+    SDL_Renderer* renderer = nullptr;
+    int x = 0, y = 0;
 public:
-    void setRenderer(SDL_Renderer* ren) { _renderer = ren; }
-    void setPosition(int x, int y) { x_ = x; y_ = y; }
+    void setRenderer(SDL_Renderer* ren) { renderer = ren; }
+    void setPosition(int x_, int y_) { x = x_; y = y_; }
 
     void ParticleExample() {}
     virtual void DestroyParticleExample() {}
 
-    enum ParticleStyle
+    enum Particles
     {
         NONE,
         FIRE,
@@ -339,16 +334,15 @@ public:
         EXPLOSION,
         SMOKE,
         SNOW,
-        RAIN,
     };
 
-    ParticleStyle style_ = NONE;
-    void setStyle(ParticleStyle style);
+    Particles particleType = NONE;
+    void setParticle(Particles type_);
     SDL_Texture* getDefaultTexture()
     {
-        static SDL_Texture* t = IMG_LoadTexture(_renderer, "Default.png");
+        static SDL_Texture* tex = IMG_LoadTexture(renderer, "Default.png");
         //printf(SDL_GetError());
-        return t;
+        return tex;
     }
 };
 
