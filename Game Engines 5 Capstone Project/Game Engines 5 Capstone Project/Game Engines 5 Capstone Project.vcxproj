@@ -143,6 +143,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="OptionsMenu.cpp" />
+    <ClCompile Include="ParticleEffects.cpp" />
     <ClCompile Include="PauseMenu.cpp" />
     <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="LevelCompleteScreen.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="OptionsMenu.h" />
+    <ClInclude Include="ParticleEffects.h" />
     <ClInclude Include="PauseMenu.h" />
     <ClInclude Include="PlayerSpriteComponent.h" />
     <ClInclude Include="Profiler.h" />

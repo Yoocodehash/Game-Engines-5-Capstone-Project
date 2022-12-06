@@ -14,6 +14,7 @@
 #include "GameOverScreen.h"
 #include "Profiler.h"
 #include "Audio.h"
+#include "ParticleEffects.h"
 
 class ColliderComponent;
 
@@ -47,6 +48,7 @@ private:
 	bool isRunning;
 	SDL_Window* window;
 	PauseMenu* PauseGame;
+	ParticleEffects* p;
 	LevelCompleteScreen* LevelFinished;
 	Profiler* profiler;
 	Audio anyAudio;
