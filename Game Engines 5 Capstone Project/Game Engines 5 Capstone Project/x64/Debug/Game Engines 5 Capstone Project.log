@@ -1,7 +1,7 @@
 ﻿  Window.cpp
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(234,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(235,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(263,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(264,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(265,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(266,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(236,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(237,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(265,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(266,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(267,12): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Window.cpp(268,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data

@@ -223,6 +223,8 @@ void Window::Update()
 	profiler->GetTicks("Window::Update()");
 
 	printf("Thread id %d: Window::Update() CPU usage: %d%%\n", ::GetCurrentThreadId(), profiler->GetCPUusage());
+	printf("Thread id %d: Window::Update() memory usage: %i MB\n", ::GetCurrentThreadId(),
+		profiler->GetMemoryUsage());
 
 	if (!isPaused)
 	{

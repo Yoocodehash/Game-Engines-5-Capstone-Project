@@ -141,3 +141,18 @@ bool Profiler::EnoughTimePassed()
 	ULONGLONG currentTickCount = GetTickCount64();
 	return (currentTickCount - lastRun) > minimumElapsedTimeInMilliseconds;
 }
+
+int Profiler::GetMemoryUsage()
+{
+	// Get the handle to this process
+	auto myHandle = GetCurrentProcess();
+
+	// Fill in the process' memory usage details
+	PROCESS_MEMORY_COUNTERS pmc;
+
+	// Return the usage in megabytes
+	if (GetProcessMemoryInfo(myHandle, &pmc, sizeof(pmc)))
+		return(pmc.WorkingSetSize / 1000000);
+	else
+		return 0;
+}

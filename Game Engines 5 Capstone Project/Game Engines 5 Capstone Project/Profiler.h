@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdint>
 #include <windows.h>
+#include <Psapi.h>
 
 class Profiler
 {
@@ -15,6 +16,7 @@ public:
 	__int64 GetTicks(std::string functionName_) const;
 
 	short GetCPUusage();
+	int GetMemoryUsage();
 
 private:
 	__int64 started_at;
