@@ -15,6 +15,8 @@ SDL_Renderer* Window::renderer = nullptr;
 SDL_Event Window::event;
 SDL_Rect Window::Camera = { 0,0,1000, 4 };
 
+typedef std::chrono::high_resolution_clock Clock;
+
 auto& PlayerBird(manager.AddEntity());
 auto& wallBlock(manager.AddEntity());
 auto& wallBlock2(manager.AddEntity());
@@ -219,6 +221,8 @@ void Window::Update()
 	profiler->Start("Window::Update()");
 	profiler->GetMilliseconds("Window::Update()");
 	profiler->GetTicks("Window::Update()");
+
+	printf("Thread id %d: Window::Update() CPU usage: %d%%\n", ::GetCurrentThreadId(), profiler->GetCPUusage());
 
 	if (!isPaused)
 	{

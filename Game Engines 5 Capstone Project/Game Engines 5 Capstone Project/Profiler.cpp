@@ -1,7 +1,9 @@
 #include "Profiler.h"
 #include <SDL_timer.h>
+#include <chrono>
 
 __int64 Profiler::frequency = 0;
+
 
 Profiler::Profiler()
 {
@@ -11,6 +13,16 @@ Profiler::Profiler()
 	}
 
 	started_at = SDL_GetPerformanceFrequency();
+
+	cpuUsage = -1;
+	lastRun = 0;
+	runCount = 0;
+
+	ZeroMemory(&prevSystemKernel, sizeof(FILETIME));
+	ZeroMemory(&prevSystemUser, sizeof(FILETIME));
+
+	ZeroMemory(&prevProcessKernel, sizeof(FILETIME));
+	ZeroMemory(&prevProcessUser, sizeof(FILETIME));
 }
 
 
@@ -45,4 +57,87 @@ __int64 Profiler::GetTicks(std::string functionName_) const
 	std::cout << functionName_ << " profiler ticks: " << ticks << std::endl;
 
 	return ticks;
+}
+
+short Profiler::GetCPUusage()
+{
+	//create a local copy to protect against race conditions in setting the member variable
+	short localCPU = cpuUsage;
+
+	if (::InterlockedIncrement(&runCount) == 1)
+	{
+
+		/* If this is called too often, the measurement itself will greatly affect the results
+		meaning that the numbers might be too big or a negative integer */
+
+		if (!EnoughTimePassed())
+		{
+			::InterlockedDecrement(&runCount);
+			return localCPU;
+		}
+	}
+
+	FILETIME SystemIdle, SystemKernel, SystemUser;
+	FILETIME ProcessCreation, ProcessExit, ProcessKernel, ProcessUser;
+
+	if (!GetSystemTimes(&SystemIdle, &SystemKernel, &SystemUser) ||
+		!GetProcessTimes(GetCurrentProcess(), &ProcessCreation, &ProcessExit, &ProcessKernel, &ProcessUser))
+	{
+		::InterlockedDecrement(&runCount);
+		return localCPU;
+	}
+
+	if (!IsFirstRun())
+	{
+		/* CPU usage is calculated by getting the total amount of time the system has operated since the
+		last measurement (made up of kernel + user) and the total amount of time the process has run
+		(kernel + user)  */
+
+		ULONGLONG SystemKernelDiff = SubtractTimes(SystemKernel, prevSystemKernel);
+		ULONGLONG SystemUserDiff = SubtractTimes(SystemUser, prevSystemUser);
+
+		ULONGLONG ProcessKernelDiff = SubtractTimes(ProcessKernel, prevProcessKernel);
+		ULONGLONG ProcessUserDiff = SubtractTimes(ProcessUser, prevProcessUser);
+
+		ULONGLONG totalSystem = SystemKernelDiff + SystemUserDiff;
+		ULONGLONG totalProcess = ProcessKernelDiff + ProcessUserDiff;
+
+		if (totalSystem > 0)
+		{
+			cpuUsage = (short)((100.0 * totalProcess) / totalSystem);
+		}
+	}
+
+	prevSystemKernel = SystemKernel;
+	prevSystemUser = SystemUser;
+	prevProcessKernel = ProcessKernel;
+	prevProcessUser = ProcessUser;
+
+	lastRun = GetTickCount64();
+
+	localCPU = cpuUsage;
+
+	::InterlockedDecrement(&runCount);
+
+	return localCPU;
+}
+
+ULONGLONG Profiler::SubtractTimes(const FILETIME& a_, const FILETIME& b_)
+{
+	LARGE_INTEGER a, b;
+	a.LowPart = a_.dwLowDateTime;
+	a.HighPart = a_.dwHighDateTime;
+
+	b.LowPart = b_.dwLowDateTime;
+	b.HighPart = b_.dwHighDateTime;
+
+	return a.QuadPart - b.QuadPart;
+}
+
+bool Profiler::EnoughTimePassed()
+{
+	const int minimumElapsedTimeInMilliseconds = 250;
+
+	ULONGLONG currentTickCount = GetTickCount64();
+	return (currentTickCount - lastRun) > minimumElapsedTimeInMilliseconds;
 }
