@@ -61,7 +61,12 @@ void CreditsMenu::RenderCreditsMenu()
 {
     profiler->Start("CreditsMenu::RenderCreditsMenu()");
     profiler->GetMilliseconds("CreditsMenu::RenderCreditsMenu()");
-    profiler->GetTicks("CreditsMenu::RenderCreditsMenu()");
+
+    printf("Thread id %d: CreditsMenu::RenderCreditsMenu() CPU usage: %d%%\n", ::GetCurrentThreadId(),
+        profiler->GetCPUusage());
+
+    printf("Thread id %d: CreditsMenu::RenderCreditsMenu() memory usage: %i MB\n", ::GetCurrentThreadId(),
+        profiler->GetMemoryUsage());
 
     SDL_RenderClear(creditsRenderer);
     SDL_RenderCopy(creditsRenderer, creditsTexture, NULL, NULL);

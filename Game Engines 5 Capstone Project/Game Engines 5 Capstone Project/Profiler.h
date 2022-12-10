@@ -13,7 +13,6 @@ public:
 
 	void Start(std::string functionName_);
 	double GetMilliseconds(std::string functionName_) const;
-	__int64 GetTicks(std::string functionName_) const;
 
 	short GetCPUusage();
 	int GetMemoryUsage();

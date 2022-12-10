@@ -21,6 +21,8 @@ OptionsMenu::OptionsMenu(const char* title_, int x_, int y_, int w_, int h_, int
     exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
     exitButton.drect.y = 550;
 
+    profiler = new Profiler();
+
     isRunning = true;
 }
 
@@ -80,6 +82,15 @@ void OptionsMenu::OptionsMenuHandleEvents()
 
 void OptionsMenu::RenderOptionsMenu()
 {
+    profiler->Start("OptionsMenu::RenderOptionsMenu()");
+    profiler->GetMilliseconds("OptionsMenu::RenderOptionsMenu()");
+
+    printf("Thread id %d: OptionsMenu::RenderOptionsMenu() CPU usage: %d%%\n", ::GetCurrentThreadId(),
+        profiler->GetCPUusage());
+
+    printf("Thread id %d: OptionsMenu::RenderOptionsMenu() memory usage: %i MB\n", ::GetCurrentThreadId(),
+        profiler->GetMemoryUsage());
+
     SDL_RenderClear(optionsRenderer);
     SDL_RenderCopy(optionsRenderer, optionsTexture, NULL, NULL);
     exitButton.draw();
