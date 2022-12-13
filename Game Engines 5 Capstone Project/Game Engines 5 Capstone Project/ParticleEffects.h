@@ -156,11 +156,6 @@ public:
     virtual float getRotatePerSecondVar() const;
     virtual void setRotatePerSecondVar(float degrees);
 
-    //virtual void setScale(float s);
-    //virtual void setRotation(float newRotation);
-    //virtual void setScaleX(float newScaleX);
-    //virtual void setScaleY(float newScaleY);
-
     virtual bool isActive() const;
 
     int getAtlasIndex() const { return atlasIndexSignedInt; }
@@ -252,9 +247,6 @@ public:
     virtual void resumeEmissions();
 
 protected:
-    //virtual void updateBlendFunc();
-
-    bool isBlendAdditive = true;
     bool isAutoRemovedOnFinish = false;
 
     std::string particleListFile;

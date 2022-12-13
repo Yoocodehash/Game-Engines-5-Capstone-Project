@@ -3,50 +3,54 @@
 #include <assert.h>
 #include <string>
 
-inline float Deg2Rad(float a)
+inline float DegreesToRadians(float a)
 {
     return a * 0.01745329252f;
 }
 
-inline float Rad2Deg(float a)
+inline float RadiansToDegrees(float a)
 {
     return a * 57.29577951f;
 }
 
-inline float clampf(float value, float min_inclusive, float maxinclusive)
+/* Clamped floating point types (found in https://docs.rs/clampf/latest/clampf/)
+Provides wrappers around floating point values clamped to the range[0, 1] */
+
+inline float ClampFloat(float value, float min_inclusive, float max_inclusive)
 {
-    if (min_inclusive > maxinclusive)
+    if (min_inclusive > max_inclusive)
     {
-        std::swap(min_inclusive, maxinclusive);
+        std::swap(min_inclusive, max_inclusive);
     }
-    return value < min_inclusive ? min_inclusive : value < maxinclusive ? value : maxinclusive;
+    return value < min_inclusive ? min_inclusive : value < max_inclusive ? value : max_inclusive;
 }
 
-inline void normalize_point(float x, float y, Point* out)
+inline void NormalizePoint(float x, float y, Point* out)
 {
     float n = x * x + y * y;
-    // Already normalized.
+
+    // If it's already normalized, return nothing
     if (n == 1.0f)
     {
         return;
     }
 
     n = sqrt(n);
-    // Too close to zero.
+
+    // If it's too close to zero (1e-5 = 0.00001), return nothing
     if (n < 1e-5)
     {
         return;
     }
 
+    // Normalized point
     n = 1.0f / n;
     out->x = x * n;
     out->y = y * n;
 }
 
-/**
-A more effect random number getter function, get from ejoy2d.
-*/
-inline static float RANDOM_M11(unsigned int* seed)
+// Random number getter function
+inline static float GetRandomNumber(unsigned int* seed)
 {
     *seed = *seed * 134775813 + 1;
     union
@@ -61,8 +65,6 @@ inline static float RANDOM_M11(unsigned int* seed)
 void ParticleEffects::ParticleSystem()
 {
 }
-
-// implementation ParticleEffects
 
 bool ParticleEffects::initWithTotalParticles(int numberOfParticles)
 {
@@ -95,34 +97,39 @@ void ParticleEffects::addParticles(int count)
     {
         return;
     }
-    uint32_t RANDSEED = rand();
+    uint32_t randomNum = rand();
 
     int start = particleCount;
     particleCount += count;
 
-    //life
+    // Life
     for (int i = start; i < particleCount; ++i)
     {
-        float theLife = life + lifeVar * RANDOM_M11(&RANDSEED);
+        float theLife = life + lifeVar * GetRandomNumber(&randomNum);
         particleInfo[i].timeToLive = (std::max)(0.0f, theLife);
     }
 
-    //position
+    // Position
     for (int i = start; i < particleCount; ++i)
     {
-        particleInfo[i].posx = sourcePos.x + posVariance.x * RANDOM_M11(&RANDSEED);
+        particleInfo[i].posx = sourcePos.x + posVariance.x * GetRandomNumber(&randomNum);
     }
 
     for (int i = start; i < particleCount; ++i)
     {
-        particleInfo[i].posy = sourcePos.y + posVariance.y * RANDOM_M11(&RANDSEED);
+        particleInfo[i].posy = sourcePos.y + posVariance.y * GetRandomNumber(&randomNum);
     }
 
-    //color
+    /* Set the color
+      \ slash allows you to #define a variable inside a function and creates a variable
+      for the ParticleEffects class (only in .cpp file)
+      So without the / slash, there will be errors with ParticleEffects class not having a variable
+      inside of the #define variable (this is a macro call, by the way)
+    */ 
 #define SET_COLOR(c, b, v)                                                 \
     for (int i = start; i < particleCount; ++i)                           \
     {                                                                      \
-        particleInfo[i].c = clampf(b + v * RANDOM_M11(&RANDSEED), 0, 1); \
+        particleInfo[i].c = ClampFloat(b + v * GetRandomNumber(&randomNum), 0, 1); \
     }
 
     SET_COLOR(colorR, startColor.r, startColorVar.r);
@@ -135,6 +142,7 @@ void ParticleEffects::addParticles(int count)
     SET_COLOR(deltaColorB, endColor.b, endColorVar.b);
     SET_COLOR(deltaColorA, endColor.a, endColorVar.a);
 
+    // Set the delta color
 #define SET_DELTA_COLOR(c, dc)                                                                              \
     for (int i = start; i < particleCount; ++i)                                                            \
     {                                                                                                       \
@@ -146,10 +154,10 @@ void ParticleEffects::addParticles(int count)
     SET_DELTA_COLOR(colorB, deltaColorB);
     SET_DELTA_COLOR(colorA, deltaColorA);
 
-    //size
+    // Size
     for (int i = start; i < particleCount; ++i)
     {
-        particleInfo[i].size = startSize + startSizeVar * RANDOM_M11(&RANDSEED);
+        particleInfo[i].size = startSize + startSizeVar * GetRandomNumber(&randomNum);
         particleInfo[i].size = (std::max)(0.0f, particleInfo[i].size);
     }
 
@@ -157,7 +165,7 @@ void ParticleEffects::addParticles(int count)
     {
         for (int i = start; i < particleCount; ++i)
         {
-            float localEndSize = endSize + endSizeVar * RANDOM_M11(&RANDSEED);
+            float localEndSize = endSize + endSizeVar * GetRandomNumber(&randomNum);
             localEndSize = (std::max)(0.0f, localEndSize);
             particleInfo[i].deltaSize = (localEndSize - particleInfo[i].size) / particleInfo[i].timeToLive;
         }
@@ -170,18 +178,18 @@ void ParticleEffects::addParticles(int count)
         }
     }
 
-    // rotation
+    // Rotation
     for (int i = start; i < particleCount; ++i)
     {
-        particleInfo[i].rotation = startSpin + startSpinVar * RANDOM_M11(&RANDSEED);
+        particleInfo[i].rotation = startSpin + startSpinVar * GetRandomNumber(&randomNum);
     }
     for (int i = start; i < particleCount; ++i)
     {
-        float endA = endSpin + endSpinVar * RANDOM_M11(&RANDSEED);
+        float endA = endSpin + endSpinVar * GetRandomNumber(&randomNum);
         particleInfo[i].deltaRotation = (endA - particleInfo[i].rotation) / particleInfo[i].timeToLive;
     }
 
-    // position
+    // Local position variable
     Vector2 pos;
     pos.x = x;
     pos.y = y;
@@ -195,20 +203,20 @@ void ParticleEffects::addParticles(int count)
         particleInfo[i].startPosY = pos.y;
     }
 
-    // Mode Gravity: A
+    // Gravity mode
     if (emitterMode == Mode::GRAVITY)
     {
 
         // radial accel
         for (int i = start; i < particleCount; ++i)
         {
-            particleInfo[i].gravityMode.radialAccel = gravityMode.radialAccel + gravityMode.radialAccelVar * RANDOM_M11(&RANDSEED);
+            particleInfo[i].gravityMode.radialAccel = gravityMode.radialAccel + gravityMode.radialAccelVar * GetRandomNumber(&randomNum);
         }
 
         // tangential accel
         for (int i = start; i < particleCount; ++i)
         {
-            particleInfo[i].gravityMode.tangentialAccel = gravityMode.tangentialAccel + gravityMode.tangentialAccelVar * RANDOM_M11(&RANDSEED);
+            particleInfo[i].gravityMode.tangentialAccel = gravityMode.tangentialAccel + gravityMode.tangentialAccelVar * GetRandomNumber(&randomNum);
         }
 
         // rotation is dir
@@ -216,45 +224,45 @@ void ParticleEffects::addParticles(int count)
         {
             for (int i = start; i < particleCount; ++i)
             {
-                float a = Deg2Rad(angle + angleVar * RANDOM_M11(&RANDSEED));
+                float a = DegreesToRadians(angle + angleVar * GetRandomNumber(&randomNum));
                 Vector2 v(cosf(a), sinf(a));
-                float s = gravityMode.speed + gravityMode.speedVar * RANDOM_M11(&RANDSEED);
+                float s = gravityMode.speed + gravityMode.speedVar * GetRandomNumber(&randomNum);
                 Vector2 dir = v * s;
                 particleInfo[i].gravityMode.dirX = dir.x;    //v * s ;
                 particleInfo[i].gravityMode.dirY = dir.y;
-                particleInfo[i].rotation = -Rad2Deg(dir.getAngle());
+                particleInfo[i].rotation = -RadiansToDegrees(dir.getAngle());
             }
         }
         else
         {
             for (int i = start; i < particleCount; ++i)
             {
-                float a = Deg2Rad(angle + angleVar * RANDOM_M11(&RANDSEED));
+                float a = DegreesToRadians(angle + angleVar * GetRandomNumber(&randomNum));
                 Vector2 v(cosf(a), sinf(a));
-                float s = gravityMode.speed + gravityMode.speedVar * RANDOM_M11(&RANDSEED);
+                float s = gravityMode.speed + gravityMode.speedVar * GetRandomNumber(&randomNum);
                 Vector2 dir = v * s;
-                particleInfo[i].gravityMode.dirX = dir.x;    //v * s ;
+                particleInfo[i].gravityMode.dirX = dir.x;
                 particleInfo[i].gravityMode.dirY = dir.y;
             }
         }
     }
 
-    // Mode Radius: B
+    // Radius mode
     else
     {
         for (int i = start; i < particleCount; ++i)
         {
-            particleInfo[i].radiusMode.radius = radiusMode.startRadius + radiusMode.startRadiusVar * RANDOM_M11(&RANDSEED);
+            particleInfo[i].radiusMode.radius = radiusMode.startRadius + radiusMode.startRadiusVar * GetRandomNumber(&randomNum);
         }
 
         for (int i = start; i < particleCount; ++i)
         {
-            particleInfo[i].radiusMode.angle = Deg2Rad(angle + angleVar * RANDOM_M11(&RANDSEED));
+            particleInfo[i].radiusMode.angle = DegreesToRadians(angle + angleVar * GetRandomNumber(&randomNum));
         }
 
         for (int i = start; i < particleCount; ++i)
         {
-            particleInfo[i].radiusMode.degreesPerSecond = Deg2Rad(radiusMode.rotatePerSecond + radiusMode.rotatePerSecondVar * RANDOM_M11(&RANDSEED));
+            particleInfo[i].radiusMode.degreesPerSecond = DegreesToRadians(radiusMode.rotatePerSecond + radiusMode.rotatePerSecondVar * GetRandomNumber(&randomNum));
         }
 
         if (radiusMode.endRadius == START_RADIUS_EQUAL_TO_END_RADIUS)
@@ -268,7 +276,7 @@ void ParticleEffects::addParticles(int count)
         {
             for (int i = start; i < particleCount; ++i)
             {
-                float endRadius = radiusMode.endRadius + radiusMode.endRadiusVar * RANDOM_M11(&RANDSEED);
+                float endRadius = radiusMode.endRadius + radiusMode.endRadiusVar * GetRandomNumber(&randomNum);
                 particleInfo[i].radiusMode.deltaRadius = (endRadius - particleInfo[i].radiusMode.radius) / particleInfo[i].timeToLive;
             }
         }
@@ -297,7 +305,6 @@ bool ParticleEffects::isFull()
     return (particleCount == totalParticles);
 }
 
-// ParticleEffects - MainLoop
 void ParticleEffects::update()
 {
     float dt = 1.0 / 25;
@@ -306,7 +313,7 @@ void ParticleEffects::update()
         float rate = 1.0f / emissionRate;
         int totalNumOfParticles = totalParticles;
 
-        //issue #1201, prevent bursts of particles, due to too high emitCounter
+        // Prevents bursts of particles, due to too high emitCounter
         if (particleCount < totalNumOfParticles)
         {
             emitterCounter += dt;
@@ -361,7 +368,7 @@ void ParticleEffects::update()
             // radial acceleration
             if (particleInfo[i].posx || particleInfo[i].posy)
             {
-                normalize_point(particleInfo[i].posx, particleInfo[i].posy, &radial);
+                NormalizePoint(particleInfo[i].posx, particleInfo[i].posy, &radial);
             }
             tangential = radial;
             radial.x *= particleInfo[i].gravityMode.radialAccel;
@@ -381,10 +388,6 @@ void ParticleEffects::update()
             particleInfo[i].gravityMode.dirX += tmp.x;
             particleInfo[i].gravityMode.dirY += tmp.y;
 
-            // this is cocos2d-x v3.0
-            // if (emitterName.length()>0 && flippedY != -1)
-
-            // this is cocos2d-x v3.0
             tmp.x = particleInfo[i].gravityMode.dirX * dt * flippedY;
             tmp.y = particleInfo[i].gravityMode.dirY * dt * flippedY;
             particleInfo[i].posx += tmp.x;
@@ -415,7 +418,6 @@ void ParticleEffects::update()
     }
 }
 
-// ParticleEffects - Texture protocol
 void ParticleEffects::setTexture(SDL_Texture* var)
 {
     if (particleTex != var)
@@ -452,7 +454,7 @@ SDL_Texture* ParticleEffects::getTexture()
     return particleTex;
 }
 
-// ParticleEffects - Properties of Gravity Mode
+// Set the properties of Gravity Mode variables
 void ParticleEffects::setTangentialAccel(float t)
 {
     gravityMode.tangentialAccel = t;
@@ -535,7 +537,7 @@ float ParticleEffects::getSpeedVar() const
     return gravityMode.speedVar;
 }
 
-// ParticleEffects - Properties of Radius Mode
+// Set the properties of Radius Mode variables
 void ParticleEffects::setStartRadius(float startRadius)
 {
     radiusMode.startRadius = startRadius;
@@ -622,31 +624,6 @@ void ParticleEffects::setAutoRemoveOnFinish(bool var)
     isAutoRemovedOnFinish = var;
 }
 
-////don't use a transform matrix, this is faster
-//void ParticleEffects::setScale(float s)
-//{
-//    isTransformSystemDirty = true;
-//    Node::setScale(s);
-//}
-//
-//void ParticleEffects::setRotation(float newRotation)
-//{
-//    isTransformSystemDirty = true;
-//    Node::setRotation(newRotation);
-//}
-//
-//void ParticleEffects::setScaleX(float newScaleX)
-//{
-//    isTransformSystemDirty = true;
-//    Node::setScaleX(newScaleX);
-//}
-//
-//void ParticleEffects::setScaleY(float newScaleY)
-//{
-//    isTransformSystemDirty = true;
-//    Node::setScaleY(newScaleY);
-//}
-
 bool ParticleEffects::isPaused() const
 {
     return isParticlePaused;
@@ -683,40 +660,37 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(250);
 
-        // duration
         duration = DURATION_INFINITY;
 
-        // Gravity Mode
+        // Gravity mode
         this->emitterMode = Mode::GRAVITY;
-
-        // Gravity Mode: gravity
         this->gravityMode.gravity = { 0, 0 };
 
-        // Gravity Mode: radial acceleration
+        // Radial acceleration
         this->gravityMode.radialAccel = 0;
         this->gravityMode.radialAccelVar = 0;
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         this->gravityMode.speed = -60;
         this->gravityMode.speedVar = 20;
 
-        // starting angle
+        // Starting angle
         angle = 90;
         angleVar = 10;
 
-        // life of particles
+        // Life of particles
         life = 3;
         lifeVar = 0.25f;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 54.0f;
         startSizeVar = 10.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
-        // emits per frame
+        // Emits per frame
         emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.76f;
         startColor.g = 0.25f;
         startColor.b = 0.12f;
@@ -741,35 +715,32 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(1500);
 
-        // duration
         duration = DURATION_INFINITY;
 
-        // Gravity Mode
+        // Gravity mode
         this->emitterMode = Mode::GRAVITY;
-
-        // Gravity Mode: gravity
         this->gravityMode.gravity = { 0.0f, 90.0f };
 
-        // Gravity Mode:  radial
+        // Radial acceleration
         this->gravityMode.radialAccel = 0.0f;
         this->gravityMode.radialAccelVar = 0.0f;
 
-        //  Gravity Mode: speed of particles
+        // Speed of particles
         this->gravityMode.speed = -180.0f;
         this->gravityMode.speedVar = 50.0f;
 
-        // angle
+        // Angle
         this->angle = 90.0f;
         this->angleVar = 20.0f;
 
-        // life of particles
+        // Life of particles
         this->life = 3.5f;
         this->lifeVar = 1.0f;
 
-        // emits per frame
+        // Emits per frame
         this->emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.5f;
         startColor.g = 0.5f;
         startColor.b = 0.5f;
@@ -787,7 +758,7 @@ void ParticleEffects::setParticle(Particles type_)
         endColorVar.b = 0.1f;
         endColorVar.a = 0.2f;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 8.0f;
         startSizeVar = 2.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
@@ -799,43 +770,37 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(350);
 
-        // additive
-        //this->setBlendAdditive(true);
-
-        // duration
         duration = DURATION_INFINITY;
 
-        // Gravity Mode
+        // Gravity mode
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(0, 0));
 
-        // Gravity mode: radial acceleration
+        // Radial acceleration
         setRadialAccel(0);
         setRadialAccelVar(0);
 
-        // Gravity mode: speed of particles
+        // Speed of particles
         setSpeed(-20);
         setSpeedVar(5);
 
-        // angle
+        // Angle
         angle = 90;
         angleVar = 360;
 
-        // life of particles
+        // Life of particles
         life = 1;
         lifeVar = 0.5f;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 30.0f;
         startSizeVar = 10.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
-        // emits per seconds
+        // Emits per seconds
         emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.76f;
         startColor.g = 0.25f;
         startColor.b = 0.12f;
@@ -859,36 +824,34 @@ void ParticleEffects::setParticle(Particles type_)
     case ParticleEffects::GALAXY:
     {
         initWithTotalParticles(200);
-        // duration
+
         duration = DURATION_INFINITY;
 
-        // Gravity Mode
+        // Gravity mode
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(0, 0));
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         setSpeed(-60);
         setSpeedVar(10);
 
-        // Gravity Mode: radial
+        // Radial acceleration
         setRadialAccel(-80);
         setRadialAccelVar(0);
 
-        // Gravity Mode: tangential
+        // Tangential acceleration
         setTangentialAccel(80);
         setTangentialAccelVar(0);
 
-        // angle
+        // Angle
         angle = 90;
         angleVar = 360;
 
-        // life of particles
+        // Life of particles
         life = 4;
         lifeVar = 1;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 37.0f;
         startSizeVar = 10.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
@@ -896,7 +859,7 @@ void ParticleEffects::setParticle(Particles type_)
         // emits per second
         emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.12f;
         startColor.g = 0.25f;
         startColor.b = 0.76f;
@@ -921,36 +884,33 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(250);
 
-        // duration
         duration = DURATION_INFINITY;
 
-        // Gravity Mode
+        // Gravity mode
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(0, 0));
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         setSpeed(-80);
         setSpeedVar(10);
 
-        // Gravity Mode: radial
+        // Radial acceleration
         setRadialAccel(-60);
         setRadialAccelVar(0);
 
-        // Gravity Mode: tangential
+        // Tangential acceleration
         setTangentialAccel(15);
         setTangentialAccelVar(0);
 
-        // angle
+        // Angle
         angle = 90;
         angleVar = 360;
 
-        // life of particles
+        // Life of particles
         life = 4;
         lifeVar = 1;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 30.0f;
         startSizeVar = 10.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
@@ -958,7 +918,7 @@ void ParticleEffects::setParticle(Particles type_)
         // emits per second
         emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.50f;
         startColor.g = 0.50f;
         startColor.b = 0.50f;
@@ -983,36 +943,33 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(150);
 
-        // duration
         duration = DURATION_INFINITY;
 
-        // Gravity Mode
+        // Gravity mode
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(-200, -200));
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         setSpeed(-15);
         setSpeedVar(5);
 
-        // Gravity Mode: radial
+        // Radial acceleration
         setRadialAccel(0);
         setRadialAccelVar(0);
 
-        // Gravity Mode: tangential
+        // Tangential acceleration
         setTangentialAccel(0);
         setTangentialAccelVar(0);
 
-        // angle
+        // Angle
         angle = 90;
         angleVar = 360;
 
-        // life of particles
+        // Life of particles
         life = 2;
         lifeVar = 1;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 60.0f;
         startSizeVar = 10.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
@@ -1020,7 +977,7 @@ void ParticleEffects::setParticle(Particles type_)
         // emits per second
         emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.2f;
         startColor.g = 0.4f;
         startColor.b = 0.7f;
@@ -1045,36 +1002,33 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(500);
 
-        // duration
         duration = DURATION_INFINITY;
 
-        // Gravity Mode
+        // Gravity mode
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(0, 0));
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         setSpeed(-150);
         setSpeedVar(0);
 
-        // Gravity Mode: radial
+        // Radial acceleration
         setRadialAccel(-380);
         setRadialAccelVar(0);
 
-        // Gravity Mode: tangential
+        // Tangential acceleration
         setTangentialAccel(45);
         setTangentialAccelVar(0);
 
-        // angle
+        // Angle
         angle = 90;
         angleVar = 0;
 
-        // life of particles
+        // Life of particles
         life = 12;
         lifeVar = 0;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 20.0f;
         startSizeVar = 0.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
@@ -1082,7 +1036,7 @@ void ParticleEffects::setParticle(Particles type_)
         // emits per second
         emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.5f;
         startColor.g = 0.5f;
         startColor.b = 0.5f;
@@ -1107,35 +1061,32 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(700);
 
-        // duration
         duration = 0.1f;
 
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(0, 0));
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         setSpeed(-70);
         setSpeedVar(40);
 
-        // Gravity Mode: radial
+        // Radial acceleration
         setRadialAccel(0);
         setRadialAccelVar(0);
 
-        // Gravity Mode: tangential
+        // Tangential acceleration
         setTangentialAccel(0);
         setTangentialAccelVar(0);
 
-        // angle
+        // Angle
         angle = 90;
         angleVar = 360;
 
-        // life of particles
+        // Life of particles
         life = 5.0f;
         lifeVar = 2;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 15.0f;
         startSizeVar = 10.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
@@ -1143,7 +1094,7 @@ void ParticleEffects::setParticle(Particles type_)
         // emits per second
         emissionRate = totalParticles / duration;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.7f;
         startColor.g = 0.1f;
         startColor.b = 0.2f;
@@ -1173,35 +1124,33 @@ void ParticleEffects::setParticle(Particles type_)
 
         // Emitter mode: Gravity Mode
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(0, 0));
 
-        // Gravity Mode: radial acceleration
+        // Radial acceleration acceleration
         setRadialAccel(0);
         setRadialAccelVar(0);
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         setSpeed(-25);
         setSpeedVar(10);
 
-        // angle
+        // Angle
         angle = 90;
         angleVar = 5;
 
-        // life of particles
+        // Life of particles
         life = 4;
         lifeVar = 1;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 60.0f;
         startSizeVar = 10.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
 
-        // emits per frame
+        // Emits per frame
         emissionRate = totalParticles / life;
 
-        // color of particles
+        // Color of particles
         startColor.r = 0.8f;
         startColor.g = 0.8f;
         startColor.b = 0.8f;
@@ -1226,36 +1175,33 @@ void ParticleEffects::setParticle(Particles type_)
     {
         initWithTotalParticles(700);
 
-        // duration
         duration = DURATION_INFINITY;
 
-        // set gravity mode.
+        // Gravity mode
         setEmitterMode(Mode::GRAVITY);
-
-        // Gravity Mode: gravity
         setGravity(Vector2(0, 1));
 
-        // Gravity Mode: speed of particles
+        // Speed of particles
         setSpeed(-5);
         setSpeedVar(1);
 
-        // Gravity Mode: radial
+        // Radial acceleration
         setRadialAccel(0);
         setRadialAccelVar(1);
 
-        // Gravity mode: tangential
+        // Tangential acceleration
         setTangentialAccel(0);
         setTangentialAccelVar(1);
 
-        // angle
+        // Angle
         angle = -90;
         angleVar = 5;
 
-        // life of particles
+        // Life of particles
         life = 45;
         lifeVar = 15;
 
-        // size, in pixels
+        // Size, in pixels
         startSize = 10.0f;
         startSizeVar = 5.0f;
         endSize = START_SIZE_EQUAL_TO_END_SIZE;
@@ -1263,7 +1209,7 @@ void ParticleEffects::setParticle(Particles type_)
         // emits per second
         emissionRate = 10;
 
-        // color of particles
+        // Color of particles
         startColor.r = 1.0f;
         startColor.g = 1.0f;
         startColor.b = 1.0f;
