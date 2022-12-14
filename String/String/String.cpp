@@ -17,7 +17,6 @@ public:
 	void GetString(char* Buffer_, size_t Length_);
 	size_t GetStringLength();
 	void AttachString(const std::string&);
-	void SetStringCallback(callback Callback_);
 };
 
 // Constructor default intialization
@@ -56,13 +55,6 @@ void String::AttachString(const std::string& String_)
 	}
 }
 
-/* Sets the callback to listen for the GetStringLengthand AttachString functions
-This is needed to use the string callback from unity */
-void String::SetStringCallback(callback Callback_) 
-{
-	Callback = Callback_;
-}
-
 /* Rest of the functions below are DLL exported functionsand don't require a class declaration in a function
 Creates a new instance of the class and returns it */
 String* GetWrittenString(const char* String_, size_t StringSize_)
@@ -91,10 +83,4 @@ size_t GetStringLength(String* StringObject_)
 // Attach the string for an instance
 void AttachString(String* StringObject_, const char* Text_, size_t StringSize_) {
 	return StringObject_->AttachString(std::string(Text_, StringSize_));
-}
-
-// Set callback for listening GetStringLength and AttachString for an instance
-void SetStringCallback(String* StringObject_, callback Callback_)
-{
-	StringObject_->SetStringCallback(Callback_);
 }

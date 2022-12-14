@@ -1,15 +1,18 @@
-﻿  String.cpp
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(45,30): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(55,43): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(68,9): warning C4273: 'GetWrittenString': inconsistent dll linkage
+﻿  pch.cpp
+  dllmain.cpp
+  String.cpp
+C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(44,30): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(54,43): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(60,9): warning C4273: 'GetWrittenString': inconsistent dll linkage
 C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.h(26,24): message : see previous definition of 'GetWrittenString'
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(74,6): warning C4273: 'OnDestroyString': inconsistent dll linkage
+C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(66,6): warning C4273: 'OnDestroyString': inconsistent dll linkage
 C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.h(27,21): message : see previous definition of 'OnDestroyString'
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(80,6): warning C4273: 'GetString': inconsistent dll linkage
+C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(72,6): warning C4273: 'GetString': inconsistent dll linkage
 C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.h(28,21): message : see previous definition of 'GetString'
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(86,8): warning C4273: 'GetStringLength': inconsistent dll linkage
+C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(78,8): warning C4273: 'GetStringLength': inconsistent dll linkage
 C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.h(29,23): message : see previous definition of 'GetStringLength'
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(92,6): warning C4273: 'AttachString': inconsistent dll linkage
+C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(84,6): warning C4273: 'AttachString': inconsistent dll linkage
 C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.h(30,21): message : see previous definition of 'AttachString'
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.cpp(97,6): warning C4273: 'SetStringCallback': inconsistent dll linkage
-C:\GitHub\Game-Engines-5-Capstone-Project\String\String\String.h(31,21): message : see previous definition of 'SetStringCallback'
+  Generating Code...
+     Creating library C:\GitHub\Game-Engines-5-Capstone-Project\String\x64\Debug\String.lib and object C:\GitHub\Game-Engines-5-Capstone-Project\String\x64\Debug\String.exp
+  String.vcxproj -> C:\GitHub\Game-Engines-5-Capstone-Project\String\x64\Debug\String.dll
