@@ -111,21 +111,22 @@ void SearchForMemoryLeaks()
     // If the null pointer size is greater than 0, then the memory has leaked and print where the leak occurs at
     if (NullPointerSize > 0)
     {
-        printf("Leaked memory at:\n");
+        std::cout << "\nLeaked memory at: ";
         for (size_t i = 0; i < NullPointerSize; ++i)
         {
-            printf("\t%p (File: %s, On line %ld)\n", MemoryMap[i].pointer, MemoryMap[i].file, MemoryMap[i].line);
+            std::cout << MemoryMap[i].pointer << " (File: " << MemoryMap[i].file << ", on line " <<
+                MemoryMap[i].line << ")\n";
         }
     }
 
     // Else if it's equal to or less than 0, then print to the console that there's no memory leaks
     else
     {
-        printf("No memory leaks!\n");
+        std::cout << "No memory leaks!\n";
     }
 };
 
-// Overload the operator new in the scalar way
+// Overload the operator new only for a single object pointer
 void* operator new(size_t size_, const char* file_, long line_) 
 {
     // Initialize the pointer to be equal to the malloc of the size of the pointer
@@ -139,7 +140,7 @@ void* operator new(size_t size_, const char* file_, long line_)
 
         if (NullPointerSize == MaxPointers) 
         {
-            printf("The memory map is a nullptr\n");
+            std::cout << "The memory map is a nullptr\n";
         }
 
         // Make the memory map array variables equal to the local pointer variable and the parameters passed in
@@ -154,22 +155,22 @@ void* operator new(size_t size_, const char* file_, long line_)
     // If trace memory is turned on, then print the memory allocation at a particular address and line of code
     if (traceMemoryOn) 
     {
-        printf("Allocated %u bytes at address %p ", size_, pointer);
-        printf("(File: %s, On line: %ld)\n", file_, line_);
+        std::cout << "\nAllocated " << size_ << " bytes at address " << pointer <<
+            " (File: " << file_ << ", on line " << line_ << ")\n";
     }
 
     // Return the local pointer variable
     return pointer;
 }
 
-// Overload the operator new in the array way which will pass in the size, code file, and the line of code
+// Overload the operator new for multiple object pointers which will pass in the size, code file, and the line of code
 void* operator new[](size_t size_, const char* file_, long line_) 
 {
     // Return operator new(size_, file_, line_)
     return operator new(size_, file_, line_);
 }
 
-// Override the operator delete in the scalar way which only passes in the void pointer variable
+// Override the operator delete for a single object pointer which only passes in the void pointer variable
 void operator delete(void* pointer_) 
 {
     // If the map address is greater than 0, then free the memory map and delete it
@@ -181,7 +182,7 @@ void operator delete(void* pointer_)
         // If trace memory is on, print the deleted memory and search for memory leaks after
         if (traceMemoryOn)
         {
-            printf("Deleted memory at address %p\n", pointer_);
+            std::cout << "\nDeleted memory at address " << pointer_ << "\n";
 
             // After the pointers are deleted, search for memory leaks (only works properly for array delete operators)
             SearchForMemoryLeaks();
@@ -192,11 +193,11 @@ void operator delete(void* pointer_)
     // Else if there's an unknown pointer somewhere, then print to the console that the pointer will be deleted
     else if (!pointer_ && activeMemoryOn)
     {
-        printf("Attempt to delete unknown pointer: %p\n", pointer_);
+        std::cout << "\nAttempt to delete unknown pointer: " << pointer_ << "\n";
     }
 }
 
-// Overload the operator delete in the array way
+// Overload the operator delete for multiple object pointers
 void operator delete[](void* pointer_) 
 {
     // Use the operator delete function above

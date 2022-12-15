@@ -30,10 +30,13 @@ void* operator new[](std::size_t, const char*, long);
 need to be a reference to a specific object */
 
 // The define functions need to be here so that we can use it in Main.cpp and run the memory monitor properly
+
+// Trace memory gets the memory from the replacement functions for operator new and operator delete functions
 extern bool traceMemoryOn;
 #define TraceMemoryOn() traceMemoryOn = true // Make the boolean true if trace memory is on
 #define TraceMemoryOff() traceMemoryOn = false // Make the boolean false if trace memory is off
 
+// Active memory gets the current memory allocation information as well as deallocation and memory leaks
 extern bool activeMemoryOn;
 #define ActiveMemoryOn() activeMemoryOn = true // Make the boolean true if active memory is on
 #define ActiveMemoryOff() activeMemoryOn = false // Make the boolean false if active memory is off

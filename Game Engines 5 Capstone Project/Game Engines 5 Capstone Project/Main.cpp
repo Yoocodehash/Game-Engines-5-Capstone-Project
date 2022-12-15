@@ -33,13 +33,20 @@ int main(int argc, char** argv)
     memoryManager = new MemoryManagement();
     memoryManager->WriteStrings();
 
+    // Turn active memory on to get the current memory allocation
     ActiveMemoryOn();
-    int* p = new int;
-    delete p;
-    int* q = new int[3];
-    delete[] q;
-    int* r = new int;
-    delete r;
+
+    // Initialize int pointers to be the new array operators to test memory monitor
+    int* fiveInts = new int[5];
+    delete[] fiveInts;
+    int* threeInts = new int[3];
+    delete[] threeInts;
+    int* sixInts = new int[6];
+    delete[] sixInts;
+    int* oneInt = new int;
+    delete oneInt;
+
+    // Turn off active memory after these variables are deallocated and freed from memory
     ActiveMemoryOff();
 
     Mouse mouse;

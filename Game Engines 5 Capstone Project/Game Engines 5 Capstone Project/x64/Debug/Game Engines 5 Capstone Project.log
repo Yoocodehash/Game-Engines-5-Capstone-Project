@@ -1,1 +1,3 @@
-﻿  Game Engines 5 Capstone Project.vcxproj -> C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\x64\Debug\Game Engines 5 Capstone Project.exe
+﻿  Memory.cpp
+C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\Game Engines 5 Capstone Project\Memory.cpp(86,21): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Game Engines 5 Capstone Project.vcxproj -> C:\GitHub\Game-Engines-5-Capstone-Project\Game Engines 5 Capstone Project\x64\Debug\Game Engines 5 Capstone Project.exe
