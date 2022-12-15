@@ -4,24 +4,20 @@ SDL_Event OptionsMenu::optionsEvent;
 
 OptionsMenu::OptionsMenu(const char* title_, int x_, int y_, int w_, int h_, int flags_)
 {
-    // Initialize window when the start button is pressed
     optionsWindow = SDL_CreateWindow(title_, x_, y_, w_, h_, flags_);
     optionsRenderer = SDL_CreateRenderer(optionsWindow, -1, SDL_RENDERER_ACCELERATED);
 
     optionsSurface = IMG_Load("Options Menu.png");
     optionsTexture = SDL_CreateTextureFromSurface(optionsRenderer, optionsSurface);
 
-    memoryPool = new MemoryPool();
-
     threadPool.Start(1);
-    memoryPool->AllocatePool(10, 10, 1);
-    memoryPool->AllocateAligned(13, 1);
 
     exitButton.srect.y = 710;
     exitButton.drect.x = 800 / 2 - exitButton.drect.w / 2;
-    exitButton.drect.y = 550;
+    exitButton.drect.y = 550; // This is where the button is and knows that it's clicked
+    // once you hit the button
 
-    profiler = new Profiler();
+    profiler = new Profiler(); // We got CPU usage and memory usage running inside the options menu
 
     isRunning = true;
 }
@@ -44,7 +40,6 @@ void OptionsMenu::OptionsMenuHandleEvents()
         {
         case SDL_QUIT:
             threadPool.Finish();
-            memoryPool->ReleaseMemoryPool();
 
             isRunning = false;
             break;
@@ -55,7 +50,6 @@ void OptionsMenu::OptionsMenuHandleEvents()
                 // I included ESC key because if you're going to play in full screen then you can't press X and you're stuck
             case SDLK_ESCAPE:
                 threadPool.Finish();
-                memoryPool->ReleaseMemoryPool();
 
                 isRunning = false;
                 break;
@@ -67,7 +61,6 @@ void OptionsMenu::OptionsMenuHandleEvents()
                     if (exitButton.isSelected)
                     {
                         threadPool.Finish();
-                        memoryPool->ReleaseMemoryPool();
 
                         isRunning = false;
                         break;

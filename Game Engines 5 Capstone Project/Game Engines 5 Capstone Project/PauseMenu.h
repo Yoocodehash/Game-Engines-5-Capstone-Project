@@ -8,7 +8,6 @@
 #include "Button.h"
 #include "Profiler.h"
 #include "ThreadPool.h"
-#include "Memory.h"
 #include "OptionsMenu.h"
 #include "Audio.h"
 
@@ -31,7 +30,6 @@ public:
 	Audio PauseMenuButtonsSound;
 
 	ThreadPool threadPool;
-	MemoryPool* memoryPool;
 
 private:
 	SDL_Window* pauseWindow;

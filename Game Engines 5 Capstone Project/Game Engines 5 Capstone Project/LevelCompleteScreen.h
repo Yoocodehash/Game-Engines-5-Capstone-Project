@@ -7,7 +7,6 @@
 #include <vulkan/vulkan.hpp>
 #include "Button.h"
 #include "ThreadPool.h"
-#include "Memory.h"
 #include "Audio.h"
 #include "Profiler.h"
 
@@ -25,7 +24,6 @@ public:
 	bool Running();
 
 	ThreadPool threadPool;
-	MemoryPool* memoryPool;
 
 	static SDL_Event LevelCompleteEvent;
 	Button Exit;

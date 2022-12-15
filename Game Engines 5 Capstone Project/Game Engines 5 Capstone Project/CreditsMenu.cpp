@@ -11,11 +11,7 @@ CreditsMenu::CreditsMenu(const char* title_, int x_, int y_, int w_, int h_, int
     creditsSurface = IMG_Load("Credits.png");
     creditsTexture = SDL_CreateTextureFromSurface(creditsRenderer, creditsSurface);
 
-    memoryPool = new MemoryPool();
-
     threadPool.Start(1);
-    memoryPool->AllocatePool(10, 10, 1);
-    memoryPool->AllocateAligned(13, 1);
 
     profiler = new Profiler();
 
@@ -34,7 +30,6 @@ void CreditsMenu::CreditsMenuHandleEvents()
         {
         case SDL_QUIT:
             threadPool.Finish();
-            memoryPool->ReleaseMemoryPool();
 
             isRunning = false;
             break;
@@ -45,7 +40,6 @@ void CreditsMenu::CreditsMenuHandleEvents()
                 // I included ESC key because if you're going to play in full screen then you can't press X and you're stuck
             case SDLK_ESCAPE:
                 threadPool.Finish();
-                memoryPool->ReleaseMemoryPool();
 
                 isRunning = false;
                 break;

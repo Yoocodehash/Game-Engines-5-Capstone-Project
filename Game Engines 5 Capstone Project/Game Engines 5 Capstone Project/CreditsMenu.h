@@ -8,7 +8,6 @@
 #include <set>
 #include "ThreadPool.h"
 #include "Profiler.h"
-#include "Memory.h"
 
 class CreditsMenu
 {
@@ -32,7 +31,6 @@ private:
     Profiler* profiler;
 
     ThreadPool threadPool;
-    MemoryPool* memoryPool;
 
     bool isRunning;
 };

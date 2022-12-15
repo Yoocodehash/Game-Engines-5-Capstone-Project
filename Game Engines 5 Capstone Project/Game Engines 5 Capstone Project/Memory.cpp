@@ -1,281 +1,73 @@
 #include "Memory.h"
 
-#include <cassert>
-#include <cstdint>
-#include <cstddef>
-#include <iostream>
 
-MemoryPool::MemoryPool() : poolSize(0), elementSize(0), alignment(0), memory(nullptr), freeMemory(nullptr) {}
-
-
-MemoryPool::MemoryPool(const std::size_t elementSize_, const std::size_t elements_, const std::size_t alignment_)
+MemoryManagement::MemoryManagement()
 {
-	memory = freeMemory = nullptr;
-	AllocatePool(elementSize_, elements_, alignment_);
-	
-	assert(elementSize >= sizeof(void*));
-	assert(elementSize % alignment == 0);
-	assert((alignment & (alignment - 1)) == 0);
-
-	poolSize = (elementSize * elements_) + alignment_;
-	memory = AllocateAligned(elementSize * elements_, alignment);
-
-	if (memory == nullptr) 
-	{
-		std::cerr << "There is an error with  " << __FUNCTION__ << ": Unable to allocate/Out of memory! " << std::endl;
-	}
-
-	else 
-	{
-		freeMemory = static_cast<void**>(memory);
-		
-		std::uintptr_t endAddress = reinterpret_cast<std::uintptr_t>(freeMemory) + (elementSize * elements_);
-
-		for (std::size_t elementCount = 0; elementCount <  elements_; ++elementCount) 
-		{
-			std::uintptr_t currentAddress = reinterpret_cast<std::uintptr_t>(freeMemory) + elementCount * elementSize;
-			std::uintptr_t nextAddress = currentAddress + elementSize;
-			
-			void **currentMemory = reinterpret_cast<void**>(currentAddress);
-
-			if(nextAddress >= endAddress) 
-			{
-				*currentMemory = nullptr;
-			}
-
-			else 
-			{
-				*currentMemory = reinterpret_cast<void*>(nextAddress);
-			}
-		}
-	}
 }
 
 
-void MemoryPool::AllocatePool(const std::size_t elementSize_, const std::size_t elements_, const std::size_t alignment_)
+MemoryManagement::~MemoryManagement()
 {
-	assert(memory == nullptr);
-
-	elementSize = elementSize_;
-	alignment = alignment_;
-
-	assert(elementSize >= sizeof(void*));
-	assert(elementSize % alignment == 0);
-	assert((alignment & (alignment - 1)) == 0);
-
-	poolSize = (elementSize * elements_) + alignment_;
-
-	memory = AllocateAligned(elementSize * elements_, alignment);
-	if (memory == nullptr) 
-	{
-		std::cerr << "ERROR  " << __FUNCTION__ << ": Unable to allocate " << std::endl;
-	}
-
-	else 
-	{
-		freeMemory = static_cast<void**>(memory);
-		
-		std::uintptr_t endAddress = reinterpret_cast<std::uintptr_t>(freeMemory) + (elementSize * elements_);
-
-		for (std::size_t elementCount = 0; elementCount < elements_; ++elementCount) 
-		{
-			std::uintptr_t currentAddress = reinterpret_cast<std::uintptr_t>(freeMemory) + elementCount * elementSize;
-			std::uintptr_t nextAddress = currentAddress + elementSize;
-			
-			void** currentMemory = reinterpret_cast<void**>(currentAddress);
-
-			if (nextAddress >= endAddress) 
-			{
-				*currentMemory = nullptr;
-			}
-
-			else 
-			{
-				*currentMemory = reinterpret_cast<void*>(nextAddress);
-			}
-		}
-	}
 }
 
-void* MemoryPool::GetElement()
+// This is where the string pointer allocates the memory if it doesn't equal to nullptr
+void MemoryManagement::WriteStrings()
 {
-	if (memory == nullptr) {
-		std::cerr << "ERROR " << __FUNCTION__ << ": No memory was allocated to this pool" << std::endl;
-		return nullptr;
-	}
+    /* Create 2 int variables, one that stores the max size of strings you want to type(in this case, MaxSize)
+    And the other stores the amount of total input strings (not the actual string size, but how many
+    strings you are ABOUT to type (in this case, Number) */
 
-	if (freeMemory != nullptr) 
-	{
-		void* block = reinterpret_cast<void*>(freeMemory);
-		freeMemory = static_cast<void**>(*freeMemory);
+    int MaxSize, Number;
+    std::string* stringPointer; // Create a string pointer to allocate the memory of typed input strings
 
-		return block;
-	}
+    // Type a number on how many strings you want to type
+    std::cout << "How many strings do you want to type? ";
+    std::cin >> MaxSize;
 
-	else 
-	{
-		std::cerr << "ERROR " << __FUNCTION__ << ": out of memory blocks" << std::endl;
-		return nullptr;
-	}
+    // Initialize the string pointer to be the max size of the typed string
+    stringPointer = new std::string[MaxSize];
+
+    // If the memory cannot be allocated, then return this error statement to the console
+    if (stringPointer == nullptr)
+    {
+        std::cerr << "The memory string could not be allocated\n";
+    }
+
+    /* Else you can enter a string you want to input and it'll be received as soon as the number variable 
+    is equal to the max size variable */
+    else
+    {
+        std::cout << "\n"; // This is for formatting and makes the strings more legible
+
+        for (Number = 0; Number < MaxSize; Number++)
+        {
+            std::cout << "Enter a string: ";
+            std::cin >> stringPointer[Number];
+        }
+
+        std::cout << "\nReceived string: ";
+        for (Number = 0; Number < MaxSize; Number++)
+        {
+            std::cout << stringPointer[Number] << "\n";
+        }
+
+        // Delete the string pointer and print this statement to the console that the string pointer has been freed
+        delete[] stringPointer;
+
+        std::cout << "\nThe string pointer has been freed and deallocated\n\n";
+    }
 }
 
-void MemoryPool::FreeElement(void* pblock)
+MemoryMonitor::MemoryMonitor()
 {
-	if (pblock == nullptr) 
-	{
-		return;
-	}
-
-	if (memory == nullptr) 
-	{
-		std::cerr << "ERROR " << __FUNCTION__ << ": No memory was allocated to this pool" << std::endl;
-		return;
-	}
-
-	if (freeMemory == nullptr) 
-	{
-		freeMemory = reinterpret_cast<void**>(pblock);
-		*freeMemory = nullptr;
-	}
-
-	else 
-	{
-		void** ppreturned_block = freeMemory;
-		freeMemory = reinterpret_cast<void**>(pblock);
-		*freeMemory = reinterpret_cast<void*>(ppreturned_block);
-	}
-
 }
 
-
-void MemoryPool::ReleaseMemoryPool()
+MemoryMonitor::~MemoryMonitor()
 {
-	FreeAligned(memory);
-	memory = freeMemory = nullptr;
-
-	std::cout << "Memory pool has been released from memory!\n";
 }
 
-MemoryPool::~MemoryPool()
+void MemoryMonitor::MonitorMemory()
 {
-	ReleaseMemoryPool();
-}
-
-void* MemoryPool::AllocateUnaligned(const std::size_t size_)
-{
-	void* memoryBlock = malloc(size_);
-
-	return memoryBlock;
-}
-
-void MemoryPool::FreeUnaligned(void* mem)
-{
-	free(mem);
-
-	std::cout << "Unaligned memory pool has been freed from memory!\n";
-}
-
-void* MemoryPool::AllocateAligned(const  std::size_t size_bytes, const std::size_t alignment_)
-{
-	assert(alignment_ >= 1);
-	assert(alignment_ <= 128);
-	assert((alignment_ & (alignment_ - 1)) == 0);
-
-	std::size_t expandedSizeBytes = size_bytes + alignment_;
-
-	std::uintptr_t rawAddress = reinterpret_cast<std::uintptr_t>(AllocateUnaligned(expandedSizeBytes));
-
-	std::size_t mask = alignment_ - 1;
-	std::uintptr_t misalignment = rawAddress & mask;
-	std::ptrdiff_t adjustment = alignment_ - misalignment;
-
-	std::uintptr_t alignedAddress = rawAddress + adjustment;
-
-	assert(adjustment < 256);
-	std::uint8_t* paligned_mem = reinterpret_cast<std::uint8_t*>(alignedAddress);
-	paligned_mem[-1] = static_cast<std::uint8_t>(adjustment);
-
-	return static_cast<void*>(paligned_mem);
-}
-
-void MemoryPool::FreeAligned(void* mem)
-{
-	const std::uint8_t* memoryAligned = reinterpret_cast<const std::uint8_t*>(mem);
-	std::uintptr_t alignedAddress = reinterpret_cast<std::uintptr_t>(mem);
-	std::ptrdiff_t ajustment = static_cast<std::ptrdiff_t>(memoryAligned[-1]);
-
-	std::uintptr_t rawAddress = alignedAddress - ajustment;
-	void* rawMemory = reinterpret_cast<void*>(rawAddress);
-
-	FreeUnaligned(rawMemory);
-
-	std::cout << "Aligned memory pool has been freed from memory!\n";
-}
-
-std::size_t MemoryPool::GetElementSize() const
-{
-	return elementSize;
-}
-
-std::ostream& operator<<(std::ostream& os, MemoryPool& pool)
-{
-	if (pool.memory == nullptr) {
-		os << "ERROR " << __FUNCTION__ << ": No memory was allocated to this pool" << std::endl;
-		return os;
-	}
-
-	std::size_t elements_ = (pool.poolSize - pool.alignment) / pool.elementSize;
-	os << "Pool memory info: total size of " << pool.poolSize << " bytes| "
-		<< pool.elementSize << " byte element size| " << elements_ << " elements| " << pool.alignment << " byte alignment requirement" << std::endl;
-	os << "Printing Pool free memory list: "
-		<< "memory address | contents(next pointer)" << std::endl;
-	void** pplist = pool.freeMemory;
-	for (std::size_t elementCount = 0; elementCount < elements_; ++elementCount) {
-		if (pplist == nullptr) {
-			break;
-		}
-		
-		std::uintptr_t currentAddress = reinterpret_cast<std::uintptr_t>(pplist);
-		std::uintptr_t nextAddress = reinterpret_cast<std::uintptr_t>(*pplist);
-		
-		pplist = static_cast<void**>(*pplist);
-		os << "\t 0x" << std::hex << currentAddress << " | 0x" << nextAddress << std::endl;
-	}
-
-	return os;
-}
-
-Memory::Memory(std::vector<const char*> file_)
-{
-	file = file_;
-
-	std::cout << "\n";
-	for (int i = 0; i < file_.size(); i++)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(300));
-		std::cout << "File " << file_[i] << " initialized!\n";
-	}
-
-	std::cout << "\n";
-	for (int i = 0; i < file_.size(); i++)
-	{
-		std::ifstream in_file(file_[i], std::ios::binary);
-		in_file.seekg(0, std::ios::end);
-
-		int fileSize = in_file.tellg(); // Determines the size of the file in bytes
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(300));
-		std::cout << "The size of " << file_[i] << " file is " << fileSize << " bytes!\n";
-	}
-	std::cout << "\n";
-}
-
-
-Memory::~Memory()
-{
-	std::cout << "\n";
-	for (int i = 0; i < file.size(); i++)
-	{
-		std::cout << "File " << file[i] << " deleted from memory!\n";
-	}
+    //std::cout << "Allocating " << size_ << " bytes of memory\n";
+    //std::allocator<MemoryMonitor> mem;
 }

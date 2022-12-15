@@ -125,15 +125,6 @@ Window::Window(const char* name, int x, int y, int w, int h, int flags_)
 
 	profiler = new Profiler();
 
-	particle = new ParticleEffects();
-	particle->setRenderer(renderer);
-	particle->setPosition(500, 100);
-	particle->setParticle(ParticleEffects::SNOW);
-	particle->setStartSpin(0);
-	particle->setStartSpinVar(90);
-	particle->setEndSpin(90);
-	particle->setStartSpinVar(90);
-
 	isPaused = false;
 }
 
@@ -184,7 +175,6 @@ void Window::HandleEvents(int flags_)
 					if (PauseGame->Quit.isSelected)
 					{
 						PauseGame->threadPool.Finish();
-						PauseGame->memoryPool->ReleaseMemoryPool();
 
 						isRunning = false;
 						PauseGame->isRunning = false;
@@ -341,7 +331,6 @@ void Window::ShowLevelCompleteScreen(int flags_)
 				if (LevelFinished->Exit.isSelected)
 				{
 					LevelFinished->threadPool.Finish();
-					LevelFinished->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFinished->isRunning = false;
@@ -391,7 +380,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed->Quit.isSelected)
 				{
 					LevelFailed->threadPool.Finish();
-					LevelFailed->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed->isRunning = false;
@@ -438,7 +426,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed2->Quit.isSelected)
 				{
 					LevelFailed2->threadPool.Finish();
-					LevelFailed2->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed2->isRunning = false;
@@ -485,7 +472,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed3->Quit.isSelected)
 				{
 					LevelFailed3->threadPool.Finish();
-					LevelFailed3->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed3->isRunning = false;
@@ -532,7 +518,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed4->Quit.isSelected)
 				{
 					LevelFailed4->threadPool.Finish();
-					LevelFailed4->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed4->isRunning = false;
@@ -579,7 +564,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed5->Quit.isSelected)
 				{
 					LevelFailed5->threadPool.Finish();
-					LevelFailed5->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed5->isRunning = false;
@@ -626,7 +610,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed6->Quit.isSelected)
 				{
 					LevelFailed6->threadPool.Finish();
-					LevelFailed6->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed6->isRunning = false;
@@ -673,7 +656,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed7->Quit.isSelected)
 				{
 					LevelFailed7->threadPool.Finish();
-					LevelFailed7->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed7->isRunning = false;
@@ -720,7 +702,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed8->Quit.isSelected)
 				{
 					LevelFailed8->threadPool.Finish();
-					LevelFailed8->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed8->isRunning = false;
@@ -767,7 +748,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed9->Quit.isSelected)
 				{
 					LevelFailed9->threadPool.Finish();
-					LevelFailed9->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed9->isRunning = false;
@@ -814,7 +794,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed10->Quit.isSelected)
 				{
 					LevelFailed10->threadPool.Finish();
-					LevelFailed10->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed10->isRunning = false;
@@ -861,7 +840,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed11->Quit.isSelected)
 				{
 					LevelFailed11->threadPool.Finish();
-					LevelFailed11->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed11->isRunning = false;
@@ -908,7 +886,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed12->Quit.isSelected)
 				{
 					LevelFailed12->threadPool.Finish();
-					LevelFailed12->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed12->isRunning = false;
@@ -955,7 +932,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed13->Quit.isSelected)
 				{
 					LevelFailed13->threadPool.Finish();
-					LevelFailed13->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed13->isRunning = false;
@@ -1002,7 +978,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed14->Quit.isSelected)
 				{
 					LevelFailed14->threadPool.Finish();
-					LevelFailed14->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed14->isRunning = false;
@@ -1049,7 +1024,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed15->Quit.isSelected)
 				{
 					LevelFailed15->threadPool.Finish();
-					LevelFailed15->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed15->isRunning = false;
@@ -1096,7 +1070,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed16->Quit.isSelected)
 				{
 					LevelFailed16->threadPool.Finish();
-					LevelFailed16->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed16->isRunning = false;
@@ -1143,7 +1116,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed17->Quit.isSelected)
 				{
 					LevelFailed17->threadPool.Finish();
-					LevelFailed17->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed17->isRunning = false;
@@ -1190,7 +1162,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed18->Quit.isSelected)
 				{
 					LevelFailed18->threadPool.Finish();
-					LevelFailed18->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed18->isRunning = false;
@@ -1237,7 +1208,6 @@ void Window::ShowLevelFailedScreen(int flags_)
 				if (LevelFailed19->Quit.isSelected)
 				{
 					LevelFailed19->threadPool.Finish();
-					LevelFailed19->memoryPool->ReleaseMemoryPool();
 
 					isRunning = false;
 					LevelFailed19->isRunning = false;
@@ -1262,8 +1232,6 @@ void Window::Render()
 {
 	SDL_RenderClear(renderer);
 	level->RenderLevel();
-
-	particle->draw();    // you have to draw it in each loop
 
 	manager.Draw();
 	SDL_RenderPresent(renderer);

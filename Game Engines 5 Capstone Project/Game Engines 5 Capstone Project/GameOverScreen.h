@@ -6,7 +6,6 @@
 #include "Button.h"
 #include <vulkan/vulkan.h>
 #include "ThreadPool.h"
-#include "Memory.h"
 #include "Profiler.h"
 #include "OptionsMenu.h"
 #include "Audio.h"
@@ -30,7 +29,6 @@ public:
 	//Audio GameOverButtonsSound;
 
 	ThreadPool threadPool;
-	MemoryPool* memoryPool;
 
 private:
 	SDL_Window* gameoverWindow;

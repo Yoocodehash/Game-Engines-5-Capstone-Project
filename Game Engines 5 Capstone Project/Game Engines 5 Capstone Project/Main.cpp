@@ -10,9 +10,9 @@
 #include "Button.h"
 
 Window* window;
-Memory* memory;
 ThreadPool threadPool;
-MemoryPool* memoryPool;
+MemoryManagement* memoryManager;
+MemoryMonitor* memoryMonitor;
 Audio *audio;
 OptionsMenu* optionsMenu;
 CreditsMenu* creditsMenu;
@@ -30,8 +30,12 @@ double time2 = SDL_GetTicks();
 
 int main(int argc, char** argv)
 {
-    // Initialize memory pool and audio here
-    memoryPool = new MemoryPool();
+    // Initialize memory management and memory monitor here before the main menu opens
+    memoryManager = new MemoryManagement();
+    memoryManager->WriteStrings();
+
+    memoryMonitor = new MemoryMonitor();
+    memoryMonitor->MonitorMemory();
 
     Mouse mouse;
 
@@ -68,15 +72,6 @@ int main(int argc, char** argv)
     exitButton.drect.y = 350;
 
     threadPool.Start(1);
-    memoryPool->AllocatePool(10, 10, 1);
-    memoryPool->AllocateAligned(13, 1);
-
-    // Initialize memory files here
-    memory = new Memory({ "Flappy bird sprite.png", "Buttons.png",
-        "Credits.png", "Game Over.png", "Level 1.png", "Level Complete.png", "Main Menu.png", "Options Menu.png",
-        "Pause Menu.png", "Long Metal Spike Rotated Vertically.png", "Long Metal Spike.png",
-        "Long Wood Spike Rotated Vertically.png", "Long Wood Spike.png", "Small Metal Spike Rotated Vertically.png",
-        "Small Metal Spike.png", "Small Wood Spike Rotated Vertically.png", "Small Wood Spike.png" });
 
     audio = new Audio();
     audio->LoadAudio(); // Load music before the window opens
@@ -108,7 +103,6 @@ int main(int argc, char** argv)
             {
             case SDL_QUIT:
                 threadPool.Finish();
-                memoryPool->ReleaseMemoryPool();
 
                 return false;
                 break;
@@ -117,7 +111,6 @@ int main(int argc, char** argv)
                 if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
                 {
                     threadPool.Finish();
-                    memoryPool->ReleaseMemoryPool();
 
                     return false;
                 }
@@ -170,8 +163,6 @@ int main(int argc, char** argv)
 
                         // The typing minigame will be done after the window has been closed (along with the thread/memory pool)
                         threadPool.Finish();
-                        memoryPool->ReleaseMemoryPool();
-                        memory->~Memory();
 
                         return 0;
                     }
@@ -243,7 +234,6 @@ int main(int argc, char** argv)
                     if (exitButton.isSelected)
                     {
                         threadPool.Finish();
-                        memoryPool->ReleaseMemoryPool();
                         audio->DestroyAudio();
 
                         return false;

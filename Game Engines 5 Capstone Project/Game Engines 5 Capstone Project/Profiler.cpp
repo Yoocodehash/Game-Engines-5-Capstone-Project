@@ -103,7 +103,8 @@ short Profiler::GetCPUusage()
 
 	localCPU = cpuUsage;
 
-	::InterlockedDecrement(&runCount);
+	::InterlockedDecrement(&runCount); // Yeah we wrote it, we just took notes of this tutorial
+	// we're folling on how to print cpu usage with the process kernel and the system user kernel
 
 	return localCPU;
 }
@@ -111,7 +112,7 @@ short Profiler::GetCPUusage()
 ULONGLONG Profiler::SubtractTimes(const FILETIME& a_, const FILETIME& b_)
 {
 	LARGE_INTEGER a, b;
-	a.LowPart = a_.dwLowDateTime;
+	a.LowPart = a_.dwLowDateTime; // This substracts the times for the cpu usage from now to before
 	a.HighPart = a_.dwHighDateTime;
 
 	b.LowPart = b_.dwLowDateTime;
@@ -122,7 +123,8 @@ ULONGLONG Profiler::SubtractTimes(const FILETIME& a_, const FILETIME& b_)
 
 bool Profiler::EnoughTimePassed()
 {
-	const int minimumElapsedTimeInMilliseconds = 250;
+	const int minimumElapsedTimeInMilliseconds = 250; // This function is where the time has
+	// passed for a minimun of 250 milliseconds, the cpu usage will be able to be returned
 
 	ULONGLONG currentTickCount = GetTickCount64();
 	return (currentTickCount - lastRun) > minimumElapsedTimeInMilliseconds;

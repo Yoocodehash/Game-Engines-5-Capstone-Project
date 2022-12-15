@@ -15,13 +15,9 @@ LevelCompleteScreen::LevelCompleteScreen(const char* title_, int x_, int y_, int
     Exit.drect.x = 100 / 2 - Exit.drect.w / 2;
     Exit.drect.y = 450;
 
-    memoryPool = new MemoryPool();
-
     ButtonSound.LoadAudio();
 
     threadPool.Start(1);
-    memoryPool->AllocatePool(10, 10, 1);
-    memoryPool->AllocateAligned(13, 1);
 
     isRunning = true;
 }
@@ -44,7 +40,6 @@ void LevelCompleteScreen::HandleEventLevelCompleteScreen()
         {
         case SDL_QUIT:
             threadPool.Finish();
-            memoryPool->ReleaseMemoryPool();
 
             isRunning = false;
             break;
@@ -55,7 +50,6 @@ void LevelCompleteScreen::HandleEventLevelCompleteScreen()
                 // I included ESC key because if you're going to play in full screen then you can't press X and you're stuck
             case SDLK_ESCAPE:
                 threadPool.Finish();
-                memoryPool->ReleaseMemoryPool();
 
                 isRunning = false;
                 break;
