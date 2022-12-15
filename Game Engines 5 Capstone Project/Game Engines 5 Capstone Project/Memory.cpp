@@ -71,15 +71,15 @@ bool activeMemoryOn = false;
 // Create and initialize the memory map data to the max amount of pointers
 const size_t MaxPointers = 10000u;
 MemoryMapInfo MemoryMap[MaxPointers];
-size_t NullPointerSize = 0;
+size_t PointerSize = 0;
 
 // Searches the map for an address
 int SearchMapForAddress(void* pointer_) 
 {
-    /* For i is less than null pointer size, increment i
+    /* For i is less than pointer size, increment i
     and if the memory map pointer equal to the parameter pointer, return i */
 
-    for (size_t i = 0; i < NullPointerSize; ++i)
+    for (size_t i = 0; i < PointerSize; ++i)
     {
         if (MemoryMap[i].pointer == pointer_)
         {
@@ -98,21 +98,21 @@ void DeleteMemoryPointer(void* pointer_)
     int pos = SearchMapForAddress(pointer_);
 
     // Remove pointer from memory map using the local variable
-    for (size_t i = pos; i < NullPointerSize - 1; ++i)
+    for (size_t i = pos; i < PointerSize - 1; ++i)
     {
         MemoryMap[i] = MemoryMap[i + 1];
-        --NullPointerSize;
+        --PointerSize;
     }
 }
 
 // Find memory leaks after the pointer is deleted
 void SearchForMemoryLeaks()
 {
-    // If the null pointer size is greater than 0, then the memory has leaked and print where the leak occurs at
-    if (NullPointerSize > 0)
+    // If the pointer size is greater than 0, then the memory has leaked and print where the leak occurs at
+    if (PointerSize > 0)
     {
         std::cout << "\nLeaked memory at: ";
-        for (size_t i = 0; i < NullPointerSize; ++i)
+        for (size_t i = 0; i < PointerSize; ++i)
         {
             std::cout << MemoryMap[i].pointer << " (File: " << MemoryMap[i].file << ", on line " <<
                 MemoryMap[i].line << ")\n";
@@ -135,21 +135,21 @@ void* operator new(size_t size_, const char* file_, long line_)
     // If active memory is turned on, initialize the memory map pointer, file and line of code
     if (activeMemoryOn) 
     {
-        /* If the null pointer size is equal to the max pointers, then print to the console that the memory map
-        is a nullptr */
+        /* If the pointer size is equal to the max pointers, then print to the console that the memory map
+        is too small */
 
-        if (NullPointerSize == MaxPointers) 
+        if (PointerSize == MaxPointers) 
         {
-            std::cout << "The memory map is a nullptr\n";
+            std::cout << "The memory map is too small\n";
         }
 
         // Make the memory map array variables equal to the local pointer variable and the parameters passed in
-        MemoryMap[NullPointerSize].pointer = pointer;
-        MemoryMap[NullPointerSize].file = file_;
-        MemoryMap[NullPointerSize].line = line_;
+        MemoryMap[PointerSize].pointer = pointer;
+        MemoryMap[PointerSize].file = file_;
+        MemoryMap[PointerSize].line = line_;
 
-        // Increment the null pointer size so that the memory map is not equal to null
-        ++NullPointerSize;
+        // Increment the pointer size so that the memory map is not equal to null
+        ++PointerSize;
     }
 
     // If trace memory is turned on, then print the memory allocation at a particular address and line of code
