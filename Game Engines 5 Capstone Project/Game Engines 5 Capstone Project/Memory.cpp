@@ -1,5 +1,8 @@
 #include "Memory.h"
 
+#undef new /* This is needed to define the new operator for the memory monitor (without it, it'll say that new is
+undefined and give an error */
+
 
 MemoryManagement::MemoryManagement()
 {
@@ -10,7 +13,7 @@ MemoryManagement::~MemoryManagement()
 {
 }
 
-// This is where the string pointer allocates the memory if it doesn't equal to nullptr
+// This is where the string pointer allocates the memory if it doesn't equal to nullpointer
 void MemoryManagement::WriteStrings()
 {
     /* Create 2 int variables, one that stores the max size of strings you want to type(in this case, MaxSize)
@@ -58,16 +61,144 @@ void MemoryManagement::WriteStrings()
     }
 }
 
-MemoryMonitor::MemoryMonitor()
+// The rest of these variables and functions below are for memory monitor and doesn't need a class for it
+
+// Initialize the global booleans from Memory.h
+bool traceMemoryOn = true;
+bool activeMemoryOn = false;
+
+// These variables need to be initialized in .cpp to prevent definer errors (happens only when it's put in the .h file)
+// Create and initialize the memory map data to the max amount of pointers
+const size_t MaxPointers = 10000u;
+MemoryMapInfo MemoryMap[MaxPointers];
+size_t NullPointerSize = 0;
+
+// Searches the map for an address
+int SearchMapForAddress(void* pointer_) 
 {
+    /* For i is less than null pointer size, increment i
+    and if the memory map pointer equal to the parameter pointer, return i */
+
+    for (size_t i = 0; i < NullPointerSize; ++i)
+    {
+        if (MemoryMap[i].pointer == pointer_)
+        {
+            return i;
+        }
+    }
+
+    // If not, return -1 (error)
+    return -1;
 }
 
-MemoryMonitor::~MemoryMonitor()
+// Delete the memory map pointer
+void DeleteMemoryPointer(void* pointer_) 
 {
+    // Local variable to store the number for the memory map pointer
+    int pos = SearchMapForAddress(pointer_);
+
+    // Remove pointer from memory map using the local variable
+    for (size_t i = pos; i < NullPointerSize - 1; ++i)
+    {
+        MemoryMap[i] = MemoryMap[i + 1];
+        --NullPointerSize;
+    }
 }
 
-void MemoryMonitor::MonitorMemory()
+// Find memory leaks after the pointer is deleted
+void SearchForMemoryLeaks()
 {
-    //std::cout << "Allocating " << size_ << " bytes of memory\n";
-    //std::allocator<MemoryMonitor> mem;
+    // If the null pointer size is greater than 0, then the memory has leaked and print where the leak occurs at
+    if (NullPointerSize > 0)
+    {
+        printf("Leaked memory at:\n");
+        for (size_t i = 0; i < NullPointerSize; ++i)
+        {
+            printf("\t%p (File: %s, On line %ld)\n", MemoryMap[i].pointer, MemoryMap[i].file, MemoryMap[i].line);
+        }
+    }
+
+    // Else if it's equal to or less than 0, then print to the console that there's no memory leaks
+    else
+    {
+        printf("No memory leaks!\n");
+    }
+};
+
+// Overload the operator new in the scalar way
+void* operator new(size_t size_, const char* file_, long line_) 
+{
+    // Initialize the pointer to be equal to the malloc of the size of the pointer
+    void* pointer = malloc(size_);
+
+    // If active memory is turned on, initialize the memory map pointer, file and line of code
+    if (activeMemoryOn) 
+    {
+        /* If the null pointer size is equal to the max pointers, then print to the console that the memory map
+        is a nullptr */
+
+        if (NullPointerSize == MaxPointers) 
+        {
+            printf("The memory map is a nullptr\n");
+        }
+
+        // Make the memory map array variables equal to the local pointer variable and the parameters passed in
+        MemoryMap[NullPointerSize].pointer = pointer;
+        MemoryMap[NullPointerSize].file = file_;
+        MemoryMap[NullPointerSize].line = line_;
+
+        // Increment the null pointer size so that the memory map is not equal to null
+        ++NullPointerSize;
+    }
+
+    // If trace memory is turned on, then print the memory allocation at a particular address and line of code
+    if (traceMemoryOn) 
+    {
+        printf("Allocated %u bytes at address %p ", size_, pointer);
+        printf("(File: %s, On line: %ld)\n", file_, line_);
+    }
+
+    // Return the local pointer variable
+    return pointer;
+}
+
+// Overload the operator new in the array way which will pass in the size, code file, and the line of code
+void* operator new[](size_t size_, const char* file_, long line_) 
+{
+    // Return operator new(size_, file_, line_)
+    return operator new(size_, file_, line_);
+}
+
+// Override the operator delete in the scalar way which only passes in the void pointer variable
+void operator delete(void* pointer_) 
+{
+    // If the map address is greater than 0, then free the memory map and delete it
+    if (SearchMapForAddress(pointer_) >= 0)
+    {
+        free(pointer_);
+        DeleteMemoryPointer(pointer_);
+
+        // If trace memory is on, print the deleted memory and search for memory leaks after
+        if (traceMemoryOn)
+        {
+            printf("Deleted memory at address %p\n", pointer_);
+
+            // After the pointers are deleted, search for memory leaks (only works properly for array delete operators)
+            SearchForMemoryLeaks();
+        }
+
+    }
+
+    // Else if there's an unknown pointer somewhere, then print to the console that the pointer will be deleted
+    else if (!pointer_ && activeMemoryOn)
+    {
+        printf("Attempt to delete unknown pointer: %p\n", pointer_);
+    }
+}
+
+// Overload the operator delete in the array way
+void operator delete[](void* pointer_) 
+{
+    // Use the operator delete function above
+    operator delete(pointer_);
 }

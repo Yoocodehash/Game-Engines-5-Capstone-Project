@@ -1,5 +1,4 @@
 #include "Window.h"
-#include "Memory.h"
 #include "Threadpool.h"
 #include "Audio.h"
 #include "OptionsMenu.h"
@@ -8,11 +7,11 @@
 #include <iostream>
 #include <thread>
 #include "Button.h"
+#include "Memory.h"
 
 Window* window;
 ThreadPool threadPool;
 MemoryManagement* memoryManager;
-MemoryMonitor* memoryMonitor;
 Audio *audio;
 OptionsMenu* optionsMenu;
 CreditsMenu* creditsMenu;
@@ -34,8 +33,14 @@ int main(int argc, char** argv)
     memoryManager = new MemoryManagement();
     memoryManager->WriteStrings();
 
-    memoryMonitor = new MemoryMonitor();
-    memoryMonitor->MonitorMemory();
+    ActiveMemoryOn();
+    int* p = new int;
+    delete p;
+    int* q = new int[3];
+    delete[] q;
+    int* r = new int;
+    delete r;
+    ActiveMemoryOff();
 
     Mouse mouse;
 
