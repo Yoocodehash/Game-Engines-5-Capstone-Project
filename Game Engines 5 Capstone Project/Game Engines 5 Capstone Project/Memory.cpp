@@ -1,8 +1,8 @@
 #include "Memory.h"
 
-#undef new /* This is needed to define the new operator for the memory monitor (without it, it'll say that new is
-undefined and give an error */
-
+#undef new /* This is needed to undefine the new macro for the memory monitor so that we can use void* operator new 
+& new[] (without it, it'll say that new is a macro definer and can't use it as function so therefore, it will
+return an error in the code) */
 
 MemoryManagement::MemoryManagement()
 {
@@ -54,10 +54,8 @@ void MemoryManagement::WriteStrings()
             std::cout << stringPointer[Number] << "\n";
         }
 
-        // Delete the string pointer and print this statement to the console that the string pointer has been freed
+        // Delete the string pointer
         delete[] stringPointer;
-
-        std::cout << "\nThe string pointer has been freed and deallocated\n\n";
     }
 }
 
@@ -69,7 +67,7 @@ bool activeMemoryOn = false;
 
 // These variables need to be initialized in .cpp to prevent definer errors (happens only when it's put in the .h file)
 // Create and initialize the memory map data to the max amount of pointers
-const size_t MaxPointers = 10000u;
+const size_t MaxPointers = 10000;
 MemoryMapInfo MemoryMap[MaxPointers];
 size_t PointerSize = 0;
 
@@ -77,7 +75,7 @@ size_t PointerSize = 0;
 int SearchMapForAddress(void* pointer_) 
 {
     /* For i is less than pointer size, increment i
-    and if the memory map pointer equal to the parameter pointer, return i */
+    and if the memory map pointer equal to the parameter pointer (that you passed in), then return i */
 
     for (size_t i = 0; i < PointerSize; ++i)
     {
@@ -100,8 +98,10 @@ void DeleteMemoryPointer(void* pointer_)
     // Remove pointer from memory map using the local variable
     for (size_t i = pos; i < PointerSize - 1; ++i)
     {
+        // Gets the current index for memory map (can't do MemoryMap[i - 1] since it'll throw an exception error)
         MemoryMap[i] = MemoryMap[i + 1];
-        --PointerSize;
+
+        --PointerSize; // Decrement the pointer size until it is equal to 0
     }
 }
 
@@ -136,11 +136,11 @@ void* operator new(size_t size_, const char* file_, long line_)
     if (activeMemoryOn) 
     {
         /* If the pointer size is equal to the max pointers, then print to the console that the memory map
-        is too small */
+        is too big */
 
         if (PointerSize == MaxPointers) 
         {
-            std::cout << "The memory map is too small\n";
+            std::cout << "The memory map is too big\n";
         }
 
         // Make the memory map array variables equal to the local pointer variable and the parameters passed in
@@ -152,7 +152,7 @@ void* operator new(size_t size_, const char* file_, long line_)
         ++PointerSize;
     }
 
-    // If trace memory is turned on, then print the memory allocation at a particular address and line of code
+    // If trace memory is turned on, then print the memory allocation at a particular address, file and line of code
     if (traceMemoryOn) 
     {
         std::cout << "\nAllocated " << size_ << " bytes at address " << pointer <<
@@ -184,7 +184,7 @@ void operator delete(void* pointer_)
         {
             std::cout << "\nDeleted memory at address " << pointer_ << "\n";
 
-            // After the pointers are deleted, search for memory leaks (only works properly for array delete operators)
+            // After the pointers are deleted, search for memory leaks
             SearchForMemoryLeaks();
         }
 
